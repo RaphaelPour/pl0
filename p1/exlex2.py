@@ -7,10 +7,11 @@ from enum import Enum
 #
 #   Expression Parser with grammar:
 #   Non-Teminals: Factor, Term, Expression
-#   Terminals: Number, '+', '*', '(', ')'
+#   Terminals: Number, '+', '-', '*', '/', '(', ')'
 #   Start: Expression
 #   Rules:
-#       Expression  -> Term | Term '+' Expression
+#       Expression  -> Term | Term '+' Expression |
+#                      Term '-' Expression
 #       Term        -> Faktor | Faktor '*' Term
 #       Faktor      -> Zahl | '(' Expression ')'
 #
@@ -38,7 +39,7 @@ class ExpressionParser:
             self.code = MorphemCode.EMPTY
             return
 
-        m = re.match(r'^([0-9]+(\.[0-9]*)?)',
+        m = re.match(r'^[-]?([0-9]+(\.[0-9]*)?)',
             self.inputString[self.position:])
         if m is not None:
             print("V({}) ".format(m.group(0)), end='')
@@ -47,7 +48,7 @@ class ExpressionParser:
             self.value = float(m.group(0))
             return
 
-        m = re.match(r'^[+|*|(|)]',
+        m = re.match(r'^[+|\-|*|/(|)]',
             self.inputString[self.position:])
 
         if m is not None:
@@ -64,18 +65,26 @@ class ExpressionParser:
     def expression(self):
         value = self.term()
 
-        if self.code == MorphemCode.OPERATOR and self.operator == '+':
-            self.lex()
-            value += self.expression()
+        if self.code == MorphemCode.OPERATOR:
+            if self.operator == '+':
+                self.lex()
+                value += self.expression()
+            elif self.operator == '-':
+                self.lex()
+                value -= self.term()
 
         return value
 
     def term(self):
         value = self.factor()
 
-        if self.code == MorphemCode.OPERATOR and self.operator == '*':
-            self.lex()
-            value *= self.term()
+        if self.code == MorphemCode.OPERATOR:
+            if self.operator == '*':
+                self.lex()
+                value *= self.term()
+            elif self.operator == '/':
+                self.lex()
+                value /= self.term()
         return value
 
     def factor(self):
@@ -95,12 +104,12 @@ class ExpressionParser:
         return value
 
     def error(self, hint):
-        print("Error at position {} '{}', MCode:{},MOp:{}: {}",
+        print("Error at position {} '{}', MCode:{},MOp:{}: {}".format(
             self.position,
             self.inputString[self.position],
             self.code,
             self.operator,
-            hint)
+            hint))
         sys.exit(1)
 
 if __name__ == '__main__':
@@ -112,8 +121,3 @@ if __name__ == '__main__':
     e = ExpressionParser(sys.argv[1])
     print("{} = {}".format(sys.argv[1],e.evaluate()))
 
-    #e.lex()
-    #while e.code != MorphemCode.EMPTY:
-    #    e.lex()
-    
-    print("")

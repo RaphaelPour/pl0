@@ -7,12 +7,14 @@ from enum import Enum
 #
 #   Expression Parser with grammar:
 #   Non-Teminals: Factor, Term, Expression
-#   Terminals: Number, '+', '*', '(', ')'
+#   Terminals: Number, '+', '-', '*', '/', '(', ')'
 #   Start: Expression
 #   Rules:
-#       Expression  -> Term | Term '+' Expression
-#       Term        -> Faktor | Faktor '*' Term
-#       Faktor      -> Zahl | '(' Expression ')'
+#       Expression  -> Term RExpr
+#       RExpr       -> '+' Term RExpr | ε
+#       Term        -> Factor RTerm
+#       RTerm       -> '*' Factor RTerm | ε
+#       Factor      -> Number | '(' Expression ')'
 #
 
 class MorphemCode(Enum):
@@ -38,7 +40,7 @@ class ExpressionParser:
             self.code = MorphemCode.EMPTY
             return
 
-        m = re.match(r'^([0-9]+(\.[0-9]*)?)',
+        m = re.match(r'^[-]?([0-9]+(\.[0-9]*)?)',
             self.inputString[self.position:])
         if m is not None:
             print("V({}) ".format(m.group(0)), end='')
@@ -47,7 +49,7 @@ class ExpressionParser:
             self.value = float(m.group(0))
             return
 
-        m = re.match(r'^[+|*|(|)]',
+        m = re.match(r'^[+|\-|*|/(|)]',
             self.inputString[self.position:])
 
         if m is not None:
@@ -63,19 +65,36 @@ class ExpressionParser:
  
     def expression(self):
         value = self.term()
+        return self.rexpr(value)
 
-        if self.code == MorphemCode.OPERATOR and self.operator == '+':
-            self.lex()
-            value += self.expression()
+    def rexpr(self, value):
+
+        if self.code == MorphemCode.OPERATOR:
+            if self.operator == '+':
+                self.lex()
+                value += self.expression()
+                value = self.rexpr(value)
+            elif self.operator == '-':
+                self.lex()
+                value -= self.term()
+                value = self.rexpr(value)
 
         return value
 
     def term(self):
         value = self.factor()
+        return self.rterm(value)
 
-        if self.code == MorphemCode.OPERATOR and self.operator == '*':
-            self.lex()
-            value *= self.term()
+    def rterm(self, value):
+        if self.code == MorphemCode.OPERATOR:
+            if self.operator == '*':
+                self.lex()
+                value *= self.term()
+                value = self.rterm(value)
+            elif self.operator == '/':
+                self.lex()
+                value /= self.term()
+                value = self.rterm(value)
         return value
 
     def factor(self):
@@ -95,12 +114,12 @@ class ExpressionParser:
         return value
 
     def error(self, hint):
-        print("Error at position {} '{}', MCode:{},MOp:{}: {}",
+        print("Error at position {} '{}', MCode:{},MOp:{}: {}".format(
             self.position,
             self.inputString[self.position],
             self.code,
             self.operator,
-            hint)
+            hint))
         sys.exit(1)
 
 if __name__ == '__main__':
@@ -112,8 +131,3 @@ if __name__ == '__main__':
     e = ExpressionParser(sys.argv[1])
     print("{} = {}".format(sys.argv[1],e.evaluate()))
 
-    #e.lex()
-    #while e.code != MorphemCode.EMPTY:
-    #    e.lex()
-    
-    print("")
