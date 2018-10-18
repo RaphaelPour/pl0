@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import re
+import inspect
 from enum import Enum
 
 #
@@ -29,6 +30,7 @@ class ExpressionParser:
         self.inputString = inputString
         self.value = 0.0
         self.operator = ''
+        self.depth =0
 
     def evaluate(self):
         self.lex()
@@ -43,7 +45,6 @@ class ExpressionParser:
         m = re.match(r'^[-]?([0-9]+(\.[0-9]*)?)',
             self.inputString[self.position:])
         if m is not None:
-            print("V({}) ".format(m.group(0)), end='')
             self.position += len(m.group(0))
             self.code = MorphemCode.VALUE
             self.value = float(m.group(0))
@@ -53,7 +54,6 @@ class ExpressionParser:
             self.inputString[self.position:])
 
         if m is not None:
-            print("O({}) ".format(m.group(0)),end='')
             self.position += 1
             self.code = MorphemCode.OPERATOR
             self.operator = m.group(0)
@@ -64,17 +64,21 @@ class ExpressionParser:
 
  
     def expression(self):
+        self.printASTNode("Expression")
         value = self.term()
         return self.rexpr(value)
 
     def rexpr(self, value):
+        self.printASTNode("RExpr")
 
         if self.code == MorphemCode.OPERATOR:
             if self.operator == '+':
+                self.printASTNode(" O({}) ".format(self.operator))
                 self.lex()
                 value += self.expression()
                 value = self.rexpr(value)
             elif self.operator == '-':
+                self.printASTNode(" O({}) ".format(self.operator))
                 self.lex()
                 value -= self.term()
                 value = self.rexpr(value)
@@ -82,31 +86,39 @@ class ExpressionParser:
         return value
 
     def term(self):
+        self.printASTNode("Term")
         value = self.factor()
         return self.rterm(value)
 
     def rterm(self, value):
+        self.printASTNode("RTerm")
         if self.code == MorphemCode.OPERATOR:
             if self.operator == '*':
+                self.printASTNode(" O({}) ".format(self.operator))
                 self.lex()
                 value *= self.term()
                 value = self.rterm(value)
             elif self.operator == '/':
+                self.printASTNode(" O({}) ".format(self.operator))
                 self.lex()
                 value /= self.term()
                 value = self.rterm(value)
         return value
 
-    def factor(self):
+    def factor(self):   
+        self.printASTNode("Factor")
         value = 0.0
 
         if self.code == MorphemCode.OPERATOR and self.operator == '(':
+            self.printASTNode(" O({}) ".format(self.operator))
             self.lex()
             value = self.expression()
             if self.code != MorphemCode.OPERATOR or self.operator != ')':
                self.error("Expected ')'")
+            self.printASTNode(" O({}) ".format(self.operator))
             self.lex()
         elif self.code == MorphemCode.VALUE:
+            self.printASTNode(" V({}) ".format(self.value))
             value = self.value
             self.lex()
         else:
@@ -121,6 +133,10 @@ class ExpressionParser:
             self.operator,
             hint))
         sys.exit(1)
+
+    def printASTNode(self, function):
+        depth = len(inspect.stack())-4
+        print("{}{}".format(" "*depth, function))
 
 if __name__ == '__main__':
 
