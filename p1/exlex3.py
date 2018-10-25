@@ -24,13 +24,15 @@ class MorphemCode(Enum):
     VALUE = 3
 
 class ExpressionParser:
-    def __init__(self, inputString):
+    def __init__(self, inputString, printAST=False, printOperations=True):
         self.code = MorphemCode.EMPTY
         self.position = 0
         self.inputString = inputString
         self.value = 0.0
         self.operator = ''
         self.depth =0
+        self.printAST = printAST
+        self.printOperations = printOperations
 
     def evaluate(self):
         self.lex()
@@ -42,7 +44,7 @@ class ExpressionParser:
             self.code = MorphemCode.EMPTY
             return
 
-        m = re.match(r'^[-]?([0-9]+(\.[0-9]*)?)',
+        m = re.match(r'^([0-9]+(\.[0-9]*)?)',
             self.inputString[self.position:])
         if m is not None:
             self.position += len(m.group(0))
@@ -50,15 +52,16 @@ class ExpressionParser:
             self.value = float(m.group(0))
             return
 
-        m = re.match(r'^[+|\-|*|/(|)]',
+        m = re.match(r'^[+|\-|*|/|(|)]',
             self.inputString[self.position:])
+
 
         if m is not None:
             self.position += 1
             self.code = MorphemCode.OPERATOR
             self.operator = m.group(0)
             return
-
+        
         print("Unknown symbol '{}'".format(self.inputString[self.position]))
         sys.exit(1)
 
@@ -72,15 +75,15 @@ class ExpressionParser:
         self.printASTNode("RExpr")
 
         if self.code == MorphemCode.OPERATOR:
-            if self.operator == '+':
-                self.printASTNode(" O({}) ".format(self.operator))
-                self.lex()
-                value += self.expression()
-                value = self.rexpr(value)
-            elif self.operator == '-':
+            if self.operator == '-':
                 self.printASTNode(" O({}) ".format(self.operator))
                 self.lex()
                 value -= self.term()
+                value = self.rexpr(value)
+            elif self.operator == '+':
+                self.printASTNode(" O({}) ".format(self.operator))
+                self.lex()
+                value += self.term()
                 value = self.rexpr(value)
 
         return value
@@ -96,12 +99,12 @@ class ExpressionParser:
             if self.operator == '*':
                 self.printASTNode(" O({}) ".format(self.operator))
                 self.lex()
-                value *= self.term()
+                value *= self.factor()
                 value = self.rterm(value)
             elif self.operator == '/':
                 self.printASTNode(" O({}) ".format(self.operator))
                 self.lex()
-                value /= self.term()
+                value /= self.factor()
                 value = self.rterm(value)
         return value
 
@@ -135,8 +138,9 @@ class ExpressionParser:
         sys.exit(1)
 
     def printASTNode(self, function):
-        depth = len(inspect.stack())-4
-        print("{}{}".format(" "*depth, function))
+        if self.printAST:
+            depth = len(inspect.stack())-4
+            print("{}{}".format(" "*depth, function))
 
 if __name__ == '__main__':
 
@@ -144,6 +148,6 @@ if __name__ == '__main__':
         print("usage {} <arithmetic expression>".format(sys.argv[0]))
         sys.exit(1)
     
-    e = ExpressionParser(sys.argv[1])
+    e = ExpressionParser(sys.argv[1],True,False)
     print("{} = {}".format(sys.argv[1],e.evaluate()))
 

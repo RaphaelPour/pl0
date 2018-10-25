@@ -20,11 +20,10 @@
     6 - >
     7 - else 
 */
-char charVector[128] ={};
 
 // Functions
 void lex_init(char *fileName);
-void printCharV{};e{};ctor();
+void printCharVector();
 
 /*
 lex();

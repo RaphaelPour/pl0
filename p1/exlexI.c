@@ -3,6 +3,9 @@
 #include <string.h>
 #include <ctype.h>
 
+// Iterative left-recursive version of the
+// Expression parser
+
 typedef struct Morphem{
 
     int code;	// Status of the Morphem
@@ -29,7 +32,7 @@ double expression();
 double term();
 double factor();
 
-int main(int argc, char* argv[])
+int main(int argc, char* argv[])//{{{
 {
     if(argc != 2)
     {
@@ -58,7 +61,7 @@ int main(int argc, char* argv[])
     free(m);
     return EXIT_SUCCESS;
 
-}
+}//}}}
 
 void lex()
 {
@@ -72,7 +75,7 @@ void lex()
     {
         // Get rid of all whitespaces
         while(inputString[m->position] == ' ' ||
-            inputString[m->position] == '\t')m->position++;
+                inputString[m->position] == '\t')m->position++;
 
         // If first char is a digit or a decimal point
         if( isdigit(*(inputString+m->position)) || 
@@ -84,7 +87,7 @@ void lex()
             m->value = strtod(tmp, &endptr);
             m->code = MCODE_VALUE;
             m->position += (int)(endptr-tmp);
-            printf("V(%.2f) ", m->value);
+            //printf("V(%.2f) ", m->value);
         }
         else
             switch(inputString[m->position])
@@ -98,7 +101,7 @@ void lex()
                     m->operator = inputString[m->position];
                     m->code = MCODE_OPERATOR;
                     m->position++;
-                    printf("O(%c) ", m->operator);
+                    //printf("O(%c) ", m->operator);
                     break;
                 default:
                     printf("Unknown symbol '%c'\n", 
@@ -112,20 +115,23 @@ void lex()
 double expression()
 {
     double value = term();
-    if(m->code == MCODE_OPERATOR && m->operator == '+')
-    {
-        lex();
-        double t = expression();
-        printf("%.2f + %.2f = %.2f\n", value,t,value+t);
-        value += t;
-    }
-    else if(m->code == MCODE_OPERATOR && m->operator == '-')
-    {
-        lex();
-        double t = expression();
-        printf("%.2f - %.2f = %.2f\n", value,t,value-t);
-        value -= t;
-    }
+
+    while(m->code == MCODE_OPERATOR && (m->operator == '+' ||
+                m->operator == '-'))
+        if(m->operator == '+')
+        {
+            lex();
+            double t = term();
+            printf("%.2f + %.2f = %.2f\n", value,t,value+t);
+            value += t;
+        }
+        else if( m->operator == '-')
+        {
+            lex();
+            double t = term();
+            printf("%.2f - %.2f = %.2f\n", value,t,value-t);
+            value -= t;
+        }
     return value;
 
 }
@@ -133,17 +139,18 @@ double expression()
 double term()
 {
     double value = factor();
-    if(m->code == MCODE_OPERATOR && m->operator == '*')
+    while(m->code == MCODE_OPERATOR && (m->operator == '*' || m->operator == '/'))
+    if(m->operator == '*')
     {
         lex();
-        double t = term();
+        double t = factor();
         printf("%.2f * %.2f = %.2f\n", value,t,value*t);
         value *= t;
     }
-    else if(m->code == MCODE_OPERATOR && m->operator == '/')
+    else if(m->operator == '/')
     {
         lex();
-        double t = term();
+        double t = factor();
         printf("%.2f / %.2f = %.2f\n", value,t,value/t);
         value /= t;
     }
