@@ -18,6 +18,17 @@ class MorphemSymbols(Enum):
     EQUALS = 128
     LESSER_EQUAL = 129
     GREATER_EQUAL = 130
+    BEGIN = 131
+    CALL= 132
+    CONST= 133
+    DO = 134
+    END= 135
+    IF= 136
+    ODD= 137
+    PROCEDURE= 138
+    THEN = 139
+    VAR = 140
+    WHILE = 141
 
 
 class Morphem():
@@ -41,7 +52,7 @@ class Morphem():
         self.code = MorphemCode.SYMBOL
 
     def __str__(self):
-        return "[i] {}.{}, Code: {}, Value: {}".format(self.lineCount, self.linePosition, self.code, self.value)
+        return "[i] {}:{} {}: {}".format(self.lineCount, self.linePosition, self.code, self.value)
 
 
 class PL0Lexer():
@@ -89,7 +100,7 @@ class PL0Lexer():
         
         # Build up state Matrix
         self.stateMat = [
-            #  0 So      1 Zi      2 Bu      3 ':'     4 '='     5 '<'     6 '>'     7 Space
+            #  0 So      1 Zi      2 Bu      3 ':'     4 '='     5 '<'     6 '>'     7 Invalid So
             [(9, SLB), (1, SL_), (2, GL_), (3, SL_), (9, SLB), (4, SL_), (5, SL_), (0, L__)],  # 0
             [(9, B__), (1, SL_), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)],  # 1
             [(9, B__), (2, SL_), (2, GL_), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)],  # 2
@@ -99,7 +110,7 @@ class PL0Lexer():
             [(9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)],  # 6
             [(9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)],  # 7
             [(9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)]  # 8
-        ]
+        ]        
 
         # Read first char to give Lexer a one char look-ahead
         self.read()
@@ -112,13 +123,7 @@ class PL0Lexer():
         if self.currentChar == "":
             return self.morphem
 
-        while self.currentState != 9:
-
-            #print("ord({}) = {}".format(self.currentChar, ord(self.currentChar)))
-
-            if not self.currentChar:
-                self.end()
-                return self.morphem
+        while self.currentState != 9 and self.currentChar:
 
             cvIndex = ord(self.currentChar)
             if cvIndex >= len(self.charVector):
@@ -180,7 +185,7 @@ class PL0Lexer():
     def end(self):
 
         # Valid Special Chars and :,<,>
-        if self.currentState in (3, 4, 5, 0):
+        if self.currentState in (3, 4, 5,0):
             self.morphem.setSymbol(self.outBuffer)
 
         # Number
@@ -202,7 +207,8 @@ class PL0Lexer():
         # Greater-Equal =>
         elif self.currentState == 8:
             self.morphem.setSymbol(MorphemSymbols.GREATER_EQUAL)
-
+        #elif self.currentState == 0:
+        #    self.warning("State 0")
         else:
             self.error("Unknown State '{}'".format(self.currentState))
 
@@ -222,6 +228,9 @@ class PL0Lexer():
     def error(self, message):
         print("[!] Error in {}: {}".format(str(self.morphem), message))
         sys.exit(1)
+
+    def warning(self, message):
+        print("[w] Warning in {}: {}".format(str(self.morphem), message))
 
     def __del__(self):
         if self.sourceFile is not None:
@@ -252,3 +261,5 @@ if __name__ == '__main__':
             break
 
         print(str(morphem))
+
+    print("done.")
