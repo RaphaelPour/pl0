@@ -113,7 +113,7 @@ class PL0Lexer():
         ]        
 
         # Read first char to give Lexer a one char look-ahead
-        self.read()
+        self.currentChar = self.sourceFile.read(1)
 
     def lex(self):
         self.currentState = 0
@@ -146,12 +146,14 @@ class PL0Lexer():
         return self.morphem
 
     def next(self):
-        self.currentChar = self.sourceFile.read(1)
-
+        
         self.morphem.linePosition += 1
-        if self.currentChar == "\n":
+        if self.currentChar in ("\n", "\r"):
             self.morphem.linePosition = 0
             self.morphem.lineCount += 1
+
+        self.currentChar = self.sourceFile.read(1)
+
 
     # Schreiben
     def write(self):
@@ -207,8 +209,6 @@ class PL0Lexer():
         # Greater-Equal =>
         elif self.currentState == 8:
             self.morphem.setSymbol(MorphemSymbols.GREATER_EQUAL)
-        #elif self.currentState == 0:
-        #    self.warning("State 0")
         else:
             self.error("Unknown State '{}'".format(self.currentState))
 
