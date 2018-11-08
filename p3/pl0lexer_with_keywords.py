@@ -110,7 +110,7 @@ class PL0LexerWithKeywords():
             #  0 So       1 Zi       2 Bu       3 ':'      4 '='      5 '<'      6 '>'      7 Inv.     8 Keyword Beginning
             [(10, SLB), ( 1, SL_), ( 2, GL_), ( 3, SL_), (10, SLB), ( 4, SL_), ( 5, SL_), ( 0, L__), ( 9, GL_)],  # 0 // Tabs/Whitespaces
             [(10, B__), ( 1, SL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 1 // Number
-            [(10, B__), ( 2, SL_), ( 2, GL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 2 // Ident
+            [(10, B__), ( 2, SL_), ( 2, GL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), ( 2, GL_)],  # 2 // Ident
             [(10, B__), (10, B__), (10, B__), (10, B__), ( 6, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 3 // :
             [(10, B__), (10, B__), (10, B__), (10, B__), ( 7, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 4 // <
             [(10, B__), (10, B__), (10, B__), (10, B__), ( 8, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 5 // >
@@ -258,9 +258,8 @@ if __name__ == '__main__':
 
     sourceFile = "test.txt"
     if len(sys.argv) != 2:
-        pass
-        #print("usage: {} <input file>".format(sys.argv[0]))
-        # sys.exit(1)
+        print("usage: {} <input file>".format(sys.argv[0]))
+        sys.exit(1)
     else:
         sourceFile = sys.argv[1]
 
