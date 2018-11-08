@@ -15,7 +15,7 @@ class MorphemCode(Enum):
 
 class MorphemSymbol(Enum):
     NULL = 0
-    EQUALS = 128
+    ASSIGN = 128
     LESSER_EQUAL = 129
     GREATER_EQUAL = 130
     BEGIN = 131
@@ -131,7 +131,15 @@ class PL0LexerWithKeywords():
         if self.currentChar == "":
             return self.morphem
 
-        while self.currentState != 10 and self.currentChar:
+        while self.currentState != 10:
+
+            # Check if EOF is reached but current state is not 10
+            # If there is an untokenized string -> call end without automaton table
+            # and end the process
+            if not self.currentChar:
+                if self.outBuffer:
+                    self.end()
+                break
 
             cvIndex = ord(self.currentChar)
             if cvIndex >= len(self.charVector):
@@ -206,9 +214,9 @@ class PL0LexerWithKeywords():
         elif self.currentState == 2:
             self.morphem.setIdentifier(self.outBuffer)
 
-        # Equals :=
+        # ASSIGN :=
         elif self.currentState == 6:
-            self.morphem.setSymbol(MorphemSymbol.EQUALS)
+            self.morphem.setSymbol(MorphemSymbol.ASSIGN)
 
         # Lesser-Equal <=
         elif self.currentState == 7:
@@ -277,6 +285,5 @@ if __name__ == '__main__':
             break
 
         print(str(morphem))
-        
 
     print("done.")

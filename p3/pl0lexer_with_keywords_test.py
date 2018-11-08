@@ -21,7 +21,7 @@ class TestPL0LexerWithKeywords(unittest.TestCase):
             currentMorphem = lexer.lex()
 
         self.assertEqual(morpheme, [">", "<", MorphemSymbol.GREATER_EQUAL,
-                                    MorphemSymbol.LESSER_EQUAL, "=", MorphemSymbol.EQUALS])
+                                    MorphemSymbol.LESSER_EQUAL, "=", MorphemSymbol.ASSIGN])
 
     def test_pl01(self):
         testFile = os.path.join(self.testFileFolder, "tx.pl0")
@@ -40,10 +40,10 @@ class TestPL0LexerWithKeywords(unittest.TestCase):
                              MorphemSymbol.PROCEDURE, "P1", ";",
                              MorphemSymbol.VAR, "I", ";",
                              MorphemSymbol.BEGIN,
-                             "I", MorphemSymbol.EQUALS, 0.0, ";",
+                             "I", MorphemSymbol.ASSIGN, 0.0, ";",
                              MorphemSymbol.WHILE, "I", "<", 7.0, MorphemSymbol.DO,
                              MorphemSymbol.BEGIN,
-                             "I", MorphemSymbol.EQUALS, "I", "+", 1.0, ";",
+                             "I", MorphemSymbol.ASSIGN, "I", "+", 1.0, ";",
                              "!", "I",
                              MorphemSymbol.END,
                              MorphemSymbol.END, ";",
@@ -67,8 +67,8 @@ class TestPL0LexerWithKeywords(unittest.TestCase):
                              MorphemSymbol.VAR, "A", ",", "B", ",", "MAX", ";",
                              MorphemSymbol.PROCEDURE, "P1", ";",
                              MorphemSymbol.BEGIN,
-                             MorphemSymbol.IF, "A", MorphemSymbol.GREATER_EQUAL, "B", MorphemSymbol.THEN, "MAX", MorphemSymbol.EQUALS, "A", ";",
-                             MorphemSymbol.IF, "A", "<", "B", MorphemSymbol.THEN, "MAX", MorphemSymbol.EQUALS, "B",
+                             MorphemSymbol.IF, "A", MorphemSymbol.GREATER_EQUAL, "B", MorphemSymbol.THEN, "MAX", MorphemSymbol.ASSIGN, "A", ";",
+                             MorphemSymbol.IF, "A", "<", "B", MorphemSymbol.THEN, "MAX", MorphemSymbol.ASSIGN, "B",
                              MorphemSymbol.END,";",
                              MorphemSymbol.BEGIN,
                              "?", "A",";",
@@ -124,17 +124,17 @@ class TestPL0LexerWithKeywords(unittest.TestCase):
                 MorphemSymbol.PROCEDURE, "P1", ";",
                 MorphemSymbol.VAR, "B", ",", "C", ";",
                 MorphemSymbol.BEGIN,
-                "B", MorphemSymbol.EQUALS, "A", ";",
-                "A", MorphemSymbol.EQUALS, "A", "-", 1.0, ";",
-                "C", MorphemSymbol.EQUALS, "A", ";",
+                "B", MorphemSymbol.ASSIGN, "A", ";",
+                "A", MorphemSymbol.ASSIGN, "A", "-", 1.0, ";",
+                "C", MorphemSymbol.ASSIGN, "A", ";",
                 "!", "C", ";",
                 MorphemSymbol.IF, "C", ">", 1.0, MorphemSymbol.THEN, MorphemSymbol.CALL, "P1", ";",
-                "FAC", MorphemSymbol.EQUALS, "FAC", "*", "B", ";",
+                "FAC", MorphemSymbol.ASSIGN, "FAC", "*", "B", ";",
                 "!", "FAC",
                 MorphemSymbol.END, ";",
                 MorphemSymbol.BEGIN,
                 "?", "A", ";",
-                "FAC", MorphemSymbol.EQUALS, 1.0, ";",
+                "FAC", MorphemSymbol.ASSIGN, 1.0, ";",
                 MorphemSymbol.CALL, "P1", ";",
                 "!", "FAC",
                 MorphemSymbol.END, "."
