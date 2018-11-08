@@ -1,16 +1,16 @@
 import unittest
 import os
 
-from pl0lex import PL0Lexer, Morphem, MorphemCode, MorphemSymbols
+from pl0lexer_with_keywords import PL0LexerWithKeywords, Morphem, MorphemCode, MorphemSymbols
 
 class TestPL0Lexer(unittest.TestCase):
 
     def setUp(self):
-        self.testFileFolder = "../testfiles"
+        self.testFileFolder = "testfiles"
 
     def test_operator(self):
         testFile = os.path.join(self.testFileFolder, "test1.txt")
-        lexer = PL0Lexer(testFile)
+        lexer = PL0LexerWithKeywords(testFile)
 
         morpheme = []
 
@@ -25,7 +25,7 @@ class TestPL0Lexer(unittest.TestCase):
 
     def test_pl01(self):
         testFile = os.path.join(self.testFileFolder, "tx.pl0")
-        lexer = PL0Lexer(testFile)
+        lexer = PL0LexerWithKeywords(testFile)
 
         morpheme = []
 
@@ -52,7 +52,7 @@ class TestPL0Lexer(unittest.TestCase):
 
     def test_pl02(self):
         testFile = os.path.join(self.testFileFolder, "t2.pl0")
-        lexer = PL0Lexer(testFile)
+        lexer = PL0LexerWithKeywords(testFile)
 
         morpheme = []
 

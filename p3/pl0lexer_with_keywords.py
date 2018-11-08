@@ -13,7 +13,7 @@ class MorphemCode(Enum):
     IDENT = 4
 
 
-class MorphemSymbols(Enum):
+class MorphemSymbol(Enum):
     NULL = 0
     EQUALS = 128
     LESSER_EQUAL = 129
@@ -29,7 +29,6 @@ class MorphemSymbols(Enum):
     THEN = 139
     VAR = 140
     WHILE = 141
-
 
 class Morphem():
 
@@ -52,10 +51,14 @@ class Morphem():
         self.code = MorphemCode.SYMBOL
 
     def __str__(self):
-        return "[i] {}:{} {}: {}".format(self.lineCount, self.linePosition, self.code, self.value)
 
+        value = self.value
+       # if self.code == MorphemCode.SYMBOL:
+                #value = "<{}, {}>".format(MorphemSymbol(self.value).name, str(self.value))
+        
+        return "[i] {}:{} {}: {}".format(self.lineCount, self.linePosition, self.code, value)
 
-class PL0Lexer():
+class PL0LexerWithKeywords():
 
     #  Class | Description
     #  ------+---------------------------
@@ -67,6 +70,7 @@ class PL0Lexer():
     #    5   | '<'
     #    6   | '>'
     #    7   | Control Chars
+    #    8   | First letter of a valid keyword
 
     stateMat = []
 
@@ -78,20 +82,21 @@ class PL0Lexer():
         self.currentState = 0
 
 
-
         self.charVector = [
-            # 0 1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+            # 0 1  2  3  4  5  6  7  8  10  A  B  C  D  E  F
             7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,  # /* 0*/
             7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,  # /*10*/
             7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # /*20*/
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 0, 5, 4, 6, 0,  # /*30*/
-            0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  # /*40*/
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0,  # /*50*/
-            0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  # /*60*/
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0  # /*70*/
+        #      A  B  C  D  E  F  G  H  I  J  K  L  M  N  O
+            0, 2, 8, 8, 8, 8, 2, 2, 2, 8, 2, 2, 2, 2, 2, 8,  # /*40*/
+        #   P  Q  R  S  T  U  V  W  Y  Y  Z  
+            8, 2, 2, 2, 8, 2, 8, 8, 2, 2, 2, 0, 0, 0, 0, 0,  # /*50*/
+        #      a  b  c  d  e  f  g  h  i  j  k  l  m  n  o
+            0, 2, 8, 8, 8, 8, 2, 2, 2, 8, 2, 2, 2, 2, 2, 8,  # /*60*/
+        #   p  q  r  s  t  u  v  w  x  y  z 
+            8, 2, 2, 2, 8, 2, 8, 8, 2, 2, 2, 0, 0, 0, 0, 0  # /*70*/
         ]
-
-        self.keywordVector = 
 
         # Make Shorter Functions for the State-Matrix
         SLB = self.writeReadEnd
@@ -102,17 +107,18 @@ class PL0Lexer():
         
         # Build up state Matrix
         self.stateMat = [
-            #  0 So      1 Zi      2 Bu      3 ':'     4 '='     5 '<'     6 '>'     7 Invalid So
-            [(9, SLB), (1, SL_), (2, GL_), (3, SL_), (9, SLB), (4, SL_), (5, SL_), (0, L__)],  # 0
-            [(9, B__), (1, SL_), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)],  # 1
-            [(9, B__), (2, SL_), (2, GL_), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)],  # 2
-            [(9, B__), (9, B__), (9, B__), (9, B__), (6, SL_), (9, B__), (9, B__), (9, B__)],  # 3
-            [(9, B__), (9, B__), (9, B__), (9, B__), (7, SL_), (9, B__), (9, B__), (9, B__)],  # 4
-            [(9, B__), (9, B__), (9, B__), (9, B__), (8, SL_), (9, B__), (9, B__), (9, B__)],  # 5
-            [(9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)],  # 6
-            [(9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)],  # 7
-            [(9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__), (9, B__)]  # 8
-        ]        
+            #  0 So       1 Zi       2 Bu       3 ':'      4 '='      5 '<'      6 '>'      7 Inv.     8 Keyword Beginning
+            [(10, SLB), ( 1, SL_), ( 2, GL_), ( 3, SL_), (10, SLB), ( 4, SL_), ( 5, SL_), ( 0, L__), ( 9, GL_)],  # 0 // Tabs/Whitespaces
+            [(10, B__), ( 1, SL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 1 // Number
+            [(10, B__), ( 2, SL_), ( 2, GL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 2 // Ident
+            [(10, B__), (10, B__), (10, B__), (10, B__), ( 6, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 3 // :
+            [(10, B__), (10, B__), (10, B__), (10, B__), ( 7, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 4 // <
+            [(10, B__), (10, B__), (10, B__), (10, B__), ( 8, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 5 // >
+            [(10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 6 // :=
+            [(10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 7 // <=
+            [(10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 8 // >=
+            [(10, B__), ( 2, SL_), ( 9, GL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), ( 9, GL_)]   # 9 // Potential Keyword
+        ]
 
         # Read first char to give Lexer a one char look-ahead
         self.currentChar = self.sourceFile.read(1)
@@ -125,7 +131,7 @@ class PL0Lexer():
         if self.currentChar == "":
             return self.morphem
 
-        while self.currentState != 9 and self.currentChar:
+        while self.currentState != 10 and self.currentChar:
 
             cvIndex = ord(self.currentChar)
             if cvIndex >= len(self.charVector):
@@ -133,12 +139,12 @@ class PL0Lexer():
                     self.controlSymbolsToString(self.currentChar), ord(self.currentChar), len(self.charVector)))
 
             charClass = self.charVector[cvIndex]
-            if charClass > 7:
+            if charClass > 8:
                 self.error(
-                    "Char Class Index '{}' out of range. There are only 7 classes.".format(charClass))
+                    "Char Class Index '{}' out of range. There are only 8 classes.".format(charClass))
 
-            if self.currentState > 9:
-                self.error("Invalid State '{}'. There are only 9 states.".format(self.currentState))
+            if self.currentState > 10:
+                self.error("Invalid State '{}'. There are only 10 states.".format(self.currentState))
 
             action = self.stateMat[self.currentState][charClass]
             action[1]()
@@ -202,15 +208,24 @@ class PL0Lexer():
 
         # Equals :=
         elif self.currentState == 6:
-            self.morphem.setSymbol(MorphemSymbols.EQUALS)
+            self.morphem.setSymbol(MorphemSymbol.EQUALS)
 
         # Lesser-Equal <=
         elif self.currentState == 7:
-            self.morphem.setSymbol(MorphemSymbols.LESSER_EQUAL)
+            self.morphem.setSymbol(MorphemSymbol.LESSER_EQUAL)
             
         # Greater-Equal =>
         elif self.currentState == 8:
-            self.morphem.setSymbol(MorphemSymbols.GREATER_EQUAL)
+            self.morphem.setSymbol(MorphemSymbol.GREATER_EQUAL)
+
+        # Potential-Keyword
+        elif self.currentState == 9:
+            for name, member in MorphemSymbol.__members__.items():
+                if self.outBuffer == name:
+                    self.morphem.setSymbol(member)
+                    break
+            else:
+                self.morphem.setIdentifier(self.outBuffer)
         else:
             self.error("Unknown State '{}'".format(self.currentState))
 
@@ -254,7 +269,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     print("[i] using sourcefile {}".format(sourceFile))
-    p = PL0Lexer(inputFile=sourceFile)
+    p = PL0LexerWithKeywords(inputFile=sourceFile)
 
     while True:
         morphem = p.lex()
@@ -263,5 +278,6 @@ if __name__ == '__main__':
             break
 
         print(str(morphem))
+        
 
     print("done.")
