@@ -61,7 +61,7 @@ class Morphem():
        # if self.code == MorphemCode.SYMBOL:
                 #value = "<{}, {}>".format(MorphemSymbol(self.value).name, str(self.value))
         
-        return "[i] {}:{} {}: {}".format(self.lineCount, self.linePosition, self.code, value)
+        return "{}:{} {}: {}".format(self.lineCount, self.linePosition, self.code, value)
 
 class PL0Lexer():
 
@@ -173,7 +173,10 @@ class PL0Lexer():
             self.morphem.linePosition = 0
             self.morphem.lineCount += 1
 
+
         self.currentChar = self.sourceFile.read(1)
+
+        #print("[l] READ <{}>".format(self.controlSymbolsToString(self.currentChar)))
 
 
     # Schreiben
