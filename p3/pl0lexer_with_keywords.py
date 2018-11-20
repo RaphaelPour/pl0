@@ -33,10 +33,10 @@ class MorphemSymbol(Enum):
 class Morphem():
 
     def __init__(self):
-        self.lineCount = 1
-        self.linePosition = 0
         self.code = MorphemCode.EMPTY
         self.value  = ""
+        self.lines = 1
+        self.cols = 1
 
     def setIdentifier(self, value):
         self.value = value
@@ -56,7 +56,7 @@ class Morphem():
        # if self.code == MorphemCode.SYMBOL:
                 #value = "<{}, {}>".format(MorphemSymbol(self.value).name, str(self.value))
         
-        return "[i] {}:{} {}: {}".format(self.lineCount, self.linePosition, self.code, value)
+        return "[i] {}:{} {}: {}".format(self.lines, self.cols, self.code, value)
 
 class PL0LexerWithKeywords():
 
@@ -81,6 +81,8 @@ class PL0LexerWithKeywords():
         self.outBuffer = ""
         self.currentState = 0
 
+        self.lines = 1
+        self.cols = 1
 
         self.charVector = [
             # 0 1  2  3  4  5  6  7  8  10  A  B  C  D  E  F
@@ -126,6 +128,7 @@ class PL0LexerWithKeywords():
     def lex(self):
         self.currentState = 0
         self.outBuffer = ""
+
         self.morphem = Morphem()
 
         if self.currentChar == "":
@@ -163,13 +166,12 @@ class PL0LexerWithKeywords():
 
     def next(self):
         
-        self.morphem.linePosition += 1
+        self.cols += 1
         if self.currentChar in ("\n", "\r"):
-            self.morphem.linePosition = 0
-            self.morphem.lineCount += 1
+            self.cols = 1
+            self.lines += 1
 
         self.currentChar = self.sourceFile.read(1)
-
 
     # Schreiben
     def write(self):
@@ -201,6 +203,13 @@ class PL0LexerWithKeywords():
 
     # Beenden
     def end(self):
+
+        # Subtract the length of the character-interpretation
+        # of the value in order to get correct line/column values
+        # for debugging (especially inside the parser)
+        # But only if are not in the final state 9
+        self.morphem.lines = self.lines
+        self.morphem.cols = self.cols - len(str(self.outBuffer))
 
         # Valid Special Chars and :,<,>
         if self.currentState in (3, 4, 5,0):
@@ -264,10 +273,11 @@ class PL0LexerWithKeywords():
 
 if __name__ == '__main__':
 
-    sourceFile = "test.txt"
+    sourceFile = "..\\testfiles\\tx.pl0"
     if len(sys.argv) != 2:
-        print("usage: {} <input file>".format(sys.argv[0]))
-        sys.exit(1)
+        #print("usage: {} <input file>".format(sys.argv[0]))
+        #sys.exit(1)
+        pass
     else:
         sourceFile = sys.argv[1]
 

@@ -140,5 +140,31 @@ class TestPL0LexerWithKeywords(unittest.TestCase):
                 MorphemSymbol.END, "."
             ])
 
+    def test_lines(self):
+        testFile = os.path.join(self.testFileFolder, "tx.pl0")
+        lexer = PL0LexerWithKeywords(testFile)
+
+        morpheme = []
+
+        currentMorphem = lexer.lex()
+        while currentMorphem.code != MorphemCode.EMPTY:
+
+            morpheme.append( (currentMorphem.lines, currentMorphem.cols ))
+            currentMorphem = lexer.lex()
+
+        self.assertEqual(morpheme,
+                         [
+                             (2,3), (2,13),(2,15),
+                             (3,3), (3,7), (3,8),
+                             (4,3),
+                             (5,5),(5,6),(5,8),(5,9),
+                             (6,5),(6,11), (6,12),(6,13), (6, 15),
+                             (7,6),
+                             (8,7),(8,8),(8,10),(8,11),(8,12),(8,13),
+                             (9,7),(9,8),
+                             (10,6),
+                             (11,3),(11,6),
+                             (13,1), (13,6), (13,8)
+                         ])
 if __name__ == '__main__':
     unittest.main()

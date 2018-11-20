@@ -2,8 +2,12 @@
   Procedure p1;
   var i;
   begin
-    i:=i+42;
-    i:=i+1337
+    i:=0;
+    while i<7 do
+     begin
+      i:=i+1;
+      !I
+     end
   end;
 
 call p1.

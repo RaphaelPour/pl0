@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-#
-# PL/0 Lexer including Keyword detection
-#
-
 import sys
 import re
 import os
@@ -14,11 +9,11 @@ from enum import Enum
 class MorphemCode(Enum):
     EMPTY = 1
     NUMBER = 2
-    SYMBOL = 3  
+    SYMBOL = 3
     IDENT = 4
 
 
-class MorphemSymbol(Enum):
+class Symbol(Enum):
     NULL = 0
     ASSIGN = 128
     LESSER_EQUAL = 129
@@ -38,10 +33,10 @@ class MorphemSymbol(Enum):
 class Morphem():
 
     def __init__(self):
-        self.lineCount = 1
-        self.linePosition = 0
         self.code = MorphemCode.EMPTY
         self.value  = ""
+        self.lines = 1
+        self.cols = 1
 
     def setIdentifier(self, value):
         self.value = value
@@ -59,9 +54,9 @@ class Morphem():
 
         value = self.value
        # if self.code == MorphemCode.SYMBOL:
-                #value = "<{}, {}>".format(MorphemSymbol(self.value).name, str(self.value))
+                #value = "<{}, {}>".format(Symbol(self.value).name, str(self.value))
         
-        return "{}:{} {}: {}".format(self.lineCount, self.linePosition, self.code, value)
+        return "[i] {}:{} {}: {}".format(self.lines, self.cols, self.code, value)
 
 class PL0Lexer():
 
@@ -86,6 +81,8 @@ class PL0Lexer():
         self.outBuffer = ""
         self.currentState = 0
 
+        self.lines = 1
+        self.cols = 1
 
         self.charVector = [
             # 0 1  2  3  4  5  6  7  8  10  A  B  C  D  E  F
@@ -131,6 +128,7 @@ class PL0Lexer():
     def lex(self):
         self.currentState = 0
         self.outBuffer = ""
+
         self.morphem = Morphem()
 
         if self.currentChar == "":
@@ -168,16 +166,12 @@ class PL0Lexer():
 
     def next(self):
         
-        self.morphem.linePosition += 1
+        self.cols += 1
         if self.currentChar in ("\n", "\r"):
-            self.morphem.linePosition = 0
-            self.morphem.lineCount += 1
-
+            self.cols = 1
+            self.lines += 1
 
         self.currentChar = self.sourceFile.read(1)
-
-        #print("[l] READ <{}>".format(self.controlSymbolsToString(self.currentChar)))
-
 
     # Schreiben
     def write(self):
@@ -210,6 +204,13 @@ class PL0Lexer():
     # Beenden
     def end(self):
 
+        # Subtract the length of the character-interpretation
+        # of the value in order to get correct line/column values
+        # for debugging (especially inside the parser)
+        # But only if are not in the final state 9
+        self.morphem.lines = self.lines
+        self.morphem.cols = self.cols - len(str(self.outBuffer))
+
         # Valid Special Chars and :,<,>
         if self.currentState in (3, 4, 5,0):
             self.morphem.setSymbol(self.outBuffer)
@@ -224,19 +225,19 @@ class PL0Lexer():
 
         # ASSIGN :=
         elif self.currentState == 6:
-            self.morphem.setSymbol(MorphemSymbol.ASSIGN)
+            self.morphem.setSymbol(Symbol.ASSIGN)
 
         # Lesser-Equal <=
         elif self.currentState == 7:
-            self.morphem.setSymbol(MorphemSymbol.LESSER_EQUAL)
+            self.morphem.setSymbol(Symbol.LESSER_EQUAL)
             
         # Greater-Equal =>
         elif self.currentState == 8:
-            self.morphem.setSymbol(MorphemSymbol.GREATER_EQUAL)
+            self.morphem.setSymbol(Symbol.GREATER_EQUAL)
 
         # Potential-Keyword
         elif self.currentState == 9:
-            for name, member in MorphemSymbol.__members__.items():
+            for name, member in Symbol.__members__.items():
                 if self.outBuffer == name:
                     self.morphem.setSymbol(member)
                     break
@@ -272,10 +273,11 @@ class PL0Lexer():
 
 if __name__ == '__main__':
 
-    sourceFile = "test.txt"
+    sourceFile = "..\\testfiles\\tx.pl0"
     if len(sys.argv) != 2:
-        print("usage: {} <input file>".format(sys.argv[0]))
-        sys.exit(1)
+        #print("usage: {} <input file>".format(sys.argv[0]))
+        #sys.exit(1)
+        pass
     else:
         sourceFile = sys.argv[1]
 

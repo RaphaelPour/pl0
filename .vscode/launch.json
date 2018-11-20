@@ -9,7 +9,6 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": ["${workspaceFolder}\\testfiles\\t2.pl0"],
             "console": "integratedTerminal"
         },
         {
