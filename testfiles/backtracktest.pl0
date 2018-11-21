@@ -1,0 +1,10 @@
+CONST a=10;
+VAR b;
+PROCEDURE p1;
+BEGIN
+if a>=b THEN CALL p1;
+CALL p1;
+!a;
+!b
+END;
+!a.

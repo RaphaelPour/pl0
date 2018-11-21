@@ -14,6 +14,19 @@ class NonTerminal(Enum):
     STATEMENT = 4
     FACTOR = 5
     CONDITION = 6
+    CONSTANT_LIST = 7
+    CONSTANT_DECLARATION = 8
+    VARIABLE_LIST = 9
+    VARIABLE_DECLARATION = 10
+    PROCEDURE_DECLARATION = 11
+    ASSIGNMENT_STATEMENT = 12
+    CONDITIONAL_STATEMENT = 13
+    LOOP_STATEMENT = 14
+    COMPOUND_STATEMENT = 15
+    PROCEDURE_CALL = 16
+    INPUT_STATEMENT = 17
+    OUTPUT_STATEMENT = 18
+    
 
 class EdgeType(Enum):
     NIL______ = 0
@@ -74,18 +87,98 @@ class PL0Parser():
         STAT = NonTerminal.STATEMENT
         FACT = NonTerminal.FACTOR
         COND = NonTerminal.CONDITION
+        CLST = NonTerminal.CONSTANT_LIST 
+        CNST = NonTerminal.CONSTANT_DECLARATION
+        VLST = NonTerminal.VARIABLE_LIST
+        VARD = NonTerminal.VARIABLE_DECLARATION
+        PROC = NonTerminal.PROCEDURE_DECLARATION
+        ASSS = NonTerminal.ASSIGNMENT_STATEMENT
+        CNDS = NonTerminal.CONDITIONAL_STATEMENT
+        LOOP = NonTerminal.LOOP_STATEMENT
+        COMP = NonTerminal.COMPOUND_STATEMENT
+        PRCL = NonTerminal.PROCEDURE_CALL
+        INST = NonTerminal.INPUT_STATEMENT
+        OUTS = NonTerminal.OUTPUT_STATEMENT
 
         programEdges = [
-            Edge(EdgeType.SUBGRAPH_, BLCK, None, 1,0, PROG),
-            Edge(EdgeType.SYMBOL___, '.', None, 2,0, PROG),
+            Edge(EdgeType.SUBGRAPH_, BLCK, None, 1,0, PROG), # 0
+            Edge(EdgeType.SYMBOL___, '.', None, 2,0, PROG),  # 1
 
             # End
-            Edge(EdgeType.GRAPH_END, 0, None, 0,0, PROG)
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, PROG)     # 2
         ]
+
+        constListEdges = [
+            Edge(EdgeType.SYMBOL___, Symbol.CONST, None, 1, 0, CLST), # 0
+            Edge(EdgeType.SUBGRAPH_, CNST, None, 2,0,CLST),           # 1
+            Edge(EdgeType.SYMBOL___, ',',None, 1,3,CLST),             # 2
+            Edge(EdgeType.SYMBOL___, ';',None, 4,0,CLST),             # 3
+
+            # End
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, CLST)              # 4
+        ]
+
+        consDeclarationEdges = [
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 1,0, CNST), # 0
+            Edge(EdgeType.SYMBOL___, '=', None, 2,0, CNST),               # 1
+            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER,None,3,0, CNST),  # 2
+
+            # End
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, CNST)                  # 3
+        ]
+
+        varListEdges = [
+            Edge(EdgeType.SYMBOL___, Symbol.VAR, None, 1, 0, VLST),   # 0
+            Edge(EdgeType.SUBGRAPH_, VARD, None, 2,0,VLST),           # 1
+            Edge(EdgeType.SYMBOL___, ',',None, 1,3,VLST),             # 2
+            Edge(EdgeType.SYMBOL___, ';',None, 4,0,VLST),             # 3
+
+            # End
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, VLST)              # 4
+        ]
+
+        varDeclarationEdges = [
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 1,0, VARD), # 0
+
+            # End
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, VARD)                  # 1
+        ]
+
+
+        procDeclatationEdges = [
+            Edge(EdgeType.SYMBOL___, Symbol.PROCEDURE, None, 1,0,PROC),  # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 2,0,PROC), # 1
+            Edge(EdgeType.SYMBOL___,';', None, 3, 0, PROC),              # 2
+            Edge(EdgeType.SUBGRAPH_,BLCK, None, 4,0,PROC),               # 3
+            Edge(EdgeType.SYMBOL___,';', None, 5,0,PROC),                # 4
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, PROC)                 # 5
+            
+        ]
+
 
         blockEdges = [
             # Constant Declaration
-            Edge(EdgeType.SYMBOL___, Symbol.CONST,None, 1,6, BLCK), # 0
+            Edge(EdgeType.SUBGRAPH_, CLST, None, 1, 1, BLCK), # 0
+
+            # Variable Declaration
+            Edge(EdgeType.SUBGRAPH_, VLST, None, 2, 2, BLCK), # 1
+
+            # Procedure Declaration
+            Edge(EdgeType.SUBGRAPH_, PROC, None, 3,3, BLCK),  # 2
+
+            # Nil Edge (needed for emitter function)
+            Edge(EdgeType.NIL______, None, None, 4,0,BLCK),   # 3
+
+            # Statement Declaration
+            Edge(EdgeType.SUBGRAPH_, STAT, None, 5,0,BLCK),   # 4
+
+            # End
+            Edge(EdgeType.GRAPH_END, None, None, 0,0, BLCK)   # 5 
+        ]
+
+        blockEdges2 = [
+            # Constant Declaration
+            Edge(EdgeType.SYMBOL___, Symbol.CONST,None, 1,6, BLCK),        # 0
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None,2,0, BLCK),   # 1
             Edge(EdgeType.SYMBOL___, '=', None, 3,0, BLCK),                # 2
             Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER,None,4,5, BLCK),   # 3
@@ -100,21 +193,20 @@ class PL0Parser():
 
             # Procedure Declaration
             Edge(EdgeType.SYMBOL___, Symbol.PROCEDURE, None, 11,15, BLCK), # 10
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 12,0, BLCK),        # 11
-            Edge(EdgeType.SYMBOL___, ';', None, 13,0, BLCK),                      # 12
-            Edge(EdgeType.SUBGRAPH_, BLCK, None, 14,0, BLCK),                     # 13
-            Edge(EdgeType.SYMBOL___, ';', None, 15,0, BLCK),                      # 14
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 12,0, BLCK), # 11
+            Edge(EdgeType.SYMBOL___, ';', None, 13,0, BLCK),               # 12
+            Edge(EdgeType.SUBGRAPH_, BLCK, None, 14,0, BLCK),              # 13
+            Edge(EdgeType.SYMBOL___, ';', None, 15,0, BLCK),               # 14
 
             # Nil Edge (needed for emitter function)
-            Edge(EdgeType.NIL______, None, None, 16,0, BLCK),                     # 15
+            Edge(EdgeType.NIL______, None, None, 16,0, BLCK),              # 15
 
             # Statement Declaration
-            Edge(EdgeType.SUBGRAPH_, STAT, None, 17,0, BLCK),                     # 16
+            Edge(EdgeType.SUBGRAPH_, STAT, None, 17,0, BLCK),              # 16
 
             # End
-            Edge(EdgeType.GRAPH_END, None, None, 0,0, BLCK)                       # 17
+            Edge(EdgeType.GRAPH_END, None, None, 0,0, BLCK)                # 17
         ]
-
     
         expressionEdges = [
             Edge(EdgeType.SYMBOL___,'-', None, 2,1,EXPR),               # 0
@@ -165,21 +257,21 @@ class PL0Parser():
             Edge(EdgeType.SYMBOL___, Symbol.END,None, 21,0,STAT),          # 14
 
             # CALL
-            Edge(EdgeType.SYMBOL___, Symbol.CALL,None, 16,17,STAT),     # 15
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 21,0,STAT),      # 16
+            Edge(EdgeType.SYMBOL___, Symbol.CALL,None, 16,17,STAT),        # 15
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 21,0,STAT),  # 16
 
             # Input
-            Edge(EdgeType.SYMBOL___, '?', None, 18, 19,STAT),                  # 17
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 21, 0,STAT),     # 18
+            Edge(EdgeType.SYMBOL___, '?', None, 18, 19,STAT),              # 17
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 21, 0,STAT), # 18
 
             # Output
             # Alternative Edge 21 or 0? This depends on the used
             # grammar
-            Edge(EdgeType.SYMBOL___, '!', None, 20, 21,STAT),                  # 19
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 21, 0,STAT),     # 20
+            Edge(EdgeType.SYMBOL___, '!', None, 20, 21,STAT),              # 19
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 21, 0,STAT), # 20
 
             # End
-            Edge(EdgeType.GRAPH_END, None, None, 0,0,STAT)                     # 21
+            Edge(EdgeType.GRAPH_END, None, None, 0,0,STAT)                 # 21
 
         ]
 
@@ -196,31 +288,36 @@ class PL0Parser():
 
         conditionEdges = [
             # ODD
-            Edge(EdgeType.SYMBOL___, Symbol.ODD, None, 1, 2,COND),   #  0
-            Edge(EdgeType.SUBGRAPH_, EXPR, None, 10, 0,COND),               #  1
+            Edge(EdgeType.SYMBOL___, Symbol.ODD, None, 1, 2,COND),           #  0
+            Edge(EdgeType.SUBGRAPH_, EXPR, None, 10, 0,COND),                #  1
 
             # Comparisson
-            Edge(EdgeType.SUBGRAPH_,EXPR, None, 3,0,COND),                          #  2
-            Edge(EdgeType.SYMBOL___, '=', None, 9, 4,COND),                         #  3
-            Edge(EdgeType.SYMBOL___, '#', None, 9, 5,COND),                         #  4
-            Edge(EdgeType.SYMBOL___, '>', None, 9, 6,COND),                         #  5
-            Edge(EdgeType.SYMBOL___, '<', None, 9, 7,COND),                         #  6
+            Edge(EdgeType.SUBGRAPH_,EXPR, None, 3,0,COND),                   #  2
+            Edge(EdgeType.SYMBOL___, '=', None, 9, 4,COND),                  #  3
+            Edge(EdgeType.SYMBOL___, '#', None, 9, 5,COND),                  #  4
+            Edge(EdgeType.SYMBOL___, '>', None, 9, 6,COND),                  #  5
+            Edge(EdgeType.SYMBOL___, '<', None, 9, 7,COND),                  #  6
             Edge(EdgeType.SYMBOL___, Symbol.LESSER_EQUAL, None, 9, 8,COND),  #  7
             Edge(EdgeType.SYMBOL___, Symbol.GREATER_EQUAL, None, 9, 0,COND), #  8
-            Edge(EdgeType.SUBGRAPH_, EXPR, None, 10,0,COND),                        #  9
+            Edge(EdgeType.SUBGRAPH_, EXPR, None, 10,0,COND),                 #  9
 
             # End
-            Edge(EdgeType.GRAPH_END, None, None, 0,0,COND)                          # 10
+            Edge(EdgeType.GRAPH_END, None, None, 0,0,COND)                   # 10
         ]
 
         self.edges = {
-            PROG : programEdges,    # 0
-            BLCK : blockEdges,      # 1
-            EXPR : expressionEdges, # 2
-            TERM : termEdges ,      # 3
-            STAT : statementEdges,  # 4
-            FACT : factorEdges,     # 5
-            COND : conditionEdges   # 6
+            PROG : programEdges,         #  0
+            BLCK : blockEdges,           #  1
+            EXPR : expressionEdges,      #  2
+            TERM : termEdges ,           #  3
+            STAT : statementEdges,       #  4
+            FACT : factorEdges,          #  5
+            COND : conditionEdges,       #  6
+            CLST : constListEdges,       #  7
+            CNST : consDeclarationEdges, #  8
+            VLST : varListEdges,         #  9
+            VARD : varDeclarationEdges,  # 10
+            PROC : procDeclatationEdges  # 11
         }
 
         # Init Lexer
@@ -229,6 +326,9 @@ class PL0Parser():
 
     def parse(self, edge=None, path=[]):
         
+        morphemProcessed = False
+        localPath = []
+
         if not edge:
             edge = self.edges[NonTerminal.PROGRAM][0]
         success = False
@@ -242,18 +342,26 @@ class PL0Parser():
             if(edge.type == EdgeType.SYMBOL___):
                 success = self.lexer.morphem.value == edge.value
                 if success:
-                    path.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
+                    localPath.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
             elif(edge.type == EdgeType.MORPHEM__):
                 success = self.lexer.morphem.code == edge.value
                 if success:
-                    path.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
+                    localPath.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
             elif(edge.type == EdgeType.SUBGRAPH_):
-                path.append({ 'value' : edge.nonterminal.name, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
-                success = self.parse(self.edges[edge.value][0],path)
-                if not success:
-                    path.pop()
+                localPath.append({ 'value' : edge.nonterminal.name, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
+                result = self.parse(self.edges[edge.value][0],path + localPath)
+                if result:
+                    success = True
+                    localPath += result
+                    #pp = pprint.PrettyPrinter(indent=4, depth=3,width=150)
+                    #pp.pprint(path)
+                    #pp.pprint(localPath)
+                else:
+                    success = False
+                    localPath.pop()
+
             elif(edge.type == EdgeType.GRAPH_END):
-                return path
+                return localPath
             elif(edge.type == EdgeType.NIL______):
                 success = True
 
@@ -267,11 +375,18 @@ class PL0Parser():
             if not success:
                 if edge.alternative != 0:
                     edge = self.edges[edge.nonterminal][edge.alternative]
-                else:
+                elif morphemProcessed:
                     print("[!] Parser failed at " + str(edge))
 
-                    pp = pprint.PrettyPrinter(indent=4, depth=3)
+                    pp = pprint.PrettyPrinter(indent=4, depth=3, width=150)
                     pp.pprint(path)
+                    pp.pprint(localPath)
+                    sys.exit(1)
+                else:
+                    # It's BACKTRACKIN' TIME
+                    pp = pprint.PrettyPrinter(indent=4, depth=3, width=150)
+                    pp.pprint(path)
+                    print ("[i] Backtracking")
                     return False
             else: 
                 # Accept morphem
@@ -279,10 +394,12 @@ class PL0Parser():
                     print("[i] {}".format(edge))
                     self.lexer.lex()
                 edge = self.edges[edge.nonterminal][edge.next]
+                morphemProcessed = True
+        return localPath
 
 
 if __name__ == "__main__":
-    sourceFile = "../testfiles/tx.pl0"
+    sourceFile = "../testfiles/backtracktest.pl0"
     if len(sys.argv) != 2:
         #print("usage: {} <input file>".format(sys.argv[0]))
         #sys.exit(1)
@@ -298,7 +415,8 @@ if __name__ == "__main__":
 
     parser = PL0Parser(sourceFile)
 
-    if not parser.parse():
+    result = parser.parse()
+    if not result:
         print("[!] Parser failed with Morphem " + str(parser.lexer.morphem))
     else:
         print("[i] done ")
