@@ -56,7 +56,7 @@ class Morphem():
        # if self.code == MorphemCode.SYMBOL:
                 #value = "<{}, {}>".format(Symbol(self.value).name, str(self.value))
         
-        return "[i] {}:{} {}: {}".format(self.lines, self.cols, self.code, value)
+        return "[i] {:2}:{:2} {:18}: {}".format(self.lines, self.cols, self.code, value)
 
 class PL0Lexer():
 

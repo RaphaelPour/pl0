@@ -58,7 +58,7 @@ class Edge():
         self.nonterminal = nonterminal
 
     def __str__(self):
-        result = "({},{}) {}".format(self.next,self.alternative, str(self.type))
+        result = "({:2d},{:2d}) {}".format(self.next,self.alternative, str(self.type))
 
         if self.type == EdgeType.SYMBOL___:
             if(isinstance(self.value, Symbol)):
@@ -354,29 +354,47 @@ class PL0Parser():
         while(True):
 
             # Check Edge type 
+
+            # Symbol detected -> Syntactically right Symbol?
             if(edge.type == EdgeType.SYMBOL___):
                 success = self.lexer.morphem.value == edge.value
                 if success:
-                    localPath.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
+                    localPath.append({ 
+                        'value' : self.lexer.morphem.value, 
+                        'type' : edge.type, 
+                        'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
+
+            # Morphem detected -> Syntacticaly right morphem?
             elif(edge.type == EdgeType.MORPHEM__):
                 success = self.lexer.morphem.code == edge.value
                 if success:
-                    localPath.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
+                    localPath.append({ 
+                        'value' : self.lexer.morphem.value, 
+                        'type' : edge.type, 
+                        'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
+
+            # Subgraph detected -> Go deeper
             elif(edge.type == EdgeType.SUBGRAPH_):
                 nextEdge = self.edges[edge.value][0]
-                print("[i] Subgraph: " + nextEdge.nonterminal.name)
-                localPath.append({ 'value' : nextEdge.nonterminal.name, 'type' : nextEdge.type, 'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
+                localPath.append({ 
+                    'value' : nextEdge.nonterminal.name, 
+                    'type' : nextEdge.type, 
+                    'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
                 result = self.parse(nextEdge,path + localPath)
                 if result:
                     success = True
+
+                    # Combines the local parse tree with the deeper one
+                    # This allows to ignore the delivered path argument
                     localPath += result
-                    #pp = pprint.PrettyPrinter(indent=4, depth=3,width=150)
-                    #pp.pprint(path)
-                    #pp.pprint(localPath)
                 else:
                     success = False
+
+                    # Delete the subgraph from the local Path because it wasn't
+                    # successful
                     localPath.pop()
 
+            # End detected -> Return the current parse-tree
             elif(edge.type == EdgeType.GRAPH_END):
                 return localPath
             elif(edge.type == EdgeType.NIL______):
@@ -401,9 +419,7 @@ class PL0Parser():
                     sys.exit(1)
                 else:
                     # It's BACKTRACKIN' TIME
-                    #pp = pprint.PrettyPrinter(indent=4, depth=3, width=150)
-                    #pp.pprint(path)
-                    #print ("[i] Backtracking")
+                    
                     return False
             else: 
                 # Accept morphem
