@@ -1,0 +1,6 @@
+  Procedure p1;
+  begin
+    i:=0
+  end;
+
+call p1.
