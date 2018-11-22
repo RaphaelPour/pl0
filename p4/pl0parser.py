@@ -155,6 +155,13 @@ class PL0Parser():
             
         ]
 
+        assignmentEdges = [
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,None, 1,0,ASSS),       # 0
+            Edge(EdgeType.SYMBOL___, Symbol.ASSIGN, None, 2,0, ASSS),         # 1
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, None, 3,0,ASSS), # 2
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, ASSS)                      # 3
+        ]
+
 
         blockEdges = [
             # Constant Declaration
@@ -329,12 +336,20 @@ class PL0Parser():
         morphemProcessed = False
         localPath = []
 
-        if not edge:
-            edge = self.edges[NonTerminal.PROGRAM][0]
         success = False
+
+        # Initialize Parser if we are called for the first time
 
         if(self.lexer.morphem.code == MorphemCode.EMPTY):
             self.lexer.lex()
+
+        if not edge:
+            edge = self.edges[NonTerminal.PROGRAM][0]
+            localPath.append({ 
+                'value' : edge.nonterminal.name, 
+                'type' : edge.type, 
+                'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)
+                })
 
         while(True):
 
@@ -342,14 +357,16 @@ class PL0Parser():
             if(edge.type == EdgeType.SYMBOL___):
                 success = self.lexer.morphem.value == edge.value
                 if success:
-                    localPath.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
+                    localPath.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
             elif(edge.type == EdgeType.MORPHEM__):
                 success = self.lexer.morphem.code == edge.value
                 if success:
-                    localPath.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
+                    localPath.append({ 'value' : self.lexer.morphem.value, 'type' : edge.type, 'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
             elif(edge.type == EdgeType.SUBGRAPH_):
-                localPath.append({ 'value' : edge.nonterminal.name, 'type' : edge.type, 'line' : self.lexer.morphem.lines})
-                result = self.parse(self.edges[edge.value][0],path + localPath)
+                nextEdge = self.edges[edge.value][0]
+                print("[i] Subgraph: " + nextEdge.nonterminal.name)
+                localPath.append({ 'value' : nextEdge.nonterminal.name, 'type' : nextEdge.type, 'pos' : (self.lexer.morphem.lines, self.lexer.morphem.cols)})
+                result = self.parse(nextEdge,path + localPath)
                 if result:
                     success = True
                     localPath += result
@@ -384,14 +401,14 @@ class PL0Parser():
                     sys.exit(1)
                 else:
                     # It's BACKTRACKIN' TIME
-                    pp = pprint.PrettyPrinter(indent=4, depth=3, width=150)
-                    pp.pprint(path)
-                    print ("[i] Backtracking")
+                    #pp = pprint.PrettyPrinter(indent=4, depth=3, width=150)
+                    #pp.pprint(path)
+                    #print ("[i] Backtracking")
                     return False
             else: 
                 # Accept morphem
                 if edge.type in [EdgeType.SYMBOL___, EdgeType.MORPHEM__]:
-                    print("[i] {}".format(edge))
+                    print("[i] Accepted Morphem: {}".format(edge))
                     self.lexer.lex()
                 edge = self.edges[edge.nonterminal][edge.next]
                 morphemProcessed = True
@@ -399,7 +416,7 @@ class PL0Parser():
 
 
 if __name__ == "__main__":
-    sourceFile = "../testfiles/backtracktest.pl0"
+    sourceFile = "../testfiles/constlist.pl0"
     if len(sys.argv) != 2:
         #print("usage: {} <input file>".format(sys.argv[0]))
         #sys.exit(1)
@@ -419,4 +436,6 @@ if __name__ == "__main__":
     if not result:
         print("[!] Parser failed with Morphem " + str(parser.lexer.morphem))
     else:
+        pp = pprint.PrettyPrinter(indent=4, depth=3, width=150)
+        pp.pprint(result)
         print("[i] done ")
