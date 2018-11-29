@@ -2,4 +2,4 @@
 
 ## Bugs
 
- [ ] line/col count doesn't work properly
+ [x] line/col count doesn't work properly
