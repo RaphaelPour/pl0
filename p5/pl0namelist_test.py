@@ -216,8 +216,85 @@ class TestPL0Parser(unittest.TestCase):
         self.assertNotEqual(p13,p23)
 
     # Local Search Tests
-    
+    def test_searchLocalVar(self):
+        n = PL0NameList()
+
+        ident = "A"
+
+        varC = n.createVar(ident)
+        self.assertIsInstance(varC, NLVariable)
+
+        varS2 = n.searchIdentLocal(n.getMainProcedure(),ident)
+        self.assertIsInstance(varS2, NLVariable)
+        self.assertEqual(varC, varS2)
+
+    def test_searchLocalVarWithoutCreate(self):
+        n = PL0NameList()
+
+        ident = "A"
+
+        # The Search must fail while the variable isn't created yet
+        varS1 = n.searchIdentLocal(n.getMainProcedure(),ident)
+        self.assertIsNone(varS1)        
+
+    def test_searchLocalConst(self):
+        n = PL0NameList()
+
+        ident = "A"
+
+        constC = n.createVar(ident)
+        self.assertIsInstance(constC, NLVariable)
+
+        # The search gives back our created Const
+        constS = n.searchIdentLocal(n.getMainProcedure(),ident)
+        self.assertEqual(constC, constS)
+
+    def test_searchLocalConstWithoutCreate(self):
+        n = PL0NameList()
+
+        ident = "A"
+
+        # The Search must fail while the variable isn't created yet
+        const = n.searchIdentLocal(n.getMainProcedure(),ident)
+        self.assertIsNone(const)        
+
+    def test_searchLocalProc(self):
+        n = PL0NameList()
+
+        ident = "collatz"
+
+        procC = n.createProc(ident, n.getMainProcedure())
+        self.assertIsInstance(procC, NLProcedure)
+
+        pIdent = n.searchIdentLocal(n.getMainProcedure(), ident)
+
+        # TODO: Is it okay to fail or not? Has a Procedure to find
+        #       idents of direct children procedures while doing 
+        #       a local search?
+        self.assertEqual(procC.ident, pIdent)
+        
+    def test_searchLocalForeignProc(self):
+        n = PL0NameList()
+
+        proc1 = n.createProc("p1", n.getMainProcedure())
+        proc2 = n.createProc("p2", n.getMainProcedure())
+        proc3 = n.createProc("p3", proc1)
+
+        # Look for proc3 in proc2 which must fail, cause
+        # p3 is no local ident of p2
+        procS = n.searchIdentLocal(proc2,proc3.ident)
+
+        self.assertIsNone(procS)
+        
     # Global Search Tests
-    
+    def test_searchGlobalConst(self):
+        n = PL0NameList()
+
+        const1 = n.createConst("a")
+        proc1 = n.createProc("p1", n.getMainProcedure())
+
+        const2 = n.searchIdentGlobal(proc1,"a")
+        self.assertEqual(const1,const2)
+
 if __name__ == '__main__':
     unittest.main()

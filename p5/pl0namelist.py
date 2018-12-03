@@ -8,6 +8,7 @@ class NLProcedure:
         self.variables = []
         self.root = root
         self.ident = NLIdent(name, mutable=False)
+        self.childs = []
 
     def identAlreadyExisting(self,ident):
         return self.getVariable(ident) or self.getConstant(ident) or self.ident.name == ident
@@ -51,6 +52,10 @@ class NLProcedure:
         
         self.variables.append(var)
         return var
+
+    def addProcedure(self,proc):
+        self.childs.append(proc)
+     
 
     def getNewRelativeAddress(self):
         addr = self.relativeAddressCounter
@@ -141,33 +146,58 @@ class PL0NameList:
             return None
 
         proc = NLProcedure(parent=parent,name=name)
+        parent.addProcedure(proc)
         self.procedures.append(proc)
         return proc
 
     def searchIdentLocal(self, procedure, ident):
+        
+        # Is the procedure itself named like ident? 
         if procedure.ident.name == ident:
             return procedure.ident
 
+        # Is a child-procedure of the current one
+        # named after the ident?
+        for p in procedure.childs:
+            if p.ident.name == ident:
+                return p.ident
+
+        # Is a local Constant named after the ident?
         id = procedure.getConstant(ident=ident)
         if id:
             return id
 
+        # Is a local variable named after the ident?
         id = procedure.getVariable(ident=ident)
         if id:
             return id
 
         return None
 
-    def searchIdentGlobal(self, ident):
-        p = self.getCurrentProcedure()
+    def searchIdentGlobal(self,proc, ident):
 
         while 1:
-            id = self.searchIdentLocal(procedure=p,ident=ident)
+            id = self.searchIdentLocal(procedure=proc,ident=ident)
 
             if id is not None:
                 return id
 
-            if p.root:
+            if proc.root:
                 return None
             
-            p = p.parent
+            proc = proc.parent
+
+    def bl1(self):
+        pass
+
+    def bl2(self):
+        pass
+        
+    def bl3(self):
+        pass
+
+    def bl4(self):
+        pass
+        
+    def bl5(self):
+        pass
