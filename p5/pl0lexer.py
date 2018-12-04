@@ -3,6 +3,7 @@
 import sys
 import re
 import os
+import logging
 from enum import Enum
 
 
@@ -56,7 +57,7 @@ class Morphem():
        # if self.code == MorphemCode.SYMBOL:
                 #value = "<{}, {}>".format(Symbol(self.value).name, str(self.value))
         
-        return "[i] {:2}:{:2} {:18}: {}".format(self.lines, self.cols, self.code, value)
+        return "{:2}:{:2} {:18}: {}".format(self.lines, self.cols, self.code, value)
 
 class PL0Lexer():
 
@@ -146,16 +147,15 @@ class PL0Lexer():
 
             cvIndex = ord(self.currentChar)
             if cvIndex >= len(self.charVector):
-                self.error("Char Vector Index out of range with char '{}' ({}), Char Vector's size is {}".format(
+                logging.error("Char Vector Index out of range with char '{}' ({}), Char Vector's size is {}".format(
                     self.controlSymbolsToString(self.currentChar), ord(self.currentChar), len(self.charVector)))
 
             charClass = self.charVector[cvIndex]
             if charClass > 8:
-                self.error(
-                    "Char Class Index '{}' out of range. There are only 8 classes.".format(charClass))
+                logging.error("Char Class Index '{}' out of range. There are only 8 classes.".format(charClass))
 
             if self.currentState > 10:
-                self.error("Invalid State '{}'. There are only 10 states.".format(self.currentState))
+                logging.error("Invalid State '{}'. There are only 10 states.".format(self.currentState))
 
             action = self.stateMat[self.currentState][charClass]
             action[1]()
@@ -244,7 +244,7 @@ class PL0Lexer():
             else:
                 self.morphem.setIdentifier(self.outBuffer)
         else:
-            self.error("Unknown State '{}'".format(self.currentState))
+            logging.error("Unknown State '{}'".format(self.currentState))
 
     def controlSymbolsToString(self, s):
         out = ""
@@ -258,13 +258,6 @@ class PL0Lexer():
             out = s
 
         return out
-
-    def error(self, message):
-        print("[!] Error in {}: {}".format(str(self.morphem), message))
-        sys.exit(1)
-
-    def warning(self, message):
-        print("[w] Warning in {}: {}".format(str(self.morphem), message))
 
     def __del__(self):
         if self.sourceFile is not None:

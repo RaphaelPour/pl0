@@ -4,9 +4,9 @@ import sys
 import os
 from enum import Enum
 import pprint
+import logging
 from pl0lexer import PL0Lexer, Morphem, MorphemCode, Symbol
-import xmlwriter
-
+from pl0namelist import NLIdent, NLProcedure, NLConstant, NLVariable, PL0NameList
 
 class NonTerminal(Enum):
     PROGRAM = 0
@@ -259,7 +259,6 @@ class PL0Parser():
             Edge(EdgeType.GRAPH_END, None, None, 0, 0, EXPR)              # 7
         ]
 
-
         statementEdges = [
             Edge(EdgeType.SUBGRAPH_, NonTerminal.ASSIGNMENT_STATEMENT,
                  None, 7, 1, STAT),  # 0
@@ -354,6 +353,10 @@ class PL0Parser():
         self.sourceFile = sourceFile
         self.lexer = PL0Lexer(self.sourceFile)
 
+        # Init NameList
+        self.nameList = PL0NameList()
+        self.currentIdent = None
+
     def parse(self, edge=None, path=[]):
 
         morphemProcessed = False
@@ -444,7 +447,7 @@ class PL0Parser():
                 if edge.alternative != 0:
                     edge = self.edges[edge.nonterminal][edge.alternative]
                 elif morphemProcessed:
-                    print("[!] Syntax Error near {}:{}".format(
+                    logging.error("[!] Syntax Error near {}:{}".format(
                         self.lexer.morphem.lines,
                         self.lexer.morphem.cols))
 
@@ -469,6 +472,76 @@ class PL0Parser():
                 morphemProcessed = True
         return localPath
 
+    # Edge functions
+    def blockCheckConstIdent(self):
+
+        # Get ident by current morphem
+        constIdent = str(self.lexer.morphem.value)
+
+        # Create Constant, print error if locally existing
+        if self.nameList.searchIdentLocal(constIdent) is not None:
+            logging.error("Can't create Const-Ident: Ident {} already existing.".format(constIdent))
+
+            # Error-Handling  
+            return False
+
+        self.currentIdent = constIdent
+        return True
+
+    def blockAddConst(self):
+        
+        # Check if current ident is set in order to add a new
+        # constant to the namelist
+        if self.currentIdent is None:
+            logging.error("Ident must be set before setting the value")
+            return False
+        
+        # Get the value from our current morphem
+        value = int(self.lexer.morphem.value)
+
+        # Add Constant to our namelist
+        self.nameList.addConst(self.currentIdent,value)
+
+        # Reset ident to None in order to avoid errors
+        self.currentIdent = None
+        
+        
+    def blockCheckVarIdent(self):
+
+        # Get ident by current morphem
+        varIdent = str(self.lexer.morphem.value)
+
+        if self.nameList.searchIdentLocal(varIdent) is not None:
+            logging.error("Can't create Var-Ident: Ident {} already existing.".format(varIdent))
+
+            # Error-Handling  
+            return False
+        return True
+
+    def blockAddVar(self):
+        # Check if current ident is set in order to add a new
+        # variable to the namelist
+        if self.currentIdent is None:
+            logging.error("Ident must be set before setting the value")
+            return False
+        
+        # Get the value from our current morphem
+        value = int(self.lexer.morphem.value)
+
+        # Add Variable to our namelist
+        self.nameList. addConst(self.currentIdent,value)
+
+        # Reset ident to None in order to avoid errors
+        self.currentIdent = None
+        
+
+    def blockAddProcedure(self, procedureIdent):
+        # Create Procedure if not existing
+        pass
+        
+    def blockEndProcedure(self):
+        # End current Procedure and reset it to the parrent
+        pass
 
 if __name__ == "__main__":
     sourceFile = "../testfiles/test.pl0"
@@ -491,6 +564,7 @@ if __name__ == "__main__":
     if not result:
         print("[!] Parser failed with Morphem " + str(parser.lexer.morphem))
     else:
+        import xmlwriter
         xmlFile = sourceFile + ".xml"
         x = xmlwriter.XMLWriter(xmlFile)
         x.writeAll(result)

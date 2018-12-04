@@ -1,203 +1,216 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import logging
 
-class NLProcedure:
+#
+# All NL*-Classes are only Data-Structures to hold
+# the neccessary information for building up a namelist
+#
 
-    def __init__(self, parent, name, root=False):
+class NLIdent():
+    def __init__(self, name, value=None):
+        self.name = name
+        self.value = value
+
+class NLProc(NLIdent):
+    def __init__(self, name,parent):
+        super().__init__(name)
         self.parent = parent
-        self.relativeAddressCounter = 0
         self.constants = []
         self.variables = []
-        self.root = root
-        self.ident = NLIdent(name, mutable=False)
-        self.childs = []
+        self.childProcedures = []
+        self.addressOffset = 0
 
-    def identAlreadyExisting(self,ident):
-        return self.getVariable(ident) or self.getConstant(ident) or self.ident.name == ident
+class NLConst(NLIdent):
+    def __init__(self, value,index,name=None):
+        super().__init__(name,value)
+        self.index = index
 
-    def getVariable(self, ident):
-        for v in self.variables:
-            if v.name == ident:
+class NLVar(NLIdent):
+
+    def __init__(self, name,addressOffset, value=None):
+        super().__init__(name,value)
+        self.addressOffset = addressOffset
+
+
+#
+# PL0NameList is an interface to access and arrange
+# the Elements of a Name-List. It also does semantic checks and
+# avoids duplicate idents depending on the context
+#
+class PL0NameList:
+    def __init__(self):
+        """ Initializes the NameList by building up the
+        neccessary data-structure for semantic lookup operations. 
+        It also adds a main/root procedure
+        """
+
+        # For the semantic checks and searches, it is neccessary to
+        # carry additional lists which overlaps with the data-structure
+        # build up with all the NL*-Classes.
+        self.procedures = []
+        self.constantList = []
+        
+        # Main Programm will be the first procedure without a parent
+        self.procedures.append(NLProc(parent=None,name="main"))
+        self.currentProcedure = self.procedures[-1]
+        
+    def mainProc(self):
+        """ Returns the Main/Root Procedure. This is the (grand)parent of
+        all other procedures 
+        """
+        return self.procedures[0]
+
+    def createConst(self, value, name=None):
+        """Adds a new constant to the current procedure.
+        It doesn't check if the ident is already existing,
+        while this should be done in the parser when the
+        ident-name is parsed
+        
+        In order to add anonym constants, the name can be left out.
+
+        Additionally the value will be looked up in the global
+        constant list to get the index of the previously added
+        constant with the same value. The aim is to store each
+        constant value only once, even used with differen idents.
+        """
+
+        # Check if ident-name already exists in local scope
+        #result = self.searchIdentNameLocal(name)
+        #if result is not None:
+        #    logging.error("Ident " + name + " already exists.")
+        #    return False
+
+        # Check if value is already in the global constant list
+        # If not: index will be the length of the list
+        index = len(self.constantList)
+        cachedConst = None
+        for c in self.constantList:
+            if c.value == value:
+                cachedConst = c
+                index = c.index
+                break
+
+        # If the constant is not already existent in the global
+        # constant list, create it
+        if cachedConst is None:
+            cachedConst = NLConst(value,index=index)
+            self.constantList.append(cachedConst)
+
+        # If the constant is anonym, the procedure will get the
+        # instance of the global constant list for more storage efficency
+        # otherwise a new instance will be created with the name
+        newConst = None
+        if name is None:
+            newConst = cachedConst
+        else:
+            newConst = NLConst(value,index,name)
+        
+        self.currentProcedure.childProcedures.append(newConst)
+        return newConst
+
+    def createVar(self, name,value):
+        """Adds a new variable to the current procedure.
+        It doesn't check if the ident is already existing,
+        while this should be done in the parser when the
+        ident-name is parsed
+        """
+
+        # Each variable has a relative address offset 
+        currentOffset = self.currentProcedure.addressOffset
+
+        newVar = NLVar(name=name,addressOffset=currentOffset,value=value)
+
+        # Increase address offset for the next variable
+        self.currentProcedure.addressOffset += 4
+
+        # Add variable to the local variable list of the current procedure
+        self.currentProcedure.variables.append(newVar)
+
+        return newVar
+
+    def createProc(self, name,parent=None):
+        
+        # The current procedure is the default value for procedure
+        if parent is None:
+            parent = self.currentProcedure
+
+        newProc = NLProc(name=name, parent=parent)
+
+        # Append new procedure as child to the current
+        # Procedure
+        parent.childProcedures.append(newProc)
+
+        # Append new procedure to the global procedure list
+        self.procedures.append(newProc)
+        
+        # Our current procedure is now the newly created until we
+        # end the procedure with endProc() to go back to the parent
+        self.currentProcedure = newProc
+
+        return newProc
+
+    def endProc(self):
+        """ Ends the current procedure by resetting it to its parent.
+        This is equal to leave a procedure and go back to the next
+        higher one.
+        """
+        if self.currentProcedure.parent is None:
+            logging.error("Procedure can't be ended. Parent not found.")
+            return False
+
+        self.currentProcedure = self.currentProcedure.parent
+        return True
+
+    def searchIdentNameLocal(self, name, procedure=None):
+        """ The Local Scope is provided using the local search to
+        find out if an ident is already in use.
+        """
+        # The current procedure is the default value for procedure
+        if procedure is None:
+            procedure = self.currentProcedure
+
+        # Procedure itself is named after given ident-name?
+        if procedure.name == name:
+            return procedure
+
+        # Procedure has child named after given ident-name?
+        for cp in procedure.childProcedures:
+            if cp.name == name:
+                return cp
+
+        # Local Constant named after the given ident-name?
+        for c in procedure.constants:
+            if c.name == name:
+                return c
+
+        # Local Variable named after the given ident-name?
+        for v in procedure.variables:
+            if v.name == name:
                 return v
 
         return None
 
-    def getConstant(self, ident):
-        for c in self.constants:
-            if c.name == ident:
-                return c
-
-        return None
-      
-    def addAnonymConstant(self,value):
-        for c in self.constants:
-            if c.isAnonym() and c.value == value:
-                return c
-
-        const = NLConstant(value=value)
-        self.constants.append(const)
-        return const
-
-    def addConstant(self, ident):
-        if self.identAlreadyExisting(ident) :
-            return None
-
-        const = NLConstant(ident) 
-        self.constants.append(const)
-        return const
-
-    def addVariable(self,ident):
-        if self.identAlreadyExisting(ident):
-            return None
-
-        var = NLVariable(ident,self.getNewRelativeAddress())
-        
-        self.variables.append(var)
-        return var
-
-    def addProcedure(self,proc):
-        self.childs.append(proc)
-     
-
-    def getNewRelativeAddress(self):
-        addr = self.relativeAddressCounter
-        
-        # We only have 4-byte (32 bit) values
-        self.relativeAddressCounter += 4
-        return addr
-
-
-class NLIdent:
-    def __init__(self, name=None,value=None,mutable=True):
-        self.name = name
-        self.value = value
-        self.mutable = mutable
-
-    def getValue(self):
-        return self.value
-
-    def setValue(self,value):
-        self.value = value
-        return True
-
-    def isConstant(self):
-        return not self.mutable
-
-    def isVariable(self):
-        return self.mutable
-
-    def isAnonym(self):
-        return self.name == None
-
-class NLVariable(NLIdent):
-
-    def __init__(self,name,relativeAddress,value=None):
-        NLIdent.__init__(self,name,value)
-        self.relativeAddress = relativeAddress
-
-class NLConstant(NLIdent):
-
-    def __init__(self,name=None,value=None):
-        NLIdent.__init__(self,name,value)
-    
-    def setValue(self,value):
-        # Constants can onle be set once
-        if self.value is not None:
-            return False
-
-        self.value = value
-        return True
-
-class PL0NameList:
-
-    def __init__(self):
-        self.procedures = []
-
-        # Main Programm will be the first procedure without
-        # parent and root-flag set to true
-        self.procedures.append(NLProcedure(parent=None,name=None,root=True))
-
-    def getMainProcedure(self):
-        return self.procedures[0]
-
-    def getCurrentProcedure(self):
-        return self.procedures[-1]
-    
-    def createAnonymConst(self,value):
-        return self.getCurrentProcedure().addAnonymConstant(value=value)
-
-    def createConst(self,ident):
-        return self.getCurrentProcedure().addConstant(ident=ident)
-
-    def searchConst(self,ident):
-        p = self.getCurrentProcedure()
-
+    def searchIdentNameGlobal(self,procedure,name):
+        """ In order to check if an ident is used in global scope,
+        this search goes from "inner to outer" scope and makes a local
+        search in each one.
+        The rule is: local scope overwrites global scope. 
+        """
         while 1:
-            c = p.getConstant(ident)
-            if c is not None:
-                return c
-            if p.root:
-                break
-            p = p.parent
-            
-    def createVar(self,ident):
-        return self.procedures[-1].addVariable(ident=ident)
+            ident = self.searchIdentNameLocal(name=name, procedure=procedure)
 
-    def createProc(self,name,parent):
-        if parent is None:
-            return None
+            if ident is None:
 
-        proc = NLProcedure(parent=parent,name=name)
-        parent.addProcedure(proc)
-        self.procedures.append(proc)
-        return proc
-
-    def searchIdentLocal(self, procedure, ident):
-        
-        # Is the procedure itself named like ident? 
-        if procedure.ident.name == ident:
-            return procedure.ident
-
-        # Is a child-procedure of the current one
-        # named after the ident?
-        for p in procedure.childs:
-            if p.ident.name == ident:
-                return p.ident
-
-        # Is a local Constant named after the ident?
-        id = procedure.getConstant(ident=ident)
-        if id:
-            return id
-
-        # Is a local variable named after the ident?
-        id = procedure.getVariable(ident=ident)
-        if id:
-            return id
-
-        return None
-
-    def searchIdentGlobal(self,proc, ident):
-
-        while 1:
-            id = self.searchIdentLocal(procedure=proc,ident=ident)
-
-            if id is not None:
-                return id
-
-            if proc.root:
-                return None
-            
-            proc = proc.parent
-
-    def bl1(self):
-        pass
-
-    def bl2(self):
-        pass
-        
-    def bl3(self):
-        pass
-
-    def bl4(self):
-        pass
-        
-    def bl5(self):
-        pass
+                # If the current procedure has no parent
+                # -> we reached the main procedure and the ident
+                # doesn't exist
+                if procedure.parent is None:
+                    return None
+                else:
+                    # Otherwise we use the parent of the current procedure
+                    # for the next round. This enables the "from inner to outer"
+                    # search
+                    procedure = procedure.parent
+            else:
+                return ident
