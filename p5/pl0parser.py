@@ -6,7 +6,7 @@ from enum import Enum
 import pprint
 import logging
 from pl0lexer import PL0Lexer, Morphem, MorphemCode, Symbol
-from pl0namelist import NLIdent, NLProcedure, NLConstant, NLVariable, PL0NameList
+from pl0namelist import NLIdent, NLProc, NLConst, NLVar, PL0NameList
 
 class NonTerminal(Enum):
     PROGRAM = 0
@@ -82,6 +82,14 @@ class PL0Parser():
 
     def __init__(self, sourceFile):
 
+        # Short identifier for the edge functions
+        BL1 = self.blockCheckConstIdent
+        BL2 = self.blockCreateConst
+        BL3 = self.blockCreateVar
+        BL4 = self.blockCreateProc
+        BL5 = self.blockEndProcedure
+        BL6 = self.blockInitCodeGen
+
         # Init Syntax rules
 
         # Short identifier for edge definition
@@ -115,18 +123,18 @@ class PL0Parser():
 
         constListEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.CONST, None, 1, 0, CLST),  # 0
-            Edge(EdgeType.SUBGRAPH_, CNST, None, 2, 0, CLST),           # 1
-            Edge(EdgeType.SYMBOL___, ',', None, 1, 3, CLST),             # 2
-            Edge(EdgeType.SYMBOL___, ';', None, 4, 0, CLST),             # 3
+            Edge(EdgeType.SUBGRAPH_, CNST, None, 2, 0, CLST),          # 1
+            Edge(EdgeType.SYMBOL___, ',', None, 1, 3, CLST),           # 2
+            Edge(EdgeType.SYMBOL___, ';', None, 4, 0, CLST),           # 3
 
             # End
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, CLST)              # 4
         ]
 
         consDeclarationEdges = [
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 1, 0, CNST),  # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL1, 1, 0, CNST),  # 0
             Edge(EdgeType.SYMBOL___, '=', None, 2, 0, CNST),               # 1
-            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, None, 3, 0, CNST),  # 2
+            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, BL2, 3, 0, CNST), # 2
 
             # End
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, CNST)                  # 3
@@ -143,7 +151,7 @@ class PL0Parser():
         ]
 
         varDeclarationEdges = [
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 1, 0, VARD),  # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL3, 1, 0, VARD),  # 0
 
             # End
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, VARD)                  # 1
@@ -151,11 +159,11 @@ class PL0Parser():
 
         procDeclatationEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.PROCEDURE, None, 1, 0, PROC),  # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 2, 0, PROC),  # 1
-            Edge(EdgeType.SYMBOL___, ';', None, 3, 0, PROC),              # 2
-            Edge(EdgeType.SUBGRAPH_, BLCK, None, 4, 0, PROC),               # 3
-            Edge(EdgeType.SYMBOL___, ';', None, 5, 0, PROC),                # 4
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROC)                 # 5
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL4, 2, 0, PROC),  # 1
+            Edge(EdgeType.SYMBOL___, ';', None, 3, 0, PROC),               # 2
+            Edge(EdgeType.SUBGRAPH_, BLCK, None, 4, 0, PROC),              # 3
+            Edge(EdgeType.SYMBOL___, ';', None, 5, 0, PROC),               # 4
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROC)                  # 5
 
         ]
 
@@ -237,10 +245,10 @@ class PL0Parser():
             Edge(EdgeType.SUBGRAPH_, PROC, None, 3, 3, BLCK),  # 2
 
             # Nil Edge (needed for emitter function)
-            Edge(EdgeType.NIL______, None, None, 4, 0, BLCK),   # 3
+            Edge(EdgeType.NIL______, None, BL6, 4, 0, BLCK),   # 3
 
             # Statement Declaration
-            Edge(EdgeType.SUBGRAPH_, STAT, None, 5, 0, BLCK),   # 4
+            Edge(EdgeType.SUBGRAPH_, STAT, BL5, 5, 0, BLCK),   # 4
 
             # End
             Edge(EdgeType.GRAPH_END, None, None, 0, 0, BLCK)   # 5
@@ -472,14 +480,18 @@ class PL0Parser():
                 morphemProcessed = True
         return localPath
 
+    #
     # Edge functions
+    #
+
+    # Also known as BL1
     def blockCheckConstIdent(self):
 
         # Get ident by current morphem
         constIdent = str(self.lexer.morphem.value)
 
         # Create Constant, print error if locally existing
-        if self.nameList.searchIdentLocal(constIdent) is not None:
+        if self.nameList.isLocalIdentName(constIdent):
             logging.error("Can't create Const-Ident: Ident {} already existing.".format(constIdent))
 
             # Error-Handling  
@@ -488,7 +500,8 @@ class PL0Parser():
         self.currentIdent = constIdent
         return True
 
-    def blockAddConst(self):
+    # Also known as BL2
+    def blockCreateConst(self):
         
         # Check if current ident is set in order to add a new
         # constant to the namelist
@@ -500,47 +513,52 @@ class PL0Parser():
         value = int(self.lexer.morphem.value)
 
         # Add Constant to our namelist
-        self.nameList.addConst(self.currentIdent,value)
+        self.nameList.createConst(name=self.currentIdent,value=value)
 
         # Reset ident to None in order to avoid errors
         self.currentIdent = None
-        
-        
-    def blockCheckVarIdent(self):
+                
+    # Also known as BL3
+    def blockCreateVar(self):
 
-        # Get ident by current morphem
-        varIdent = str(self.lexer.morphem.value)
+        # Check if ident is already defined in local scope
+        ident = str(self.lexer.morphem.value)
 
-        if self.nameList.searchIdentLocal(varIdent) is not None:
-            logging.error("Can't create Var-Ident: Ident {} already existing.".format(varIdent))
+        # Create Constant, print error if locally existing
+        if self.nameList.isLocalIdentName(ident):
+            logging.error("Can't create Const-Ident: Ident {} already existing.".format(ident))
 
             # Error-Handling  
             return False
-        return True
-
-    def blockAddVar(self):
-        # Check if current ident is set in order to add a new
-        # variable to the namelist
-        if self.currentIdent is None:
-            logging.error("Ident must be set before setting the value")
-            return False
-        
-        # Get the value from our current morphem
-        value = int(self.lexer.morphem.value)
 
         # Add Variable to our namelist
-        self.nameList. addConst(self.currentIdent,value)
-
-        # Reset ident to None in order to avoid errors
-        self.currentIdent = None
+        self.nameList.createVar(name=ident)
         
+    # Also known as BL4
+    def blockCreateProc(self):
 
-    def blockAddProcedure(self, procedureIdent):
-        # Create Procedure if not existing
-        pass
+
+        # Check if ident is already defined in local scope
+        ident = str(self.lexer.morphem.value)
         
+        if self.nameList.isLocalIdentName(ident):
+            logging.error("Can't create Const-Ident: Ident {} already existing.".format(ident))
+
+            # Error-Handling  
+            return False
+
+        self.nameList.createProc(ident)
+        return True
+    
+    # Also known as BL5
     def blockEndProcedure(self):
         # End current Procedure and reset it to the parrent
+        
+        return self.nameList.endProc()
+
+    # Also known as BL6
+    def blockInitCodeGen(self):
+        # Initialize the code generator
         pass
 
 if __name__ == "__main__":

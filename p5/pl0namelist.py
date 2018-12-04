@@ -109,7 +109,7 @@ class PL0NameList:
         self.currentProcedure.childProcedures.append(newConst)
         return newConst
 
-    def createVar(self, name,value):
+    def createVar(self, name):
         """Adds a new variable to the current procedure.
         It doesn't check if the ident is already existing,
         while this should be done in the parser when the
@@ -119,7 +119,7 @@ class PL0NameList:
         # Each variable has a relative address offset 
         currentOffset = self.currentProcedure.addressOffset
 
-        newVar = NLVar(name=name,addressOffset=currentOffset,value=value)
+        newVar = NLVar(name=name,addressOffset=currentOffset)
 
         # Increase address offset for the next variable
         self.currentProcedure.addressOffset += 4
@@ -191,7 +191,7 @@ class PL0NameList:
 
         return None
 
-    def searchIdentNameGlobal(self,procedure,name):
+    def searchIdentNameGlobal(self,name,procedure):
         """ In order to check if an ident is used in global scope,
         this search goes from "inner to outer" scope and makes a local
         search in each one.
@@ -214,3 +214,10 @@ class PL0NameList:
                     procedure = procedure.parent
             else:
                 return ident
+
+    def isLocalIdentName(self,name,procedure=None):
+        return self.searchIdentNameLocal(procedure=procedure, name=name) != None
+
+    def isGlobalIdentName(self,name,procedure=None):
+        return self.searchIdentNameGlobal(procedure=procedure, name=name)
+    
