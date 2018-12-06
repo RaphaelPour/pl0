@@ -7,6 +7,7 @@ import pprint
 import logging
 from pl0lexer import PL0Lexer, Morphem, MorphemCode, Symbol
 from pl0namelist import NLIdent, NLProc, NLConst, NLVar, PL0NameList
+from pl0codegen import PL0CodeGen,VMCode
 
 class NonTerminal(Enum):
     PROGRAM = 0
@@ -80,7 +81,7 @@ class Edge():
 
 class PL0Parser():
 
-    def __init__(self, sourceFile):
+    def __init__(self, inputFilename, outputFilenname):
 
         # Short identifier for the edge functions
         BL1 = self.blockCheckConstIdent
@@ -178,37 +179,27 @@ class PL0Parser():
         ]
 
         conditionalEdges = [
-            Edge(EdgeType.SYMBOL___, Symbol.IF,
-                 None, 1, 0, CNDS),              # 0
+            Edge(EdgeType.SYMBOL___, Symbol.IF, None, 1, 0, CNDS),              # 0
             Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, None, 2, 0, CNDS),  # 1
-            Edge(EdgeType.SYMBOL___, Symbol.THEN,
-                 None, 3, 0, CNDS),             # 2
+            Edge(EdgeType.SYMBOL___, Symbol.THEN, None, 3, 0, CNDS),            # 2
             Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, None, 4, 0, CNDS),  # 3
-            Edge(EdgeType.GRAPH_END, 0, None, 0,
-                 0, CNDS)                       # 4
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, CNDS)                       # 4
         ]
 
         loopEdges = [
-            Edge(EdgeType.SYMBOL___, Symbol.WHILE,
-                 None, 1, 0, LOOP),           # 0
+            Edge(EdgeType.SYMBOL___, Symbol.WHILE, None, 1, 0, LOOP),           # 0
             Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, None, 2, 0, LOOP),  # 1
-            Edge(EdgeType.SYMBOL___, Symbol.DO,
-                 None, 3, 0, LOOP),             # 2
+            Edge(EdgeType.SYMBOL___, Symbol.DO,  None, 3, 0, LOOP),             # 2
             Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, None, 4, 0, LOOP),  # 3
-            Edge(EdgeType.GRAPH_END, 0, None, 0,
-                 0, LOOP)                       # 5
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, LOOP)                       # 5
         ]
 
         compoundEdges = [
-            Edge(EdgeType.SYMBOL___, Symbol.BEGIN,
-                 None, 1, 0, COMP),          # 0
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, None, 2, 0, COMP),  # 1
-            Edge(EdgeType.SYMBOL___, ";", None, 1,
-                 3, COMP),                   # 2
-            Edge(EdgeType.SYMBOL___, Symbol.END,
-                 None, 4, 0, COMP),            # 3
-            Edge(EdgeType.GRAPH_END, 0, None, 0,
-                 0, COMP)                      # 4
+            Edge(EdgeType.SYMBOL___, Symbol.BEGIN, None, 1, 0, COMP),          # 0
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, None, 2, 0, COMP), # 1
+            Edge(EdgeType.SYMBOL___, ";", None, 1, 3, COMP),                   # 2
+            Edge(EdgeType.SYMBOL___, Symbol.END, None, 4, 0, COMP),            # 3
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, COMP)                      # 4
         ]
 
         procedureCallEdges = [
@@ -358,12 +349,16 @@ class PL0Parser():
         }
 
         # Init Lexer
-        self.sourceFile = sourceFile
-        self.lexer = PL0Lexer(self.sourceFile)
+        self.inputFilename = inputFilename
+        self.lexer = PL0Lexer(self.inputFilename)
 
         # Init NameList
         self.nameList = PL0NameList()
         self.currentIdent = None
+
+        # Init Code Generator
+        self.outputFilename = outputFilenname
+        self.codeGen = PL0CodeGen(self.outputFilename)
 
     def parse(self, edge=None, path=[]):
 
@@ -373,7 +368,7 @@ class PL0Parser():
         success = False
 
         # Initialize Parser if we are called for the first time
-        if(self.lexer.morphem.code == MorphemCode.EMPTY):
+        if self.lexer.morphem.code == MorphemCode.EMPTY:
             self.lexer.lex()
 
         if not edge:
@@ -391,12 +386,12 @@ class PL0Parser():
             else:
                 return False
 
-        while(True):
+        while True:
 
             # Check Edge type
 
             # Symbol detected -> Syntactically right Symbol?
-            if(edge.type == EdgeType.SYMBOL___):
+            if edge.type == EdgeType.SYMBOL___:
                 success = self.lexer.morphem.value == edge.value
                 if success:
                     localPath.append({
@@ -405,7 +400,7 @@ class PL0Parser():
                         'pos': (self.lexer.morphem.lines, self.lexer.morphem.cols)})
 
             # Morphem detected -> Syntacticaly right morphem?
-            elif(edge.type == EdgeType.MORPHEM__):
+            elif edge.type == EdgeType.MORPHEM__:
                 success = self.lexer.morphem.code == edge.value
                 if success:
                     localPath.append({
@@ -415,7 +410,7 @@ class PL0Parser():
                     })
 
             # Subgraph detected -> Go deeper
-            elif(edge.type == EdgeType.SUBGRAPH_):
+            elif edge.type == EdgeType.SUBGRAPH_:
                 nextEdge = self.edges[edge.value][0]
                 localPath.append({
                     'value': nextEdge.nonterminal.name,
@@ -439,9 +434,9 @@ class PL0Parser():
                     localPath.pop()
 
             # End detected -> Return the current parse-tree
-            elif(edge.type == EdgeType.GRAPH_END):
+            elif edge.type == EdgeType.GRAPH_END:
                 return localPath
-            elif(edge.type == EdgeType.NIL______):
+            elif edge.type == EdgeType.NIL______:
                 success = True
 
             # Call Emitter
@@ -481,9 +476,25 @@ class PL0Parser():
         return localPath
 
     #
-    # Edge functions
+    # EDGE FUNCTIONS
     #
 
+    # PROGRAM
+
+    # Also known as Pr1
+    def programmEnd(self):
+
+        # Write the count of procedures at the very beginning
+        self.codeGen.setTotalCountOfProcedures(len(self.nameList.procedures))
+
+        # Append List of constants to the end of the file before
+        # closing it
+        self.codeGen.writeConstList(self.nameList.constantList)
+
+        self.codeGen.closeOutputfile()
+        
+    # BLOCK
+    
     # Also known as BL1
     def blockCheckConstIdent(self):
 
@@ -553,37 +564,47 @@ class PL0Parser():
     # Also known as BL5
     def blockEndProcedure(self):
         # End current Procedure and reset it to the parrent
-        
+
         return self.nameList.endProc()
 
     # Also known as BL6
     def blockInitCodeGen(self):
         # Initialize the code generator
-        pass
+        self.codeGen.flushBuffer()
+
+
+    # STATEMENT
+
+    # Also known as BL10
+    def statementPutVal(self):
+        self.codeGen.writeCommand(VMCode.PUT_VAL)
 
 if __name__ == "__main__":
-    sourceFile = "../testfiles/test.pl0"
+    inputFilename = "../testfiles/test.pl0"
+    outputFilename = "../testfiles/test.cl0"
+
     if len(sys.argv) != 2:
         #print("usage: {} <input file>".format(sys.argv[0]))
         # sys.exit(1)
         pass
     else:
-        sourceFile = sys.argv[1]
+        inputFilename = sys.argv[1]
+        outputFilename = os.path.splitext(sys.argv[1])[0] + ".cl0"
 
-    if not os.path.exists(sourceFile):
+    if not os.path.exists(inputFilename):
         print("File doesn't exist")
         sys.exit(1)
 
-    print("[i] using sourcefile {}".format(sourceFile))
+    print("[i] using inputfile {}".format(inputFilename))
 
-    parser = PL0Parser(sourceFile)
+    parser = PL0Parser(inputFilename, outputFilename)
 
     result = parser.parse()
     if not result:
         print("[!] Parser failed with Morphem " + str(parser.lexer.morphem))
     else:
         import xmlwriter
-        xmlFile = sourceFile + ".xml"
+        xmlFile = inputFilename + ".xml"
         x = xmlwriter.XMLWriter(xmlFile)
         x.writeAll(result)
         print("[i] wrote Parsetree to {}".format(xmlFile))
