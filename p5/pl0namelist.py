@@ -13,13 +13,14 @@ class NLIdent():
         self.value = value
 
 class NLProc(NLIdent):
-    def __init__(self, name,parent):
+    def __init__(self, name,parent,index):
         super().__init__(name)
         self.parent = parent
         self.constants = []
         self.variables = []
         self.childProcedures = []
         self.addressOffset = 0
+        self.index = index
 
 class NLConst(NLIdent):
     def __init__(self, value,index,name=None):
@@ -52,7 +53,7 @@ class PL0NameList:
         self.constantList = []
         
         # Main Programm will be the first procedure without a parent
-        self.procedures.append(NLProc(parent=None,name="main"))
+        self.procedures.append(NLProc(parent=None,name="main",index=0))
         self.currentProcedure = self.procedures[-1]
         
     def mainProc(self):
@@ -135,7 +136,7 @@ class PL0NameList:
         if parent is None:
             parent = self.currentProcedure
 
-        newProc = NLProc(name=name, parent=parent)
+        newProc = NLProc(name=name, parent=parent, index=len(self.procedures))
 
         # Append new procedure as child to the current
         # Procedure
@@ -155,12 +156,18 @@ class PL0NameList:
         This is equal to leave a procedure and go back to the next
         higher one.
         """
-        if self.currentProcedure.parent is None:
-            logging.error("Procedure can't be ended. Parent not found.")
-            return False
+        #if self.currentProcedure.parent is None and self.currentProcedure is not self.mainProc:
+        #    logging.error("[NameList] Procedure can't be ended. Parent not found.")
+        #    return False
 
         self.currentProcedure = self.currentProcedure.parent
         return True
+
+    def searchConstByValue(self,value):
+        for const in self.constantList:
+            if const.value == value:
+                return const
+        return None
 
     def searchIdentNameLocal(self, name, procedure=None):
         """ The Local Scope is provided using the local search to
@@ -191,7 +198,7 @@ class PL0NameList:
 
         return None
 
-    def searchIdentNameGlobal(self,name,procedure):
+    def searchIdentNameGlobal(self,name,procedure=None):
         """ In order to check if an ident is used in global scope,
         this search goes from "inner to outer" scope and makes a local
         search in each one.

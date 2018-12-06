@@ -1,5 +1,4 @@
-from pl0parser import EdgeType
-
+import pl0parser
 
 class XMLWriter:
 
@@ -17,7 +16,7 @@ class XMLWriter:
 
         out = ""
         for el in tree:
-            if el['type'].value == EdgeType.SUBGRAPH_.value:
+            if el['type'].value == pl0parser.EdgeType.SUBGRAPH_.value:
                 out += ("  " * depth) + "<{}>\n".format(el['value'])
                 out += self.parse(el['sub'], depth+1)
                 out += ("  " * depth) + "</{}>\n".format(el['value'])

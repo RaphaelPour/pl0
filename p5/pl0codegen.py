@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import logging
 from enum import Enum
 import struct
@@ -51,41 +53,50 @@ class PL0CodeGen:
     def __init__(self, outputFilename):
         self.outputFilename = outputFilename
         self.outputFile = open(self.outputFilename, "wb+")
-        self.outputBuffer = ""
+        self.outputBuffer = bytearray()
 
         # Add 2 byte placehoder for procedurecount at the
         # very beginning
-        self.__write2Bytes__(48879) # hex(48879)=BEEF
+        self.__append2Bytes__(48879) # hex(48879)=BEEF
+        self.__append2Bytes__(0)
         self.flushBuffer()
 
-    def __writeByte__(self,value):
-        self.outputBuffer += struct.pack("<c",value)
+    def __appendByte__(self,value):
+        self.outputBuffer += (struct.pack("<B",value))
 
-    def __write2Bytes__(self,value):
+    def __frontInsertByte__(self,value):
+        self.outputBuffer.insert(0,struct.pack("<B",value))
+        
+    def __append2Bytes__(self,value):
         # Write value as 2-byte little-endian to the buffer
-        self.outputBuffer += struct.pack("<H",value)
+        self.outputBuffer += (struct.pack("<H",value))
 
-    def __write4Bytes__(self, value):
+    def __append4Bytes__(self, value):
         # Write value as 4-byte little-endian to the buffer
-        self.outputBuffer += struct.pack("<L",value)
+        self.outputBuffer += (struct.pack("<L",value))
 
     def writeConstList(self, constList):
 
         # Const is 4 byte long
         # 255 -> ff 00 00 00
         for const in constList:
-            self.__write4Bytes__(int(const.value))
+            self.__append4Bytes__(int(const.value))
 
     def writeCommand(self,vmcode, args=[]):
-        if vmcode > len(VMCode):
-            logging.error("CodeGen: Unknown VM Code '{}'".format(vmcode))
+
+        logging.debug("{}({})".format(vmcode,args))
+
+        vmcodenr = vmcode.value
+
+        if vmcodenr > len(VMCode):
+            logging.error("[CodeGen] Unknown VM Code '{}'".format(vmcode))
 
         # Write command
-        self.__writeByte__(vmcode)
+        self.__appendByte__(vmcodenr)
 
-        # Write arguments
+        # Write each argument as 2-byte value
         for arg in args:
-            self.__write2Bytes__(arg)
+            self.__append2Bytes__(arg)
 
     def setTotalCountOfProcedures(self, procedureCount):
 
@@ -102,19 +113,26 @@ class PL0CodeGen:
         # Go back where we were before
         self.outputFile.seek(currentPosition, 0)
 
-    def writeEntryProc(self, length, index, varMemorySize):
+    def setProcedureLength(self):
+        
+        length = len(self.outputBuffer)
 
-        # 0000: 1A EntryProc            000C,0001,0000 <-- Procedure
-        self.__write2Bytes__(int(length))
-        self.__write2Bytes__(int(index))
-        self.__write2Bytes__(int(varMemorySize))
+        if length < 2:
+            logging.error("[CodeGen] Procedure length can't be set with an empty or too short output buffer.")
+            return False
+
+        self.outputBuffer[1] = len(self.outputBuffer)
+
+        return True
 
     def flushBuffer(self):
+        print(self.outputBuffer)
         self.outputFile.write(self.outputBuffer)
-        self.outputBuffer = ""
+        logging.info("Wrote {} bytes to {}.".format(len(self.outputBuffer), self.outputFilename))
+        self.outputBuffer = bytearray()
 
     def initOutputBuffer(self):
-        self.outputBuffer = ""
+        self.outputBuffer = bytearray()
         
     def closeOutputfile(self):
         self.flushBuffer()

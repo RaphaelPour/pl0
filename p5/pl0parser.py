@@ -5,6 +5,7 @@ import os
 from enum import Enum
 import pprint
 import logging
+import xmlwriter
 from pl0lexer import PL0Lexer, Morphem, MorphemCode, Symbol
 from pl0namelist import NLIdent, NLProc, NLConst, NLVar, PL0NameList
 from pl0codegen import PL0CodeGen,VMCode
@@ -84,12 +85,24 @@ class PL0Parser():
     def __init__(self, inputFilename, outputFilenname):
 
         # Short identifier for the edge functions
+
+        # Program
+        PR1 = self.programmEnd
+
+        # Block
         BL1 = self.blockCheckConstIdent
         BL2 = self.blockCreateConst
         BL3 = self.blockCreateVar
         BL4 = self.blockCreateProc
         BL5 = self.blockEndProcedure
         BL6 = self.blockInitCodeGen
+
+        # Statement
+        ST10 = self.statementPutVal
+
+        # Factor
+        FA1 = self.factorPushNumber
+        FA2 = self.factorPushIdent
 
         # Init Syntax rules
 
@@ -116,7 +129,7 @@ class PL0Parser():
 
         programEdges = [
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 1, 0, PROG),  # 0
-            Edge(EdgeType.SYMBOL___, '.', None, 2, 0, PROG),  # 1
+            Edge(EdgeType.SYMBOL___, '.', PR1, 2, 0, PROG),  # 1
 
             # End
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROG)     # 2
@@ -134,7 +147,7 @@ class PL0Parser():
 
         consDeclarationEdges = [
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL1, 1, 0, CNST),  # 0
-            Edge(EdgeType.SYMBOL___, '=', None, 2, 0, CNST),               # 1
+            Edge(EdgeType.SYMBOL___, '=', None, 2, 0, CNST),                # 1
             Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, BL2, 3, 0, CNST), # 2
 
             # End
@@ -169,13 +182,10 @@ class PL0Parser():
         ]
 
         assignmentEdges = [
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,
-                 None, 1, 0, ASSS),       # 0
-            Edge(EdgeType.SYMBOL___, Symbol.ASSIGN,
-                 None, 2, 0, ASSS),         # 1
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,None, 1, 0, ASSS),       # 0
+            Edge(EdgeType.SYMBOL___, Symbol.ASSIGN, None, 2, 0, ASSS),          # 1
             Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, None, 3, 0, ASSS),  # 2
-            Edge(EdgeType.GRAPH_END, 0, None, 0,
-                 0, ASSS)                      # 3
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, ASSS)                      # 3
         ]
 
         conditionalEdges = [
@@ -203,26 +213,21 @@ class PL0Parser():
         ]
 
         procedureCallEdges = [
-            Edge(EdgeType.SYMBOL___, Symbol.CALL,
-                 None, 1, 0, PRCC),            # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,
-                 None, 2, 0, PRCC),      # 1
-            Edge(EdgeType.GRAPH_END, 0, None, 0,
-                 0, PRCC)                      # 2
+            Edge(EdgeType.SYMBOL___, Symbol.CALL, None, 1, 0, PRCC),            # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 2, 0, PRCC),      # 1
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PRCC)                       # 2
         ]
 
         inputEdges = [
-            Edge(EdgeType.SYMBOL___, "?", None, 1, 0, INST),              # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 2, 0, INST),  # 1
+            Edge(EdgeType.SYMBOL___, "?", None, 1, 0, INST),               # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 2, 0, INST), # 1
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, INST)                  # 2
         ]
 
         outputEdges = [
-            Edge(EdgeType.SYMBOL___, "!", None, 1,
-                 0, OUTS),                   # 0
+            Edge(EdgeType.SYMBOL___, "!", None, 1, 0, OUTS),                     # 0
             Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, None, 2, 0, OUTS),  # 1
-            Edge(EdgeType.GRAPH_END, 0, None, 0,
-                 0, OUTS)                      # 2
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, OUTS)                        # 2
         ]
 
         blockEdges = [
@@ -259,29 +264,21 @@ class PL0Parser():
         ]
 
         statementEdges = [
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.ASSIGNMENT_STATEMENT,
-                 None, 7, 1, STAT),  # 0
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.ASSIGNMENT_STATEMENT, None, 7, 1, STAT),    # 0
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITIONAL_STATEMENT,
-                 None, 7, 2, STAT),  # 1
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITIONAL_STATEMENT, None, 7, 2, STAT),   # 1
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.LOOP_STATEMENT,
-                 None,  7, 3, STAT),      # 2
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.LOOP_STATEMENT, None, 7, 3, STAT),          # 2
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.COMPOUND_STATEMENT,
-                 None, 7, 4,  STAT),  # 3
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.COMPOUND_STATEMENT, None, 7, 4,  STAT),     # 3
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.PROCEDURE_CALL,
-                 None,  7, 5, STAT),      # 4
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.PROCEDURE_CALL, None,  7, 5, STAT),         # 4
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.INPUT_STATEMENT,
-                 None, 7, 6, STAT),     # 5
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.INPUT_STATEMENT, None, 7, 6, STAT),         # 5
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT,
-                 None, 7, 0, STAT),      # 6
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT, ST10, 7, 0, STAT),        # 6
 
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0,
-                 STAT)                                    # 7
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, STAT)                                    # 7
         ]
 
         termEdges = [
@@ -296,11 +293,11 @@ class PL0Parser():
         ]
 
         factorEdges = [
-            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, None, 5, 1, FACT),     # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, FA1, 5, 1, FACT),      # 0
             Edge(EdgeType.SYMBOL___, '(', None, 2, 4, FACT),                    # 1
             Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, FACT),                   # 2
             Edge(EdgeType.SYMBOL___, ')', None, 5, 0, FACT),                    # 3
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 5, 0, FACT),      # 4
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, FA2, 5, 0, FACT),       # 4
 
             # End
             Edge(EdgeType.GRAPH_END, None, None, 0, 0, FACT)                    # 5
@@ -450,7 +447,7 @@ class PL0Parser():
                 if edge.alternative != 0:
                     edge = self.edges[edge.nonterminal][edge.alternative]
                 elif morphemProcessed:
-                    logging.error("[!] Syntax Error near {}:{}".format(
+                    logging.error("[Parser] Syntax Error near {}:{}".format(
                         self.lexer.morphem.lines,
                         self.lexer.morphem.cols))
 
@@ -483,7 +480,7 @@ class PL0Parser():
 
     # Also known as Pr1
     def programmEnd(self):
-
+        logging.info("P1")
         # Write the count of procedures at the very beginning
         self.codeGen.setTotalCountOfProcedures(len(self.nameList.procedures))
 
@@ -492,18 +489,21 @@ class PL0Parser():
         self.codeGen.writeConstList(self.nameList.constantList)
 
         self.codeGen.closeOutputfile()
+
+        return True
         
     # BLOCK
     
     # Also known as BL1
     def blockCheckConstIdent(self):
+        logging.info("B1")
 
         # Get ident by current morphem
         constIdent = str(self.lexer.morphem.value)
 
         # Create Constant, print error if locally existing
         if self.nameList.isLocalIdentName(constIdent):
-            logging.error("Can't create Const-Ident: Ident {} already existing.".format(constIdent))
+            logging.error("[Parser] Can't create Const-Ident: Ident {} already existing.".format(constIdent))
 
             # Error-Handling  
             return False
@@ -513,11 +513,12 @@ class PL0Parser():
 
     # Also known as BL2
     def blockCreateConst(self):
+        logging.info("B2")
         
         # Check if current ident is set in order to add a new
         # constant to the namelist
         if self.currentIdent is None:
-            logging.error("Ident must be set before setting the value")
+            logging.error("[Parser] Ident must be set before setting the value")
             return False
         
         # Get the value from our current morphem
@@ -528,32 +529,38 @@ class PL0Parser():
 
         # Reset ident to None in order to avoid errors
         self.currentIdent = None
+
+        return True
                 
     # Also known as BL3
     def blockCreateVar(self):
+        logging.info("B3")
 
         # Check if ident is already defined in local scope
         ident = str(self.lexer.morphem.value)
 
         # Create Constant, print error if locally existing
         if self.nameList.isLocalIdentName(ident):
-            logging.error("Can't create Const-Ident: Ident {} already existing.".format(ident))
+            logging.error("[Parser] Can't create Const-Ident: Ident {} already existing.".format(ident))
 
             # Error-Handling  
             return False
 
         # Add Variable to our namelist
         self.nameList.createVar(name=ident)
+
+        return True
         
     # Also known as BL4
     def blockCreateProc(self):
+        logging.info("B4")
 
 
         # Check if ident is already defined in local scope
         ident = str(self.lexer.morphem.value)
         
         if self.nameList.isLocalIdentName(ident):
-            logging.error("Can't create Const-Ident: Ident {} already existing.".format(ident))
+            logging.error("[Parser] Can't create Const-Ident: Ident {} already existing.".format(ident))
 
             # Error-Handling  
             return False
@@ -563,28 +570,129 @@ class PL0Parser():
     
     # Also known as BL5
     def blockEndProcedure(self):
-        # End current Procedure and reset it to the parrent
+        logging.info("B5")
 
-        return self.nameList.endProc()
+        # Write Return Statement (Doesn't need an address, cause Beck's VM can handle it by itself)
+        self.codeGen.writeCommand(VMCode.RET_PROC)
+
+        # Write length of the current procedure at the very
+        # beginning
+        if not self.codeGen.setProcedureLength():
+            return False
+
+        # End current Procedure and reset it to the parrent
+        if not self.nameList.endProc():
+            return False
+
+        # Write current output buffer to file
+        self.codeGen.flushBuffer()
+
+        return True
 
     # Also known as BL6
     def blockInitCodeGen(self):
+        logging.info("B6")
+
         # Initialize the code generator
         self.codeGen.flushBuffer()
+
+        # Write EntryProc command to introduce a new procedure
+        length = 0
+        index = len(self.nameList.procedures)-1
+        varMemorySize = self.nameList.currentProcedure.addressOffset
+        
+        args = [length, index, varMemorySize]
+
+        self.codeGen.writeCommand(VMCode.ENTRY_PROC,args)
+
+        return True
 
 
     # STATEMENT
 
     # Also known as BL10
     def statementPutVal(self):
+        logging.info("ST10")
         self.codeGen.writeCommand(VMCode.PUT_VAL)
+        return True
+
+
+    # FACTOR
+
+    # Also known as FA1
+    def factorPushNumber(self):
+        logging.info("FA1")
+
+        # Get number from the last read morphem
+        value = int(self.lexer.morphem.value)
+
+        # Looking for const with the current value
+        const = self.nameList.searchConstByValue(value)
+
+        # if not found -> add it as anonym const
+        if const is None:
+            const = self.nameList.createConst(value)
+
+        # put index of the constant onto the stack
+        args = [const.index]
+        self.codeGen.writeCommand(VMCode.PUT_CONST,args)
+
+        return True
+    
+    # Also known as FA2
+    def factorPushIdent(self):
+        logging.info("FA2")
+
+        # Get ident from the last read morphem
+        identName = str(self.lexer.morphem.value)
+
+        # Search globally for ident
+        ident = self.nameList.searchIdentNameGlobal(identName)
+
+        # if ident not found -> Semantic Error!
+        if ident is None:
+            logging.error("[Parser] Declaration error: Ident {} is used but not declared.".format(identName))
+            return False
+
+        # Check if ident is a procedure
+        # If it is one -> Semantic Error!
+        if isinstance(ident, NLProc):
+            logging.error("[Parser] Type error: Excepted Const/Var ident but got Procedure ident {}".format(identName))
+            return False
+
+        # If the ident is a const, it doesn't matter
+        # if main/local/global and we can directly
+        # push the index onto the stack
+        if isinstance(ident, NLConst):
+            args = [ident.index]
+            self.codeGen.writeCommand(VMCode.PUT_CONST,args)
+
+
+        # Check if main/local/global variable
+        displacement = ident.addressOffset
+        args = [displacement]
+        if ident.parent == self.nameList.mainProc:
+            # Main Variable
+            self.codeGen.writeCommand(VMCode.PUT_VALUE_VAR_MAIN,args)
+        elif ident.parent == self.nameList.currentProcedure:
+            # Local Scope Variable
+            self.codeGen.writeCommand(VMCode.PUT_VALUE_VAR_LOCAL,args)
+        else:
+            # Global scope Variable
+            args.append(ident.parent.index)
+            self.codeGen.writeCommand(VMCode.PUT_VALUE_VAR_GLOBAL,args)
+
+        return True
 
 if __name__ == "__main__":
-    inputFilename = "../testfiles/test.pl0"
-    outputFilename = "../testfiles/test.cl0"
+
+    logging.basicConfig(level=logging.DEBUG)
+
+    inputFilename = "../testfiles/tmin.pl0"
+    outputFilename = "../testfiles/tmin.cl0"
 
     if len(sys.argv) != 2:
-        #print("usage: {} <input file>".format(sys.argv[0]))
+        #logging.error("usage: {} <input file>".format(sys.argv[0]))
         # sys.exit(1)
         pass
     else:
@@ -592,20 +700,19 @@ if __name__ == "__main__":
         outputFilename = os.path.splitext(sys.argv[1])[0] + ".cl0"
 
     if not os.path.exists(inputFilename):
-        print("File doesn't exist")
+        logging.error("[main] File doesn't exist")
         sys.exit(1)
 
-    print("[i] using inputfile {}".format(inputFilename))
+    logging.info("[main] using inputfile {}".format(inputFilename))
 
     parser = PL0Parser(inputFilename, outputFilename)
 
     result = parser.parse()
     if not result:
-        print("[!] Parser failed with Morphem " + str(parser.lexer.morphem))
+        logging.error("[main]  Parser failed with Morphem " + str(parser.lexer.morphem))
     else:
-        import xmlwriter
         xmlFile = inputFilename + ".xml"
         x = xmlwriter.XMLWriter(xmlFile)
         x.writeAll(result)
-        print("[i] wrote Parsetree to {}".format(xmlFile))
-        print("[i] done ")
+        logging.info("[main]  wrote Parsetree to {}".format(xmlFile))
+        logging.info("[main]  done ")

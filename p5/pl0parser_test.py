@@ -11,14 +11,20 @@ class TestPL0Parser(unittest.TestCase):
         self.testFileFolder = "../testfiles"
 
     def test_instance(self):
-        p = PL0Parser(os.path.join(self.testFileFolder, "tx.pl0"))
+        inputFile = os.path.join(self.testFileFolder, "tx.pl0")
+        outputFile = os.path.join(self.testFileFolder, "tx.cl0")
+        
+        p = PL0Parser(inputFile,outputFile)
 
         self.assertIsInstance(p, PL0Parser)
 
     def test_parse_test_pl0(self):
-        p = PL0Parser(os.path.join(self.testFileFolder, "test.pl0"))
-
+        inputFile = os.path.join(self.testFileFolder, "test.pl0")
+        outputFile = os.path.join(self.testFileFolder, "test.cl0")
+    
+        p = PL0Parser(inputFile,outputFile)
         path = p.parse()
+
 
         self.assertNotEqual(path, False)
 

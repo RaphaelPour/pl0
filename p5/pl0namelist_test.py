@@ -59,23 +59,24 @@ class TestPL0Parser(unittest.TestCase):
     def test_addVar(self):
         nameList = PL0NameList()
 
-        var = nameList.createVar("a",10)
+        var = nameList.createVar("a")
         self.assertIsInstance(var,NLVar)
 
     def test_addMultipleVars(self):
         nameList = PL0NameList()
 
-        var1 = nameList.createVar("a",10)
+        var1 = nameList.createVar("a")
         self.assertIsInstance(var1,NLVar)
         
-        var2 = nameList.createVar("b",10)
+        var2 = nameList.createVar("b")
         self.assertIsInstance(var2,NLVar)
         self.assertNotEqual(var1,var2)
 
     def test_setVar(self):
         nameList = PL0NameList()
 
-        var = nameList.createVar("a",10)
+        var = nameList.createVar("a")
+        var.value = 10
         self.assertIsInstance(var,NLVar)
         self.assertEqual(var.value, 10)   
         
@@ -146,7 +147,7 @@ class TestPL0Parser(unittest.TestCase):
 
         ident = "A"
 
-        varC = n.createVar(name=ident,value=10)
+        varC = n.createVar(name=ident)
         self.assertIsInstance(varC, NLVar)
 
         varS2 = n.searchIdentNameLocal(procedure=n.mainProc(),name=ident)
@@ -167,7 +168,7 @@ class TestPL0Parser(unittest.TestCase):
 
         ident = "A"
 
-        constC = n.createVar(name=ident,value=10)
+        constC = n.createVar(name=ident)
         self.assertIsInstance(constC, NLVar)
 
         # The search gives back our created Const
