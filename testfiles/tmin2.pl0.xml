@@ -1,0 +1,26 @@
+<PROGRAM>
+  <BLOCK>
+    <CONSTANT_LIST>
+      <TERMINAL line='1' col='1'>Symbol.CONST</TERMINAL>
+      <CONSTANT_DECLARATION>
+        <TERMINAL line='1' col='7'>X</TERMINAL>
+        <TERMINAL line='1' col='8'>=</TERMINAL>
+        <TERMINAL line='1' col='9'>5.0</TERMINAL>
+      </CONSTANT_DECLARATION>
+      <TERMINAL line='1' col='10'>;</TERMINAL>
+    </CONSTANT_LIST>
+    <STATEMENT>
+      <OUTPUT_STATEMENT>
+        <TERMINAL line='2' col='1'>!</TERMINAL>
+        <EXPRESSION>
+          <TERM>
+            <FACTOR>
+              <TERMINAL line='2' col='2'>X</TERMINAL>
+            </FACTOR>
+          </TERM>
+        </EXPRESSION>
+      </OUTPUT_STATEMENT>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='2' col='3'>.</TERMINAL>
+</PROGRAM>

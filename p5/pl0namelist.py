@@ -29,8 +29,9 @@ class NLConst(NLIdent):
 
 class NLVar(NLIdent):
 
-    def __init__(self, name,addressOffset, value=None):
+    def __init__(self, name,addressOffset, parent,value=None):
         super().__init__(name,value)
+        self.parent = parent
         self.addressOffset = addressOffset
 
 
@@ -120,7 +121,7 @@ class PL0NameList:
         # Each variable has a relative address offset 
         currentOffset = self.currentProcedure.addressOffset
 
-        newVar = NLVar(name=name,addressOffset=currentOffset)
+        newVar = NLVar(name=name,parent=self.currentProcedure,addressOffset=currentOffset)
 
         # Increase address offset for the next variable
         self.currentProcedure.addressOffset += 4

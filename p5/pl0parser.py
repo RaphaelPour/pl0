@@ -98,7 +98,15 @@ class PL0Parser():
         BL6 = self.blockInitCodeGen
 
         # Statement
+        ST1 = self.statementAssignmentLeftSide
+        ST2 = self.statementAssignmentRightSide
+        ST9 = self.statementGetVal
         ST10 = self.statementPutVal
+
+        # Expression
+        EX1 = self.expressionNegSign
+        EX2 = self.expressionAdd
+        EX3 = self.expressionSub
 
         # Factor
         FA1 = self.factorPushNumber
@@ -182,10 +190,10 @@ class PL0Parser():
         ]
 
         assignmentEdges = [
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,None, 1, 0, ASSS),       # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,ST1, 1, 0, ASSS),        # 0
             Edge(EdgeType.SYMBOL___, Symbol.ASSIGN, None, 2, 0, ASSS),          # 1
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, None, 3, 0, ASSS),  # 2
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, ASSS)                      # 3
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, ST2, 3, 0, ASSS),  # 2
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, ASSS)                       # 3
         ]
 
         conditionalEdges = [
@@ -220,13 +228,13 @@ class PL0Parser():
 
         inputEdges = [
             Edge(EdgeType.SYMBOL___, "?", None, 1, 0, INST),               # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 2, 0, INST), # 1
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST9, 2, 0, INST), # 1
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, INST)                  # 2
         ]
 
         outputEdges = [
             Edge(EdgeType.SYMBOL___, "!", None, 1, 0, OUTS),                     # 0
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, None, 2, 0, OUTS),  # 1
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, ST10, 2, 0, OUTS),  # 1
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, OUTS)                        # 2
         ]
 
@@ -251,16 +259,22 @@ class PL0Parser():
         ]
 
         expressionEdges = [
-            Edge(EdgeType.SYMBOL___, '-', None, 2, 1, EXPR),              # 0
-            Edge(EdgeType.NIL______, None, None, 2, 0, EXPR),             # 1
-            Edge(EdgeType.SUBGRAPH_, TERM, None, 3, 0, EXPR),             # 2
-            Edge(EdgeType.SYMBOL___, '+', None, 4, 5, EXPR),              # 3
-            Edge(EdgeType.SUBGRAPH_, TERM, None, 3, 0, EXPR),             # 4
-            Edge(EdgeType.SYMBOL___, '-', None, 6, 7, EXPR),              # 5
-            Edge(EdgeType.SUBGRAPH_, TERM, None, 3, 0, EXPR),             # 6
+            # Detect negative sign
+            Edge(EdgeType.SYMBOL___, '-', None, 1, 2, EXPR),  # 0
+            Edge(EdgeType.SUBGRAPH_, TERM, EX1, 3, 0, EXPR),  # 1
+            
+            # No sign detected
+            Edge(EdgeType.SUBGRAPH_, TERM, None, 3,0, EXPR),  # 2
+            
+            # Detect Add Operation
+            Edge(EdgeType.SYMBOL___, '+', None, 4, 5, EXPR),  # 3
+            Edge(EdgeType.SUBGRAPH_, TERM, EX2, 3, 0, EXPR),  # 4
 
-            # End
-            Edge(EdgeType.GRAPH_END, None, None, 0, 0, EXPR)              # 7
+            # Detect Sub Operation
+            Edge(EdgeType.SYMBOL___, '-', None, 6, 7, EXPR),  # 5
+            Edge(EdgeType.SUBGRAPH_, TERM, EX3, 3, 0, EXPR),  # 6
+
+            Edge(EdgeType.GRAPH_END, None, None, 0, 0, EXPR)  # 7  
         ]
 
         statementEdges = [
@@ -276,7 +290,7 @@ class PL0Parser():
 
             Edge(EdgeType.SUBGRAPH_, NonTerminal.INPUT_STATEMENT, None, 7, 6, STAT),         # 5
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT, ST10, 7, 0, STAT),        # 6
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT, None, 7, 0, STAT),        # 6
 
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, STAT)                                    # 7
         ]
@@ -610,10 +624,119 @@ class PL0Parser():
 
     # STATEMENT
 
-    # Also known as BL10
+    # Also known as ST1
+    def statementAssignmentLeftSide(self):
+        
+        # Use current morphem as ident
+        identName = str(self.lexer.morphem.value)
+
+        # Search globally for ident
+        ident = self.nameList.searchIdentNameGlobal(identName)
+
+        # if ident not found -> Semantic Error!
+        if ident is None:
+            logging.error("[Parser] Declaration error: Ident {} is used in assignment but not declared.".format(identName))
+            return False
+
+        # Check if const or proc -> Semantic error!
+        if isinstance(ident, NLProc):
+            logging.error("[Parser] Type error: Excepted Var ident but got Procedure ident {}".format(identName))
+            return False
+
+        if isinstance(ident, NLConst):
+            logging.error("[Parser] Type error: Excepted Var ident but got Const ident {}".format(identName))
+            return False
+
+        # Check if main/local/global variable
+        displacement = ident.addressOffset
+        args = [displacement]
+        if ident.parent == self.nameList.mainProc:
+            # Main Variable
+            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_MAIN,args)
+        elif ident.parent == self.nameList.currentProcedure:
+            # Local Scope Variable
+            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_LOCAL,args)
+        else:
+            # Global scope Variable
+            args.append(ident.parent.index)
+            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_GLOBAL,args)
+
+        return True
+
+    # Also known as ST2
+    def statementAssignmentRightSide(self):
+
+        # Value and address are on the stack
+        # and we store the value to the address
+        self.codeGen.writeCommand(VMCode.STORE_VAL)
+        return True
+
+    # Also known as ST9
+    def statementGetVal(self):
+
+        # Use current morphem as ident
+        identName = str(self.lexer.morphem.value)
+
+        # Search globally for ident
+        ident = self.nameList.searchIdentNameGlobal(identName)
+
+        # if ident not found -> Semantic Error!
+        if ident is None:
+            logging.error("[Parser] Declaration error: Ident {} is used in assignment but not declared.".format(identName))
+            return False
+
+        # Check if const or proc -> Semantic error!
+        if isinstance(ident, NLProc):
+            logging.error("[Parser] Type error: Excepted Var ident but got Procedure ident {}".format(identName))
+            return False
+
+        if isinstance(ident, NLConst):
+            logging.error("[Parser] Type error: Excepted Var ident but got Const ident {}".format(identName))
+            return False
+
+                # Check if main/local/global variable
+        displacement = ident.addressOffset
+        args = [displacement]
+        if ident.parent == self.nameList.mainProc:
+            # Main Variable
+            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_MAIN,args)
+        elif ident.parent == self.nameList.currentProcedure:
+            # Local Scope Variable
+            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_LOCAL,args)
+        else:
+            # Global scope Variable
+            args.append(ident.parent.index)
+            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_GLOBAL,args)
+
+        # Write user-input command
+        self.codeGen.writeCommand(VMCode.GET_VAL)
+
+        return True
+
+        return True
+
+    # Also known as ST10
     def statementPutVal(self):
         logging.info("ST10")
-        self.codeGen.writeCommand(VMCode.PUT_VAL)
+        self.codeGen.writeCommand(VMCode.PUSH_VAL)
+        return True
+
+
+    # EXPRESSION
+
+    # Also known as EX1
+    def expressionNegSign(self):
+        self.codeGen.writeCommand(VMCode.VZ_MINUS)
+        return True
+
+    # Also known as EX2
+    def expressionAdd(self):
+        self.codeGen.writeCommand(VMCode.OP_ADD)
+        return True
+        
+    # Also known as EX3
+    def expressionSub(self):
+        self.codeGen.writeCommand(VMCode.OP_SUB)
         return True
 
 
@@ -635,7 +758,7 @@ class PL0Parser():
 
         # put index of the constant onto the stack
         args = [const.index]
-        self.codeGen.writeCommand(VMCode.PUT_CONST,args)
+        self.codeGen.writeCommand(VMCode.PUSH_CONST,args)
 
         return True
     
@@ -665,7 +788,8 @@ class PL0Parser():
         # push the index onto the stack
         if isinstance(ident, NLConst):
             args = [ident.index]
-            self.codeGen.writeCommand(VMCode.PUT_CONST,args)
+            self.codeGen.writeCommand(VMCode.PUSH_CONST,args)
+            return True
 
 
         # Check if main/local/global variable
@@ -673,14 +797,14 @@ class PL0Parser():
         args = [displacement]
         if ident.parent == self.nameList.mainProc:
             # Main Variable
-            self.codeGen.writeCommand(VMCode.PUT_VALUE_VAR_MAIN,args)
+            self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_MAIN,args)
         elif ident.parent == self.nameList.currentProcedure:
             # Local Scope Variable
-            self.codeGen.writeCommand(VMCode.PUT_VALUE_VAR_LOCAL,args)
+            self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_LOCAL,args)
         else:
             # Global scope Variable
             args.append(ident.parent.index)
-            self.codeGen.writeCommand(VMCode.PUT_VALUE_VAR_GLOBAL,args)
+            self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_GLOBAL,args)
 
         return True
 

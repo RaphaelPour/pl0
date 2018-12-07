@@ -7,15 +7,15 @@ import struct
 
 class VMCode(Enum):
     # Stack
-    PUT_VALUE_VAR_LOCAL = 0
-    PUT_VALUE_VAR_MAIN = 1
-    PUT_VALUE_VAR_GLOBAL = 2
-    PUT_ADDRESS_VAR_LOCAL = 3
-    PUT_ADDRESS_VAR_MAIN = 4
-    PUT_ADDRESS_VAR_GLOBAL = 5
-    PUT_CONST = 6
+    PUSH_VALUE_VAR_LOCAL = 0
+    PUSH_VALUE_VAR_MAIN = 1
+    PUSH_VALUE_VAR_GLOBAL = 2
+    PUSH_ADDRESS_VAR_LOCAL = 3
+    PUSH_ADDRESS_VAR_MAIN = 4
+    PUSH_ADDRESS_VAR_GLOBAL = 5
+    PUSH_CONST = 6
     STORE_VAL = 7
-    PUT_VAL = 8
+    PUSH_VAL = 8
     GET_VAL = 9
 
     # Arithmetic
@@ -126,9 +126,7 @@ class PL0CodeGen:
         return True
 
     def flushBuffer(self):
-        print(self.outputBuffer)
         self.outputFile.write(self.outputBuffer)
-        logging.info("Wrote {} bytes to {}.".format(len(self.outputBuffer), self.outputFilename))
         self.outputBuffer = bytearray()
 
     def initOutputBuffer(self):

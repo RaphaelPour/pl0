@@ -1,0 +1,6 @@
+var x;
+BEGIN
+    x := 1;
+    x := 1337;
+    !x
+END.
