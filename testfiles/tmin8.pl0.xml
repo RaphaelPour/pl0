@@ -1,0 +1,31 @@
+<PROGRAM>
+  <BLOCK>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='1' col='1'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='1' col='11'>MAIN</TERMINAL>
+      <TERMINAL line='1' col='15'>;</TERMINAL>
+      <BLOCK>
+        <STATEMENT>
+          <OUTPUT_STATEMENT>
+            <TERMINAL line='2' col='1'>!</TERMINAL>
+            <EXPRESSION>
+              <TERM>
+                <FACTOR>
+                  <TERMINAL line='2' col='2'>1337.0</TERMINAL>
+                </FACTOR>
+              </TERM>
+            </EXPRESSION>
+          </OUTPUT_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='2' col='6'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <STATEMENT>
+      <PROCEDURE_CALL>
+        <TERMINAL line='4' col='1'>Symbol.CALL</TERMINAL>
+        <TERMINAL line='4' col='6'>MAIN</TERMINAL>
+      </PROCEDURE_CALL>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='4' col='10'>.</TERMINAL>
+</PROGRAM>

@@ -213,7 +213,7 @@ class PL0NameList:
                 # If the current procedure has no parent
                 # -> we reached the main procedure and the ident
                 # doesn't exist
-                if procedure.parent is None:
+                if procedure is None or procedure.parent is None:
                     return None
                 else:
                     # Otherwise we use the parent of the current procedure

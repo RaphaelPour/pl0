@@ -1,0 +1,15 @@
+var a,b;
+BEGIN
+    ?a;
+    ?b;
+    IF a = b THEN !0;
+    IF a # b THEN !1;
+    
+    IF a >= b THEN !3;
+    IF a > b THEN !4;
+    
+    IF a < b THEN !5;
+    IF a <= b THEN !6;
+
+    IF ODD a THEN !7
+END.

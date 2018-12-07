@@ -1,0 +1,4 @@
+PROCEDURE main;
+!1337;
+
+CALL main.

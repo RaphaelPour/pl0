@@ -48,6 +48,11 @@ class VMCode(Enum):
 
     END_OF_CODE = 20 #1E
 
+class CGLabel:
+    def __init__(self, address):
+        self.address = address
+        self.distance = 0
+
 class PL0CodeGen:
 
     def __init__(self, outputFilename):
@@ -60,6 +65,9 @@ class PL0CodeGen:
         self.__append2Bytes__(48879) # hex(48879)=BEEF
         self.__append2Bytes__(0)
         self.flushBuffer()
+
+        self.labels = []
+        self.delayedCommands = []
 
     def __appendByte__(self,value):
         self.outputBuffer += (struct.pack("<B",value))
@@ -84,12 +92,13 @@ class PL0CodeGen:
 
     def writeCommand(self,vmcode, args=[]):
 
-        logging.debug("{}({})".format(vmcode,args))
+        #logging.debug("{}({})".format(vmcode,args))
 
         vmcodenr = vmcode.value
 
         if vmcodenr > len(VMCode):
             logging.error("[CodeGen] Unknown VM Code '{}'".format(vmcode))
+            return False
 
         # Write command
         self.__appendByte__(vmcodenr)
@@ -97,6 +106,8 @@ class PL0CodeGen:
         # Write each argument as 2-byte value
         for arg in args:
             self.__append2Bytes__(arg)
+
+        return True
 
     def setTotalCountOfProcedures(self, procedureCount):
 
@@ -121,9 +132,54 @@ class PL0CodeGen:
             logging.error("[CodeGen] Procedure length can't be set with an empty or too short output buffer.")
             return False
 
-        self.outputBuffer[1] = len(self.outputBuffer)
+        # Code length is from index 1 with size of 2 bytes
+        # First byte is the EntryProc command
+        b = struct.pack("<H", len(self.outputBuffer))
+        self.outputBuffer[1] = b[0]
+        self.outputBuffer[2] = b[1]
 
         return True
+
+    def pushDelayedCommand(self,vmcode, args=[]):
+        self.delayedCommands.append((vmcode, args))
+
+    def popDelayedCommand(self):
+        if len(self.delayedCommands) == 0:
+            logging.error("No delayed commands left")
+            return (0,)
+
+        return self.delayedCommands.pop()
+
+    def pushLabel(self):
+        # Store the current position (=length of the current buffer)
+        # in order to calculate the relative address for if/while later
+        self.labels.append(CGLabel(len(self.outputBuffer)))
+
+    def popLabel(self):
+        # Calculate relative address for if/while so they know
+        # where to jump to if condition is true 
+        label = self.labels.pop()
+
+        # Calculate distance between JMPNOT and end of the if/while statement
+        # Substract 3 because we want the distance from the next command
+        # to the end of the if/while (JMP + 2byte arg = 3 bytes) 
+        label.distance = len(self.outputBuffer) - label.address -3
+        return label
+
+    def correctJmp(self, label):
+
+        # Check if jump command (2 byte) + its first argument (2 byte)
+        # is inside the output buffer
+        if label.address + 4 >= len(self.outputBuffer):
+            logging.error("[CodeGen] Invalid Jump address")
+            return False
+        
+        b = struct.pack("<H", label.distance)
+        self.outputBuffer[label.address+1] = b[0]
+        self.outputBuffer[label.address+2] = b[1]
+
+        return True
+
 
     def flushBuffer(self):
         self.outputFile.write(self.outputBuffer)

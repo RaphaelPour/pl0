@@ -1,0 +1,280 @@
+<PROGRAM>
+  <BLOCK>
+    <VARIABLE_LIST>
+      <TERMINAL line='1' col='1'>Symbol.VAR</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='5'>A</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='6'>,</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='7'>B</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='8'>;</TERMINAL>
+    </VARIABLE_LIST>
+    <STATEMENT>
+      <COMPOUND_STATEMENT>
+        <TERMINAL line='2' col='1'>Symbol.BEGIN</TERMINAL>
+        <STATEMENT>
+          <INPUT_STATEMENT>
+            <TERMINAL line='3' col='5'>?</TERMINAL>
+            <TERMINAL line='3' col='6'>A</TERMINAL>
+          </INPUT_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='3' col='7'>;</TERMINAL>
+        <STATEMENT>
+          <INPUT_STATEMENT>
+            <TERMINAL line='4' col='5'>?</TERMINAL>
+            <TERMINAL line='4' col='6'>B</TERMINAL>
+          </INPUT_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='4' col='7'>;</TERMINAL>
+        <STATEMENT>
+          <CONDITIONAL_STATEMENT>
+            <TERMINAL line='5' col='5'>Symbol.IF</TERMINAL>
+            <CONDITION>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='5' col='8'>A</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+              <TERMINAL line='5' col='10'>=</TERMINAL>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='5' col='12'>B</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+            </CONDITION>
+            <TERMINAL line='5' col='14'>Symbol.THEN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='5' col='19'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='5' col='20'>0.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+          </CONDITIONAL_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='5' col='21'>;</TERMINAL>
+        <STATEMENT>
+          <CONDITIONAL_STATEMENT>
+            <TERMINAL line='6' col='5'>Symbol.IF</TERMINAL>
+            <CONDITION>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='6' col='8'>A</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+              <TERMINAL line='6' col='10'>#</TERMINAL>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='6' col='12'>B</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+            </CONDITION>
+            <TERMINAL line='6' col='14'>Symbol.THEN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='6' col='19'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='6' col='20'>1.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+          </CONDITIONAL_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='6' col='21'>;</TERMINAL>
+        <STATEMENT>
+          <CONDITIONAL_STATEMENT>
+            <TERMINAL line='8' col='5'>Symbol.IF</TERMINAL>
+            <CONDITION>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='8' col='8'>A</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+              <TERMINAL line='8' col='10'>Symbol.GREATER_EQUAL</TERMINAL>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='8' col='13'>B</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+            </CONDITION>
+            <TERMINAL line='8' col='15'>Symbol.THEN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='8' col='20'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='8' col='21'>3.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+          </CONDITIONAL_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='8' col='22'>;</TERMINAL>
+        <STATEMENT>
+          <CONDITIONAL_STATEMENT>
+            <TERMINAL line='9' col='5'>Symbol.IF</TERMINAL>
+            <CONDITION>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='9' col='8'>A</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+              <TERMINAL line='9' col='10'>></TERMINAL>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='9' col='12'>B</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+            </CONDITION>
+            <TERMINAL line='9' col='14'>Symbol.THEN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='9' col='19'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='9' col='20'>4.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+          </CONDITIONAL_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='9' col='21'>;</TERMINAL>
+        <STATEMENT>
+          <CONDITIONAL_STATEMENT>
+            <TERMINAL line='11' col='5'>Symbol.IF</TERMINAL>
+            <CONDITION>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='11' col='8'>A</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+              <TERMINAL line='11' col='10'><</TERMINAL>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='11' col='12'>B</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+            </CONDITION>
+            <TERMINAL line='11' col='14'>Symbol.THEN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='11' col='19'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='11' col='20'>5.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+          </CONDITIONAL_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='11' col='21'>;</TERMINAL>
+        <STATEMENT>
+          <CONDITIONAL_STATEMENT>
+            <TERMINAL line='12' col='5'>Symbol.IF</TERMINAL>
+            <CONDITION>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='12' col='8'>A</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+              <TERMINAL line='12' col='10'>Symbol.LESSER_EQUAL</TERMINAL>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='12' col='13'>B</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+            </CONDITION>
+            <TERMINAL line='12' col='15'>Symbol.THEN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='12' col='20'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='12' col='21'>6.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+          </CONDITIONAL_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='12' col='22'>;</TERMINAL>
+        <STATEMENT>
+          <CONDITIONAL_STATEMENT>
+            <TERMINAL line='14' col='5'>Symbol.IF</TERMINAL>
+            <CONDITION>
+              <TERMINAL line='14' col='8'>Symbol.ODD</TERMINAL>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='14' col='12'>A</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+            </CONDITION>
+            <TERMINAL line='14' col='14'>Symbol.THEN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='14' col='19'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='14' col='20'>7.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+          </CONDITIONAL_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='15' col='1'>Symbol.END</TERMINAL>
+      </COMPOUND_STATEMENT>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='15' col='4'>.</TERMINAL>
+</PROGRAM>

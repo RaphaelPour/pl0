@@ -100,13 +100,28 @@ class PL0Parser():
         # Statement
         ST1 = self.statementAssignmentLeftSide
         ST2 = self.statementAssignmentRightSide
+        ST3 = self.statementIfCondition
+        ST4 = self.statementThenStatement
         ST9 = self.statementGetVal
         ST10 = self.statementPutVal
+
+        # Condition
+        CO1 = self.conditionOdd
+        CO2 = self.conditionEQ
+        CO3 = self.conditionNE
+        CO4 = self.conditionLT
+        CO5 = self.conditionLE
+        CO6 = self.conditionGT
+        CO7 = self.conditionGE
+        CO8 = self.conditionReleaseCommand
 
         # Expression
         EX1 = self.expressionNegSign
         EX2 = self.expressionAdd
         EX3 = self.expressionSub
+
+        TE1 = self.termMul
+        TE2 = self.termDiv
 
         # Factor
         FA1 = self.factorPushNumber
@@ -197,11 +212,11 @@ class PL0Parser():
         ]
 
         conditionalEdges = [
-            Edge(EdgeType.SYMBOL___, Symbol.IF, None, 1, 0, CNDS),              # 0
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, None, 2, 0, CNDS),  # 1
-            Edge(EdgeType.SYMBOL___, Symbol.THEN, None, 3, 0, CNDS),            # 2
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, None, 4, 0, CNDS),  # 3
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, CNDS)                       # 4
+            Edge(EdgeType.SYMBOL___, Symbol.IF, None, 1, 0, CNDS),             # 0
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, ST3, 2, 0, CNDS),  # 1
+            Edge(EdgeType.SYMBOL___, Symbol.THEN, None, 3, 0, CNDS),           # 2
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, ST4, 4, 0, CNDS),  # 3
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, CNDS)                      # 4
         ]
 
         loopEdges = [
@@ -296,14 +311,14 @@ class PL0Parser():
         ]
 
         termEdges = [
-            Edge(EdgeType.SUBGRAPH_, FACT, None, 1, 0, TERM),             # 0
-            Edge(EdgeType.SYMBOL___, '*', None, 2, 3, TERM),              # 1
-            Edge(EdgeType.SUBGRAPH_, FACT, None, 1, 0, TERM),             # 2
-            Edge(EdgeType.SYMBOL___, '/', None, 4, 5, TERM),              # 3
-            Edge(EdgeType.SUBGRAPH_, FACT, None, 1, 0, TERM),             # 4
+            Edge(EdgeType.SUBGRAPH_, FACT, None, 1, 0, TERM), # 0
+            Edge(EdgeType.SYMBOL___, '*', None, 2, 3, TERM),  # 1
+            Edge(EdgeType.SUBGRAPH_, FACT, TE1, 1, 0, TERM),  # 2
+            Edge(EdgeType.SYMBOL___, '/', None, 4, 5, TERM),  # 3
+            Edge(EdgeType.SUBGRAPH_, FACT, TE2, 1, 0, TERM),  # 4
 
             # End
-            Edge(EdgeType.GRAPH_END, None, None, 0, 0, TERM)              # 5
+            Edge(EdgeType.GRAPH_END, None, None, 0, 0, TERM)  # 5
         ]
 
         factorEdges = [
@@ -320,17 +335,17 @@ class PL0Parser():
         conditionEdges = [
             # ODD
             Edge(EdgeType.SYMBOL___, Symbol.ODD, None, 1, 2, COND),  # 0
-            Edge(EdgeType.SUBGRAPH_, EXPR, None, 10, 0, COND),  # 1
+            Edge(EdgeType.SUBGRAPH_, EXPR, CO1, 10, 0, COND),  # 1
 
             # Comparisson
             Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, COND),  # 2
-            Edge(EdgeType.SYMBOL___, '=', None, 9, 4, COND),  # 3
-            Edge(EdgeType.SYMBOL___, '#', None, 9, 5, COND),  # 4
-            Edge(EdgeType.SYMBOL___, '>', None, 9, 6, COND),  # 5
-            Edge(EdgeType.SYMBOL___, '<', None, 9, 7, COND),  # 6
-            Edge(EdgeType.SYMBOL___, Symbol.LESSER_EQUAL, None, 9, 8, COND),  # 7
-            Edge(EdgeType.SYMBOL___, Symbol.GREATER_EQUAL, None, 9, 0, COND),  # 8
-            Edge(EdgeType.SUBGRAPH_, EXPR, None, 10, 0, COND),  # 9
+            Edge(EdgeType.SYMBOL___, '=', CO2, 9, 4, COND),  # 3
+            Edge(EdgeType.SYMBOL___, '#', CO3, 9, 5, COND),  # 4
+            Edge(EdgeType.SYMBOL___, '>', CO6, 9, 6, COND),  # 5
+            Edge(EdgeType.SYMBOL___, '<', CO4, 9, 7, COND),  # 6
+            Edge(EdgeType.SYMBOL___, Symbol.LESSER_EQUAL, CO5, 9, 8, COND),  # 7
+            Edge(EdgeType.SYMBOL___, Symbol.GREATER_EQUAL, CO7, 9, 0, COND),  # 8
+            Edge(EdgeType.SUBGRAPH_, EXPR, CO8, 10, 0, COND),  # 9
 
             # End
             Edge(EdgeType.GRAPH_END, None, None,
@@ -494,7 +509,6 @@ class PL0Parser():
 
     # Also known as Pr1
     def programmEnd(self):
-        logging.info("P1")
         # Write the count of procedures at the very beginning
         self.codeGen.setTotalCountOfProcedures(len(self.nameList.procedures))
 
@@ -510,8 +524,6 @@ class PL0Parser():
     
     # Also known as BL1
     def blockCheckConstIdent(self):
-        logging.info("B1")
-
         # Get ident by current morphem
         constIdent = str(self.lexer.morphem.value)
 
@@ -527,7 +539,6 @@ class PL0Parser():
 
     # Also known as BL2
     def blockCreateConst(self):
-        logging.info("B2")
         
         # Check if current ident is set in order to add a new
         # constant to the namelist
@@ -548,8 +559,6 @@ class PL0Parser():
                 
     # Also known as BL3
     def blockCreateVar(self):
-        logging.info("B3")
-
         # Check if ident is already defined in local scope
         ident = str(self.lexer.morphem.value)
 
@@ -567,9 +576,6 @@ class PL0Parser():
         
     # Also known as BL4
     def blockCreateProc(self):
-        logging.info("B4")
-
-
         # Check if ident is already defined in local scope
         ident = str(self.lexer.morphem.value)
         
@@ -584,10 +590,10 @@ class PL0Parser():
     
     # Also known as BL5
     def blockEndProcedure(self):
-        logging.info("B5")
 
         # Write Return Statement (Doesn't need an address, cause Beck's VM can handle it by itself)
-        self.codeGen.writeCommand(VMCode.RET_PROC)
+        if not self.codeGen.writeCommand(VMCode.RET_PROC):
+            return False
 
         # Write length of the current procedure at the very
         # beginning
@@ -605,7 +611,6 @@ class PL0Parser():
 
     # Also known as BL6
     def blockInitCodeGen(self):
-        logging.info("B6")
 
         # Initialize the code generator
         self.codeGen.flushBuffer()
@@ -617,9 +622,7 @@ class PL0Parser():
         
         args = [length, index, varMemorySize]
 
-        self.codeGen.writeCommand(VMCode.ENTRY_PROC,args)
-
-        return True
+        return self.codeGen.writeCommand(VMCode.ENTRY_PROC,args)
 
 
     # STATEMENT
@@ -652,14 +655,17 @@ class PL0Parser():
         args = [displacement]
         if ident.parent == self.nameList.mainProc:
             # Main Variable
-            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_MAIN,args)
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_MAIN,args):
+                return False
         elif ident.parent == self.nameList.currentProcedure:
             # Local Scope Variable
-            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_LOCAL,args)
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_LOCAL,args):
+                return False
         else:
             # Global scope Variable
             args.append(ident.parent.index)
-            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_GLOBAL,args)
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_GLOBAL,args):
+                return False
 
         return True
 
@@ -668,8 +674,18 @@ class PL0Parser():
 
         # Value and address are on the stack
         # and we store the value to the address
-        self.codeGen.writeCommand(VMCode.STORE_VAL)
-        return True
+        return self.codeGen.writeCommand(VMCode.STORE_VAL)
+
+    # Also known as ST3
+    def statementIfCondition(self):
+        self.codeGen.pushLabel()
+        return self.codeGen.writeCommand(VMCode.JMP_NOT,[0])
+
+    # Also known as ST4
+    def statementThenStatement(self):
+        label = self.codeGen.popLabel()
+
+        return self.codeGen.correctJmp(label)
 
     # Also known as ST9
     def statementGetVal(self):
@@ -699,53 +715,98 @@ class PL0Parser():
         args = [displacement]
         if ident.parent == self.nameList.mainProc:
             # Main Variable
-            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_MAIN,args)
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_MAIN,args):
+                return False
         elif ident.parent == self.nameList.currentProcedure:
             # Local Scope Variable
-            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_LOCAL,args)
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_LOCAL,args):
+                return False
         else:
             # Global scope Variable
             args.append(ident.parent.index)
-            self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_GLOBAL,args)
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_GLOBAL,args):
+                return False
 
         # Write user-input command
-        self.codeGen.writeCommand(VMCode.GET_VAL)
-
-        return True
-
-        return True
+        return self.codeGen.writeCommand(VMCode.GET_VAL)
 
     # Also known as ST10
     def statementPutVal(self):
-        logging.info("ST10")
-        self.codeGen.writeCommand(VMCode.PUSH_VAL)
+        return self.codeGen.writeCommand(VMCode.PUSH_VAL)
+
+
+    # CONDITION
+
+    # Also known as CO1
+    def conditionOdd(self):
+        return self.codeGen.writeCommand(VMCode.ODD)
+
+    # Also known as CO2
+    def conditionEQ(self):
+        self.codeGen.pushDelayedCommand(VMCode.CMP_EQ)
         return True
 
+    # Also known as CO3
+    def conditionNE(self):
+        self.codeGen.pushDelayedCommand(VMCode.CMP_NE)
+        return True
+
+    # Also known as CO4
+    def conditionLT(self):
+        self.codeGen.pushDelayedCommand(VMCode.CMP_LT)
+        return True
+
+    # Also known as CO5
+    def conditionLE(self):
+        self.codeGen.pushDelayedCommand(VMCode.CMP_LE)
+        return True
+
+    # Also known as CO6
+    def conditionGT(self):
+        self.codeGen.pushDelayedCommand(VMCode.CMP_GT)
+        return True
+
+    # Also known as CO7
+    def conditionGE(self):
+        self.codeGen.pushDelayedCommand(VMCode.CMP_GE)
+        return True
+
+
+    # Also known as CO8
+    def conditionReleaseCommand(self):
+        command, args = self.codeGen.popDelayedCommand()
+
+        return self.codeGen.writeCommand(command, args)
 
     # EXPRESSION
 
     # Also known as EX1
     def expressionNegSign(self):
-        self.codeGen.writeCommand(VMCode.VZ_MINUS)
-        return True
+        return self.codeGen.writeCommand(VMCode.VZ_MINUS)
 
     # Also known as EX2
     def expressionAdd(self):
-        self.codeGen.writeCommand(VMCode.OP_ADD)
-        return True
+        return self.codeGen.writeCommand(VMCode.OP_ADD)
         
     # Also known as EX3
     def expressionSub(self):
-        self.codeGen.writeCommand(VMCode.OP_SUB)
-        return True
+        return self.codeGen.writeCommand(VMCode.OP_SUB)
 
+
+    # TERM
+
+    # Also known as TE1
+    def termMul(self):
+        return self.codeGen.writeCommand(VMCode.OP_MULT)
+
+    # Also known as TE1
+    def termDiv(self):
+        return self.codeGen.writeCommand(VMCode.OP_DIV)
 
     # FACTOR
 
     # Also known as FA1
     def factorPushNumber(self):
-        logging.info("FA1")
-
         # Get number from the last read morphem
         value = int(self.lexer.morphem.value)
 
@@ -758,14 +819,10 @@ class PL0Parser():
 
         # put index of the constant onto the stack
         args = [const.index]
-        self.codeGen.writeCommand(VMCode.PUSH_CONST,args)
-
-        return True
+        return self.codeGen.writeCommand(VMCode.PUSH_CONST,args)
     
     # Also known as FA2
     def factorPushIdent(self):
-        logging.info("FA2")
-
         # Get ident from the last read morphem
         identName = str(self.lexer.morphem.value)
 
@@ -797,16 +854,14 @@ class PL0Parser():
         args = [displacement]
         if ident.parent == self.nameList.mainProc:
             # Main Variable
-            self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_MAIN,args)
+            return self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_MAIN,args)
         elif ident.parent == self.nameList.currentProcedure:
             # Local Scope Variable
-            self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_LOCAL,args)
+            return self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_LOCAL,args)
         else:
             # Global scope Variable
             args.append(ident.parent.index)
-            self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_GLOBAL,args)
-
-        return True
+            return self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_GLOBAL,args)
 
 if __name__ == "__main__":
 
