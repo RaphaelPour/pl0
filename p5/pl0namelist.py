@@ -205,11 +205,13 @@ class PL0NameList:
         search in each one.
         The rule is: local scope overwrites global scope. 
         """
+        if procedure is None:
+            procedure = self.currentProcedure
+
         while 1:
             ident = self.searchIdentNameLocal(name=name, procedure=procedure)
 
             if ident is None:
-
                 # If the current procedure has no parent
                 # -> we reached the main procedure and the ident
                 # doesn't exist
