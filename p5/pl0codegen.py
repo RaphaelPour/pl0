@@ -76,8 +76,11 @@ class PL0CodeGen:
         self.outputBuffer.insert(0,struct.pack("<B",value))
         
     def __append2Bytes__(self,value):
-        # Write value as 2-byte little-endian to the buffer
-        self.outputBuffer += (struct.pack("<H",value))
+        if(value < 0):
+            self.outputBuffer += (struct.pack("<h",value))
+        else:
+            # Write value as 2-byte little-endian to the buffer
+            self.outputBuffer += (struct.pack("<H",value))
 
     def __append4Bytes__(self, value):
         # Write value as 4-byte little-endian to the buffer
@@ -160,13 +163,11 @@ class PL0CodeGen:
         # where to jump to if condition is true 
         label = self.labels.pop()
 
-        # Calculate distance between JMPNOT and end of the if/while statement
-        # Substract 3 because we want the distance from the next command
-        # to the end of the if/while (JMP + 2byte arg = 3 bytes) 
-        label.distance = len(self.outputBuffer) - label.address -3
+        # Calculate relative address
+        label.distance = len(self.outputBuffer) - label.address
         return label
 
-    def correctJmp(self, label):
+    def correctJmp(self, label,offset=0):
 
         # Check if jump command (2 byte) + its first argument (2 byte)
         # is inside the output buffer
@@ -174,12 +175,12 @@ class PL0CodeGen:
             logging.error("[CodeGen] Invalid Jump address")
             return False
         
-        b = struct.pack("<H", label.distance)
+        #logging.info("Relative address: " + label.distance+offset)
+        b = struct.pack("<h", label.distance+offset)
         self.outputBuffer[label.address+1] = b[0]
         self.outputBuffer[label.address+2] = b[1]
 
         return True
-
 
     def flushBuffer(self):
         self.outputFile.write(self.outputBuffer)

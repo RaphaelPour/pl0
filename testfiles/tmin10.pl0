@@ -1,0 +1,9 @@
+VAR a;
+BEGIN
+    a := 5;
+    WHILE a > 0 DO
+    BEGIN
+        !a;
+        a := a-1
+    END
+END.

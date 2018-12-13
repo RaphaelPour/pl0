@@ -1,4 +1,11 @@
+PROCEDURE sub;
+    PROCEDURE subsub;
+    BEGIN
+      !1
+    END;
+    CALL subsub;
 PROCEDURE main;
-!1337;
-
+  BEGIN
+    CALL sub
+  END;
 CALL main.

@@ -1,0 +1,30 @@
+CONST null=0, eins=1;
+VAR a,b;
+
+PROCEDURE p1;
+VAR x;
+PROCEDURE p2;
+    VAR y;
+    BEGIN
+        WHILE x > 0 DO
+        BEGIN
+            y := b;
+            WHILE y > null DO
+            BEGIN
+                    
+                !y*x;
+                y := y-eins
+            END;
+            x := x-1
+        END
+    END;
+BEGIN
+    x := a;
+    CALL p2
+END;
+
+BEGIN
+    ?a;
+    ?b;
+    CALL p1
+END.

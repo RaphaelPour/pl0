@@ -1,6 +1,8 @@
-  Procedure p1;
-  begin
-    i:=0
-  end;
+var a,fac;
+Procedure p1;
+ begin
+  a := 1;
+  !a
+ end;
 
 call p1.

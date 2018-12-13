@@ -1,38 +1,62 @@
 <PROGRAM>
   <BLOCK>
+    <VARIABLE_LIST>
+      <TERMINAL line='1' col='1'>Symbol.VAR</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='5'>A</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='6'>,</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='7'>FAC</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='10'>;</TERMINAL>
+    </VARIABLE_LIST>
     <PROCEDURE_DECLARATION>
-      <TERMINAL line='1' col='3'>Symbol.PROCEDURE</TERMINAL>
-      <TERMINAL line='1' col='13'>P1</TERMINAL>
-      <TERMINAL line='1' col='15'>;</TERMINAL>
+      <TERMINAL line='2' col='1'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='2' col='11'>P1</TERMINAL>
+      <TERMINAL line='2' col='13'>;</TERMINAL>
       <BLOCK>
         <STATEMENT>
           <COMPOUND_STATEMENT>
-            <TERMINAL line='2' col='3'>Symbol.BEGIN</TERMINAL>
+            <TERMINAL line='3' col='2'>Symbol.BEGIN</TERMINAL>
             <STATEMENT>
               <ASSIGNMENT_STATEMENT>
-                <TERMINAL line='3' col='5'>I</TERMINAL>
-                <TERMINAL line='3' col='6'>Symbol.ASSIGN</TERMINAL>
+                <TERMINAL line='4' col='3'>A</TERMINAL>
+                <TERMINAL line='4' col='5'>Symbol.ASSIGN</TERMINAL>
                 <EXPRESSION>
                   <TERM>
                     <FACTOR>
-                      <TERMINAL line='3' col='8'>0.0</TERMINAL>
+                      <TERMINAL line='4' col='8'>1.0</TERMINAL>
                     </FACTOR>
                   </TERM>
                 </EXPRESSION>
               </ASSIGNMENT_STATEMENT>
             </STATEMENT>
-            <TERMINAL line='4' col='3'>Symbol.END</TERMINAL>
+            <TERMINAL line='4' col='9'>;</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='5' col='3'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='5' col='4'>A</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='6' col='2'>Symbol.END</TERMINAL>
           </COMPOUND_STATEMENT>
         </STATEMENT>
       </BLOCK>
-      <TERMINAL line='4' col='6'>;</TERMINAL>
+      <TERMINAL line='6' col='5'>;</TERMINAL>
     </PROCEDURE_DECLARATION>
     <STATEMENT>
       <PROCEDURE_CALL>
-        <TERMINAL line='6' col='1'>Symbol.CALL</TERMINAL>
-        <TERMINAL line='6' col='6'>P1</TERMINAL>
+        <TERMINAL line='8' col='1'>Symbol.CALL</TERMINAL>
+        <TERMINAL line='8' col='6'>P1</TERMINAL>
       </PROCEDURE_CALL>
     </STATEMENT>
   </BLOCK>
-  <TERMINAL line='6' col='8'>.</TERMINAL>
+  <TERMINAL line='8' col='8'>.</TERMINAL>
 </PROGRAM>

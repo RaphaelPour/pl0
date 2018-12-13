@@ -102,6 +102,10 @@ class PL0Parser():
         ST2 = self.statementAssignmentRightSide
         ST3 = self.statementIfCondition
         ST4 = self.statementThenStatement
+        ST5 = self.statementWhileCondition
+        ST6 = self.statementWhileAfterCondition
+        ST7 = self.statementWhileEnd
+        ST8 = self.statementCallProc
         ST9 = self.statementGetVal
         ST10 = self.statementPutVal
 
@@ -168,7 +172,7 @@ class PL0Parser():
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, CLST)              # 4
         ]
 
-        consDeclarationEdges = [
+        constDeclarationEdges = [
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL1, 1, 0, CNST),  # 0
             Edge(EdgeType.SYMBOL___, '=', None, 2, 0, CNST),                # 1
             Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, BL2, 3, 0, CNST), # 2
@@ -199,7 +203,7 @@ class PL0Parser():
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL4, 2, 0, PROC),  # 1
             Edge(EdgeType.SYMBOL___, ';', None, 3, 0, PROC),               # 2
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 4, 0, PROC),              # 3
-            Edge(EdgeType.SYMBOL___, ';', None, 5, 0, PROC),               # 4
+            Edge(EdgeType.SYMBOL___, ';', None, 5, 0, PROC),                # 4
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROC)                  # 5
 
         ]
@@ -220,10 +224,10 @@ class PL0Parser():
         ]
 
         loopEdges = [
-            Edge(EdgeType.SYMBOL___, Symbol.WHILE, None, 1, 0, LOOP),           # 0
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, None, 2, 0, LOOP),  # 1
+            Edge(EdgeType.SYMBOL___, Symbol.WHILE, ST5, 1, 0, LOOP),           # 0
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, ST6, 2, 0, LOOP),  # 1
             Edge(EdgeType.SYMBOL___, Symbol.DO,  None, 3, 0, LOOP),             # 2
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, None, 4, 0, LOOP),  # 3
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, ST7, 4, 0, LOOP),  # 3
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, LOOP)                       # 5
         ]
 
@@ -237,7 +241,7 @@ class PL0Parser():
 
         procedureCallEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.CALL, None, 1, 0, PRCC),            # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 2, 0, PRCC),      # 1
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST8, 2, 0, PRCC),       # 1
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PRCC)                       # 2
         ]
 
@@ -261,7 +265,7 @@ class PL0Parser():
             Edge(EdgeType.SUBGRAPH_, VLST, None, 2, 2, BLCK),  # 1
 
             # Procedure Declaration
-            Edge(EdgeType.SUBGRAPH_, PROC, None, 3, 3, BLCK),  # 2
+            Edge(EdgeType.SUBGRAPH_, PROC, None, 2, 3, BLCK),   # 2
 
             # Nil Edge (needed for emitter function)
             Edge(EdgeType.NIL______, None, BL6, 4, 0, BLCK),   # 3
@@ -361,7 +365,7 @@ class PL0Parser():
             FACT: factorEdges,  # 5
             COND: conditionEdges,  # 6
             CLST: constListEdges,  # 7
-            CNST: consDeclarationEdges,  # 8
+            CNST: constDeclarationEdges,  # 8
             VLST: varListEdges,  # 9
             VARD: varDeclarationEdges,  # 10
             PROC: procDeclatationEdges,  # 11
@@ -590,7 +594,7 @@ class PL0Parser():
     
     # Also known as BL5
     def blockEndProcedure(self):
-
+        #print("*ring ring* BL5 was called")
         # Write Return Statement (Doesn't need an address, cause Beck's VM can handle it by itself)
         if not self.codeGen.writeCommand(VMCode.RET_PROC):
             return False
@@ -617,7 +621,7 @@ class PL0Parser():
 
         # Write EntryProc command to introduce a new procedure
         length = 0
-        index = len(self.nameList.procedures)-1
+        index = self.nameList.currentProcedure.index
         varMemorySize = self.nameList.currentProcedure.addressOffset
         
         args = [length, index, varMemorySize]
@@ -638,16 +642,16 @@ class PL0Parser():
 
         # if ident not found -> Semantic Error!
         if ident is None:
-            logging.error("[Parser] Declaration error: Ident {} is used in assignment but not declared.".format(identName))
+            logging.error("[Parser] Declaration error: Var {} is used in assignment but not declared.".format(identName))
             return False
 
         # Check if const or proc -> Semantic error!
         if isinstance(ident, NLProc):
-            logging.error("[Parser] Type error: Excepted Var ident but got Procedure ident {}".format(identName))
+            logging.error("[Parser] Type error: Excepted Variable but got Procedure {} instead".format(identName))
             return False
 
         if isinstance(ident, NLConst):
-            logging.error("[Parser] Type error: Excepted Var ident but got Const ident {}".format(identName))
+            logging.error("[Parser] Type error: Excepted Variable but got Constant {} instead".format(identName))
             return False
 
         # Check if main/local/global variable
@@ -685,7 +689,68 @@ class PL0Parser():
     def statementThenStatement(self):
         label = self.codeGen.popLabel()
 
+        # Add length of jump command (3 bytes) 
+        label.distance -= 3
         return self.codeGen.correctJmp(label)
+
+    # Also known as ST5
+    def statementWhileCondition(self):
+        # Generate Label for the jump at the
+        # end of the loop. The Label has to point
+        # to the head
+        self.codeGen.pushLabel()
+        return True
+
+    # Also known as ST6
+    def statementWhileAfterCondition(self):
+        # Generate Label to save the position of the jump
+        # where we have to replace the address later
+        self.codeGen.pushLabel()
+
+        # Generate JumpNot which jumps to the first command
+        # after the loop if the condition is false
+        # Use 0 as placeholder for JumpNot
+        return self.codeGen.writeCommand(VMCode.JMP_NOT,[0])
+
+    def statementWhileEnd(self):
+        # Add jump pointing to the condition of the current while loop
+        jmpNotRelAddr = self.codeGen.popLabel()
+        conditionRelAddr = self.codeGen.popLabel()
+
+        # Add jump to the condition, add 3 bytes for the jump command itself
+        args1 = [ -conditionRelAddr.distance -3]
+        if not self.codeGen.writeCommand(VMCode.JMP, args1):
+            return False
+
+        # Correct address of the JmpNot of the While-Condition
+        return self.codeGen.correctJmp(label=jmpNotRelAddr)
+
+    # Also known as ST8
+    def statementCallProc(self):
+
+        # Use current morphem as ident for procedure
+        identName = str(self.lexer.morphem.value)
+
+        # Search globally for ident
+        ident = self.nameList.searchIdentNameGlobal(identName)
+
+        # if ident not found -> Semantic Error!
+        if ident is None:
+            logging.error("[Parser] Declaration error: Procedure {} is used in call but not declared.".format(identName))
+            return False
+        
+        # Check if ident is const or var -> Semantic error!
+        if isinstance(ident, NLConst):
+            logging.error("[Parser] Type error: Excepted Procedure but got Constant {} instead".format(identName))
+            return False
+
+        if isinstance(ident, NLVar):
+            logging.error("[Parser] Type error: Excepted Procedure but got Variable {} instead".format(identName))
+            return False
+
+        # Write Call Command with proc index as first argument
+        args = [ident.index]
+        return self.codeGen.writeCommand(VMCode.CALL,args)
 
     # Also known as ST9
     def statementGetVal(self):
@@ -882,7 +947,7 @@ if __name__ == "__main__":
         logging.error("[main] File doesn't exist")
         sys.exit(1)
 
-    logging.info("[main] using inputfile {}".format(inputFilename))
+    #logging.info("[main] using inputfile {}".format(inputFilename))
 
     parser = PL0Parser(inputFilename, outputFilename)
 
@@ -893,5 +958,5 @@ if __name__ == "__main__":
         xmlFile = inputFilename + ".xml"
         x = xmlwriter.XMLWriter(xmlFile)
         x.writeAll(result)
-        logging.info("[main]  wrote Parsetree to {}".format(xmlFile))
-        logging.info("[main]  done ")
+        #logging.info("[main]  wrote Parsetree to {}".format(xmlFile))
+        #logging.info("[main]  done ")
