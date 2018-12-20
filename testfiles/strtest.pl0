@@ -1,0 +1,8 @@
+var a,fac;
+Procedure p1;
+ /* Test-Procedur */
+ begin
+    !"HELLO"
+ end;
+
+call p1.

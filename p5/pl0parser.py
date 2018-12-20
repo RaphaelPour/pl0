@@ -108,6 +108,7 @@ class PL0Parser():
         ST8 = self.statementCallProc
         ST9 = self.statementGetVal
         ST10 = self.statementPutVal
+        ST11 = self.statementPutStr
 
         # Condition
         CO1 = self.conditionOdd
@@ -253,8 +254,9 @@ class PL0Parser():
 
         outputEdges = [
             Edge(EdgeType.SYMBOL___, "!", None, 1, 0, OUTS),                     # 0
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, ST10, 2, 0, OUTS),  # 1
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, OUTS)                        # 2
+            Edge(EdgeType.MORPHEM__, MorphemCode.STRING, ST11, 3,2, OUTS),       # 1
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, ST10, 3, 0, OUTS),  # 2
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, OUTS)                        # 3
         ]
 
         blockEdges = [
@@ -798,6 +800,11 @@ class PL0Parser():
     # Also known as ST10
     def statementPutVal(self):
         return self.codeGen.writeCommand(VMCode.PUSH_VAL)
+
+    # Also known as ST11
+    def statementPutStr(self):
+        value = str(self.lexer.morphem.value)
+        return self.codeGen.putString(value)
 
 
     # CONDITION

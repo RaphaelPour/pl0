@@ -93,6 +93,15 @@ class PL0CodeGen:
         for const in constList:
             self.__append4Bytes__(int(const.value))
 
+    def putString(self,str):
+        # Write command
+        self.__appendByte__(VMCode.PUTSTRG.value)
+        
+        for c in str:
+            self.__appendByte__(ord(c))
+
+        return True
+
     def writeCommand(self,vmcode, args=[]):
 
         #logging.debug("{}({})".format(vmcode,args))

@@ -25,7 +25,6 @@ class TestPL0Parser(unittest.TestCase):
         p = PL0Parser(inputFile,outputFile)
         path = p.parse()
 
-
         self.assertNotEqual(path, False)
 
         self.assertEqual(path,

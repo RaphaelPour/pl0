@@ -12,6 +12,7 @@ class MorphemCode(Enum):
     NUMBER = 2
     SYMBOL = 3
     IDENT = 4
+    STRING = 5
 
 
 class Symbol(Enum):
@@ -30,6 +31,8 @@ class Symbol(Enum):
     THEN = 139
     VAR = 140
     WHILE = 141
+    #FOR = 142
+    #ELSE = 143
 
 class Morphem():
 
@@ -50,6 +53,10 @@ class Morphem():
     def setSymbol(self,value):
         self.value = value
         self.code = MorphemCode.SYMBOL
+
+    def setString(self, value):
+        self.value = value
+        self.code = MorphemCode.STRING
 
     def __str__(self):
 
@@ -72,6 +79,9 @@ class PL0Lexer():
     #    6   | '>'
     #    7   | Control Chars
     #    8   | First letter of a valid keyword
+    #    9   | '"'
+    #   10   | '/'
+    #   11   | '*'
 
     stateMat = []
 
@@ -86,10 +96,12 @@ class PL0Lexer():
         self.cols = 1
 
         self.charVector = [
-            # 0 1  2  3  4  5  6  7  8  10  A  B  C  D  E  F
+        #   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
             7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,  # /* 0*/
             7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,  # /*10*/
-            7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # /*20*/
+        #         "                       *              /             
+            7, 0, 9, 0, 0, 0, 0, 0, 0, 0,11, 0, 0, 0, 0,10,  # /*20*/
+        #                                 :     <  =  >
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 0, 5, 4, 6, 0,  # /*30*/
         #      A  B  C  D  E  F  G  H  I  J  K  L  M  N  O
             0, 2, 8, 8, 8, 8, 2, 2, 2, 8, 2, 2, 2, 2, 2, 8,  # /*40*/
@@ -106,21 +118,31 @@ class PL0Lexer():
         SL_ = self.writeRead
         GL_ = self.upperWriteEnd
         L__ = self.read
+        RL_ = self.rewindRead
+        RB_ = self.rewindEnd
         B__ = self.end
         
         # Build up state Matrix
         self.stateMat = [
-            #  0 So       1 Zi       2 Bu       3 ':'      4 '='      5 '<'      6 '>'      7 Inv.     8 Keyword Beginning
-            [(10, SLB), ( 1, SL_), ( 2, GL_), ( 3, SL_), (10, SLB), ( 4, SL_), ( 5, SL_), ( 0, L__), ( 9, GL_)],  # 0 // Tabs/Whitespaces
-            [(10, B__), ( 1, SL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 1 // Number
-            [(10, B__), ( 2, SL_), ( 2, GL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), ( 2, GL_)],  # 2 // Ident
-            [(10, B__), (10, B__), (10, B__), (10, B__), ( 6, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 3 // :
-            [(10, B__), (10, B__), (10, B__), (10, B__), ( 7, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 4 // <
-            [(10, B__), (10, B__), (10, B__), (10, B__), ( 8, SL_), (10, B__), (10, B__), (10, B__), (10, B__)],  # 5 // >
-            [(10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 6 // :=
-            [(10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 7 // <=
-            [(10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__)],  # 8 // >=
-            [(10, B__), ( 2, SL_), ( 9, GL_), (10, B__), (10, B__), (10, B__), (10, B__), (10, B__), ( 9, GL_)]   # 9 // Potential Keyword
+            #  0 So       1 Zi       2 Bu       3 ':'      4 '='      5 '<'      6 '>'      7 Inv.     8 KB       9 '"'    10 /      11 *
+            [(16, SLB), ( 1, SL_), ( 2, GL_), ( 3, SL_), (16, SLB), ( 4, SL_), ( 5, SL_), ( 0, L__), ( 9, GL_), (14,RL_), (10,SL_), (16,SLB)],  # 0 // Tabs/Whitespaces
+            [(16, B__), ( 1, SL_), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (16,B__)],  # 1 // Number
+            [(16, B__), ( 2, SL_), ( 2, GL_), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), ( 2, GL_), (16,B__), (16,B__), (16,B__)],  # 2 // Ident
+            [(16, B__), (16, B__), (16, B__), (16, B__), ( 6, SL_), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (16,B__)],  # 3 // :
+            [(16, B__), (16, B__), (16, B__), (16, B__), ( 7, SL_), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (16,B__)],  # 4 // <
+            [(16, B__), (16, B__), (16, B__), (16, B__), ( 8, SL_), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (16,B__)],  # 5 // >
+            [(16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (16,B__)],  # 6 // :=
+            [(16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (16,B__)],  # 7 // <=
+            [(16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (16,B__)],  # 8 // >=
+            [(16, B__), ( 2, SL_), ( 9, GL_), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), ( 9, GL_), (16,B__), (16,B__), (16,B__)],  # 9 // Potential Keyword
+
+            [(16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16,SLB), (16,SLB), (11,RL_)],  #10 // '/'
+            [(11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11,L__), (11,L__), (12,L__)],  #11 // '/*'
+            [(11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11,L__), (13,L__), (11,L__)],  #12 // '/*...|*'
+            [( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0,L__), ( 0,L__), ( 0,L__)],  #13 // '/*...*/'
+
+            [(14, SL_), (14, SL_), (14, SL_), (14, SL_), (14, SL_), (14, SL_), (14, SL_), (14, SL_), (14, SL_), (15,SL_), (14,SL_), (14,SL_)],  #14 // '"'
+            [(16, RB_), (16, RB_), (16, RB_), (16, RB_), (16, RB_), (16, RB_), (16, RB_), (16, RB_), (16, RB_), (14,SL_), (16,RB_), (16,RB_)],  #15 // '"..."'
         ]
 
         # Read first char to give Lexer a one char look-ahead
@@ -135,7 +157,7 @@ class PL0Lexer():
         if self.currentChar == "":
             return self.morphem
 
-        while self.currentState != 10:
+        while self.currentState != 16:
 
             # Check if EOF is reached but current state is not 10
             # If there is an untokenized string -> call end without automaton table
@@ -151,12 +173,13 @@ class PL0Lexer():
                     self.controlSymbolsToString(self.currentChar), ord(self.currentChar), len(self.charVector)))
 
             charClass = self.charVector[cvIndex]
-            if charClass > 8:
-                logging.error("Char Class Index '{}' out of range. There are only 8 classes.".format(charClass))
+            if charClass > 11:
+                logging.error("Char Class Index '{}' out of range. There are only 11 classes.".format(charClass))
 
-            if self.currentState > 10:
-                logging.error("Invalid State '{}'. There are only 10 states.".format(self.currentState))
+            if self.currentState > 16:
+                logging.error("Invalid State '{}'. There are only 16 states.".format(self.currentState))
 
+            #print("State: {}, charClass: {}".format(self.currentState, charClass))
             action = self.stateMat[self.currentState][charClass]
             action[1]()
 
@@ -201,13 +224,27 @@ class PL0Lexer():
         self.writeRead()
         self.end()
 
+    # Rewind, Lesen
+    def rewindRead(self):
+        self.rewind()
+        self.read()
+
+    # Rewind, Beenden
+    def rewindEnd(self):
+        self.rewind()
+        self.end()
+
+    # Rewind (Delete last char)
+    def rewind(self):
+        self.outBuffer = self.outBuffer[:-1] 
+
     # Beenden
     def end(self):
 
         # Subtract the length of the character-interpretation
         # of the value in order to get correct line/column values
         # for debugging (especially inside the parser)
-        # But only if are not in the final state 9
+        # But only if are not in the final state 16
         self.morphem.lines = self.lines
         self.morphem.cols = self.cols - len(str(self.outBuffer))
 
@@ -243,6 +280,10 @@ class PL0Lexer():
                     break
             else:
                 self.morphem.setIdentifier(self.outBuffer)
+
+        # Comment -> Ignore
+        elif self.currentState == 15:
+            self.morphem.setString(self.outBuffer)
         else:
             logging.error("Unknown State '{}'".format(self.currentState))
 
