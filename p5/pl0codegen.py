@@ -100,6 +100,8 @@ class PL0CodeGen:
         for c in str:
             self.__appendByte__(ord(c))
 
+        self.__appendByte__(0)
+
         return True
 
     def writeCommand(self,vmcode, args=[]):
