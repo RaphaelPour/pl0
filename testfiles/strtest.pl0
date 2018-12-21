@@ -1,8 +1,13 @@
-var a,fac;
+var a,b;
 Procedure p1;
  /* Test-Procedur */
  begin
-    !"HELLO"
+    !"Eingabe Summand 1:";
+    ?a;
+    !"Eingabe Summand 2:";
+    ?b;
+    !"Ergebnis:";
+    !a+b
  end;
 
 call p1.

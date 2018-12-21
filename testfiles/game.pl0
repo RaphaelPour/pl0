@@ -1,0 +1,61 @@
+/*
+ * Number-Guessing Game
+ *
+ * 1) Enter random seed (we don't have a random function)
+ * 2) Happy guessing!
+ */
+CONST MAXTRIES=5;
+VAR in,goal,done,tries;
+PROCEDURE calculateGoal;
+BEGIN
+   goal := (in*3)+2;
+   IF goal < 0 THEN goal := -goal
+END;
+PROCEDURE main;
+BEGIN
+   done:=0;
+   tries:=0;
+   !"       GUESS";
+   !"           THE";
+   !"             NUMBER";
+   !"Enter random number:";
+   ?in;
+   CALL calculateGoal;
+   WHILE done = 0 DO
+   BEGIN
+       !"Your guess:";
+       ?in;
+       IF in = goal THEN
+       BEGIN
+           !"You won!";
+           done := 1
+       END;
+
+       IF in>goal THEN
+       BEGIN
+           !"Smaller!";
+           tries := tries+1
+       END;
+
+       IF in<goal THEN
+       BEGIN
+           !"Larger!";
+           tries := tries+1
+       END;
+
+       IF tries < MAXTRIES THEN
+       BEGIN
+           !"Tries left:";
+           !MAXTRIES-tries
+       END;
+
+       IF tries = MAXTRIES THEN
+       BEGIN
+           !"No tries left...";
+           !"   G A M E";
+           !"    O V E R";
+           done := 1
+       END
+   END
+END;
+CALL main.
