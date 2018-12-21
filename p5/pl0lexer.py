@@ -31,7 +31,7 @@ class Symbol(Enum):
     THEN = 139
     VAR = 140
     WHILE = 141
-    #FOR = 142
+    FOR = 142
     #ELSE = 143
 
 class Morphem():
@@ -104,7 +104,7 @@ class PL0Lexer():
         #                                 :     <  =  >
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 0, 5, 4, 6, 0,  # /*30*/
         #      A  B  C  D  E  F  G  H  I  J  K  L  M  N  O
-            0, 2, 8, 8, 8, 8, 2, 2, 2, 8, 2, 2, 2, 2, 2, 8,  # /*40*/
+            0, 2, 8, 8, 8, 8, 8, 2, 2, 8, 2, 2, 2, 2, 2, 8,  # /*40*/
         #   P  Q  R  S  T  U  V  W  Y  Y  Z  
             8, 2, 2, 2, 8, 2, 8, 8, 2, 2, 2, 0, 0, 0, 0, 0,  # /*50*/
         #      a  b  c  d  e  f  g  h  i  j  k  l  m  n  o

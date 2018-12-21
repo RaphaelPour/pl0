@@ -31,6 +31,9 @@ class NonTerminal(Enum):
     INPUT_STATEMENT = 17
     OUTPUT_STATEMENT = 18
 
+    # Compiler Extension
+    FOR_STATEMENT = 19
+
 
 class EdgeType(Enum):
     NIL______ = 0
@@ -132,6 +135,13 @@ class PL0Parser():
         FA1 = self.factorPushNumber
         FA2 = self.factorPushIdent
 
+        # Language Extension
+        # For loop
+        FOR1 = self.forBeforeCondition
+        FOR2 = self.forBeforeIncrement
+        FOR3 = self.forAfterIncrement
+        FOR4 = self.forAfterStatement
+
         # Init Syntax rules
 
         # Short identifier for edge definition
@@ -154,6 +164,9 @@ class PL0Parser():
         PRCC = NonTerminal.PROCEDURE_CALL
         INST = NonTerminal.INPUT_STATEMENT
         OUTS = NonTerminal.OUTPUT_STATEMENT
+
+        # Language Extension
+        FORS = NonTerminal.FOR_STATEMENT
 
         programEdges = [
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 1, 0, PROG),  # 0
@@ -299,21 +312,23 @@ class PL0Parser():
         ]
 
         statementEdges = [
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.ASSIGNMENT_STATEMENT, None, 7, 1, STAT),    # 0
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.ASSIGNMENT_STATEMENT, None, 8, 1, STAT),    # 0
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITIONAL_STATEMENT, None, 7, 2, STAT),   # 1
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITIONAL_STATEMENT, None, 8, 2, STAT),   # 1
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.LOOP_STATEMENT, None, 7, 3, STAT),          # 2
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.LOOP_STATEMENT, None, 8, 3, STAT),          # 2
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.COMPOUND_STATEMENT, None, 7, 4,  STAT),     # 3
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.COMPOUND_STATEMENT, None, 8, 4,  STAT),     # 3
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.PROCEDURE_CALL, None,  7, 5, STAT),         # 4
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.PROCEDURE_CALL, None,  8, 5, STAT),         # 4
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.INPUT_STATEMENT, None, 7, 6, STAT),         # 5
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.INPUT_STATEMENT, None, 8, 6, STAT),         # 5
 
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT, None, 7, 0, STAT),        # 6
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT, None, 8, 7, STAT),        # 6
 
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, STAT)                                    # 7
+            Edge(EdgeType.SUBGRAPH_,NonTerminal.FOR_STATEMENT,None,8,0,STAT),                # 7 
+
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, STAT)                                    # 8
         ]
 
         termEdges = [
@@ -354,30 +369,46 @@ class PL0Parser():
             Edge(EdgeType.SUBGRAPH_, EXPR, CO8, 10, 0, COND),  # 9
 
             # End
-            Edge(EdgeType.GRAPH_END, None, None,
-                 0, 0, COND)                   # 10
+            Edge(EdgeType.GRAPH_END, None, None, 0, 0, COND)                   # 10
+        ]
+
+
+        forEdges = [
+            Edge(EdgeType.SYMBOL___, Symbol.FOR, None, 1,0,FORS),   # 0
+            Edge(EdgeType.SYMBOL___, '(', None, 2,0,FORS),          # 1
+            Edge(EdgeType.SUBGRAPH_,ASSS,None, 3,0,FORS),           # 2
+            Edge(EdgeType.SYMBOL___,';',FOR1, 4,0,FORS),            # 3
+            Edge(EdgeType.SUBGRAPH_,COND,FOR2,5,0,FORS),            # 4
+            Edge(EdgeType.SYMBOL___,';',None,6,0,FORS),             # 5
+            Edge(EdgeType.SUBGRAPH_,ASSS,FOR3,7,0,FORS),            # 6
+            Edge(EdgeType.SYMBOL___,')', None, 8,0,FORS),           # 7
+            Edge(EdgeType.SUBGRAPH_,STAT,FOR4, 9,0,FORS),           # 8
+            Edge(EdgeType.GRAPH_END,None,None,0,0,FORS)             # 9
         ]
 
         self.edges = {
-            PROG: programEdges,  # 0
-            BLCK: blockEdges,  # 1
-            EXPR: expressionEdges,  # 2
-            TERM: termEdges,  # 3
-            STAT: statementEdges,  # 4
-            FACT: factorEdges,  # 5
-            COND: conditionEdges,  # 6
-            CLST: constListEdges,  # 7
-            CNST: constDeclarationEdges,  # 8
-            VLST: varListEdges,  # 9
+            PROG: programEdges,         # 0
+            BLCK: blockEdges,           # 1
+            EXPR: expressionEdges,      # 2
+            TERM: termEdges,            # 3
+            STAT: statementEdges,       # 4
+            FACT: factorEdges,          # 5
+            COND: conditionEdges,       # 6
+            CLST: constListEdges,       # 7
+            CNST: constDeclarationEdges,# 8
+            VLST: varListEdges,         # 9
             VARD: varDeclarationEdges,  # 10
-            PROC: procDeclatationEdges,  # 11
+            PROC: procDeclatationEdges, # 11
             ASSS: assignmentEdges,      # 12
             CNDS: conditionalEdges,     # 13
             LOOP: loopEdges,            # 14
             COMP: compoundEdges,        # 15
             PRCC: procedureCallEdges,   # 16
             INST: inputEdges,           # 17
-            OUTS: outputEdges           # 18
+            OUTS: outputEdges,          # 18
+
+            # Language Extension
+            FORS: forEdges              # 19
         }
 
         # Init Lexer
@@ -482,9 +513,10 @@ class PL0Parser():
                 if edge.alternative != 0:
                     edge = self.edges[edge.nonterminal][edge.alternative]
                 elif morphemProcessed:
-                    logging.error("[Parser] Syntax Error near {}:{}".format(
+                    logging.error("[Parser] Syntax Error near {}:{}: {}".format(
                         self.lexer.morphem.lines,
-                        self.lexer.morphem.cols))
+                        self.lexer.morphem.cols,
+                        self.lexer.morphem.value))
 
                     errorEdge = {
                         'value': "ERROR",
@@ -934,6 +966,46 @@ class PL0Parser():
             # Global scope Variable
             args.append(ident.parent.index)
             return self.codeGen.writeCommand(VMCode.PUSH_VALUE_VAR_GLOBAL,args)
+
+
+    # Language Extension
+    # Also known as FOR1
+    def forBeforeCondition(self):
+        self.codeGen.pushLabel()
+        return True
+        
+    # Also known as FOR2
+    def  forBeforeIncrement(self):
+
+        self.codeGen.pushLabel()
+        if not self.codeGen.writeCommand(VMCode.JMP_NOT,[0]):
+            return False
+
+        self.codeGen.recordCode()
+        return True
+
+    # Also known as FOR3
+    def  forAfterIncrement(self):
+        self.codeGen.stopRecordingCode()
+        
+        return True
+
+    # Also known as FOR4
+    def  forAfterStatement(self):
+        self.codeGen.popRecordedCode()
+        
+        # Add jump pointing to the condition of the current while loop
+        jmpNotRelAddr = self.codeGen.popLabel()
+        conditionRelAddr = self.codeGen.popLabel()
+
+        # Add jump to the condition, add 3 bytes for the jump command itself
+        args1 = [ -conditionRelAddr.distance -3]
+        if not self.codeGen.writeCommand(VMCode.JMP, args1):
+            return False
+
+        # Correct address of the JmpNot of the While-Condition
+        return self.codeGen.correctJmp(label=jmpNotRelAddr)
+        
 
 if __name__ == "__main__":
 

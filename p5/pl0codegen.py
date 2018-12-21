@@ -56,6 +56,10 @@ class CGLabel:
 class PL0CodeGen:
 
     def __init__(self, outputFilename):
+        # For delayed subgraph
+        self.codeCache = []
+        self.delayedSubgraph = False
+
         self.outputFilename = outputFilename
         self.outputFile = open(self.outputFilename, "wb+")
         self.outputBuffer = bytearray()
@@ -69,22 +73,32 @@ class PL0CodeGen:
         self.labels = []
         self.delayedCommands = []
 
+
     def __appendByte__(self,value):
-        self.outputBuffer += (struct.pack("<B",value))
+        self.__write__(struct.pack("<B",value))
 
     def __frontInsertByte__(self,value):
-        self.outputBuffer.insert(0,struct.pack("<B",value))
+        if self.delayedSubgraph:
+            self.codeCache[-1].insert(0,struct.pack("<B",value))
+        else:
+            self.outputBuffer.insert(0,struct.pack("<B",value))
         
     def __append2Bytes__(self,value):
         if(value < 0):
-            self.outputBuffer += (struct.pack("<h",value))
+            self.__write__(struct.pack("<h",value))
         else:
             # Write value as 2-byte little-endian to the buffer
-            self.outputBuffer += (struct.pack("<H",value))
+            self.__write__(struct.pack("<H",value))
 
     def __append4Bytes__(self, value):
         # Write value as 4-byte little-endian to the buffer
-        self.outputBuffer += (struct.pack("<L",value))
+        self.__write__(struct.pack("<L",value))
+
+    def __write__(self,value):
+        if self.delayedSubgraph:
+            self.codeCache[-1] += value
+        else:
+            self.outputBuffer += value
 
     def writeConstList(self, constList):
 
@@ -153,6 +167,16 @@ class PL0CodeGen:
         self.outputBuffer[2] = b[1]
 
         return True
+
+    def recordCode(self):
+        self.delayedSubgraph = True
+        self.codeCache.append(bytearray())
+
+    def stopRecordingCode(self):
+        self.delayedSubgraph = False
+
+    def popRecordedCode(self):
+        self.outputBuffer.extend(self.codeCache.pop())
 
     def pushDelayedCommand(self,vmcode, args=[]):
         self.delayedCommands.append((vmcode, args))

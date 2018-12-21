@@ -1,0 +1,78 @@
+<PROGRAM>
+  <BLOCK>
+    <VARIABLE_LIST>
+      <TERMINAL line='1' col='1'>Symbol.VAR</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='5'>A</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='6'>;</TERMINAL>
+    </VARIABLE_LIST>
+    <STATEMENT>
+      <FOR_STATEMENT>
+        <TERMINAL line='2' col='1'>Symbol.FOR</TERMINAL>
+        <TERMINAL line='2' col='4'>(</TERMINAL>
+        <ASSIGNMENT_STATEMENT>
+          <TERMINAL line='2' col='5'>A</TERMINAL>
+          <TERMINAL line='2' col='6'>Symbol.ASSIGN</TERMINAL>
+          <EXPRESSION>
+            <TERM>
+              <FACTOR>
+                <TERMINAL line='2' col='8'>0.0</TERMINAL>
+              </FACTOR>
+            </TERM>
+          </EXPRESSION>
+        </ASSIGNMENT_STATEMENT>
+        <TERMINAL line='2' col='9'>;</TERMINAL>
+        <CONDITION>
+          <EXPRESSION>
+            <TERM>
+              <FACTOR>
+                <TERMINAL line='2' col='10'>A</TERMINAL>
+              </FACTOR>
+            </TERM>
+          </EXPRESSION>
+          <TERMINAL line='2' col='11'><</TERMINAL>
+          <EXPRESSION>
+            <TERM>
+              <FACTOR>
+                <TERMINAL line='2' col='12'>10.0</TERMINAL>
+              </FACTOR>
+            </TERM>
+          </EXPRESSION>
+        </CONDITION>
+        <TERMINAL line='2' col='14'>;</TERMINAL>
+        <ASSIGNMENT_STATEMENT>
+          <TERMINAL line='2' col='15'>A</TERMINAL>
+          <TERMINAL line='2' col='16'>Symbol.ASSIGN</TERMINAL>
+          <EXPRESSION>
+            <TERM>
+              <FACTOR>
+                <TERMINAL line='2' col='18'>A</TERMINAL>
+              </FACTOR>
+            </TERM>
+            <TERMINAL line='2' col='19'>+</TERMINAL>
+            <TERM>
+              <FACTOR>
+                <TERMINAL line='2' col='20'>1.0</TERMINAL>
+              </FACTOR>
+            </TERM>
+          </EXPRESSION>
+        </ASSIGNMENT_STATEMENT>
+        <TERMINAL line='2' col='21'>)</TERMINAL>
+        <STATEMENT>
+          <OUTPUT_STATEMENT>
+            <TERMINAL line='3' col='9'>!</TERMINAL>
+            <EXPRESSION>
+              <TERM>
+                <FACTOR>
+                  <TERMINAL line='3' col='10'>A</TERMINAL>
+                </FACTOR>
+              </TERM>
+            </EXPRESSION>
+          </OUTPUT_STATEMENT>
+        </STATEMENT>
+      </FOR_STATEMENT>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='3' col='11'>.</TERMINAL>
+</PROGRAM>
