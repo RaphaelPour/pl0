@@ -6,7 +6,7 @@ from pl0namelist import PL0NameList,NLIdent,NLConst,NLProc,NLVar
 class TestPL0Parser(unittest.TestCase):
 
     def setUp(self):
-        self.testFileFolder = "../testfiles"
+        self.testFileFolder = "testfiles"
 
     # Constant Tests
     def test_addConst(self):

@@ -8,7 +8,7 @@ from pl0lexer import Symbol
 class TestPL0Parser(unittest.TestCase):
 
     def setUp(self):
-        self.testFileFolder = "../testfiles"
+        self.testFileFolder = "testfiles"
 
     def test_instance(self):
         inputFile = os.path.join(self.testFileFolder, "tx.pl0")
