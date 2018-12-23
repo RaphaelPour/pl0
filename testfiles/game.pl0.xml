@@ -1,0 +1,523 @@
+<PROGRAM>
+  <BLOCK>
+    <CONSTANT_LIST>
+      <TERMINAL line='1' col='2'>Symbol.CONST</TERMINAL>
+      <CONSTANT_DECLARATION>
+        <TERMINAL line='1' col='8'>MAXTRIES</TERMINAL>
+        <TERMINAL line='1' col='16'>=</TERMINAL>
+        <TERMINAL line='1' col='17'>5.0</TERMINAL>
+      </CONSTANT_DECLARATION>
+      <TERMINAL line='1' col='18'>;</TERMINAL>
+    </CONSTANT_LIST>
+    <VARIABLE_LIST>
+      <TERMINAL line='2' col='2'>Symbol.VAR</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='2' col='6'>IN</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='2' col='8'>,</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='2' col='9'>GOAL</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='2' col='13'>,</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='2' col='14'>DONE</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='2' col='18'>,</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='2' col='19'>TRIES</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='2' col='24'>;</TERMINAL>
+    </VARIABLE_LIST>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='3' col='2'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='3' col='12'>CALCULATEGOAL</TERMINAL>
+      <TERMINAL line='3' col='25'>;</TERMINAL>
+      <BLOCK>
+        <STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='4' col='2'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <ASSIGNMENT_STATEMENT>
+                <TERMINAL line='5' col='5'>GOAL</TERMINAL>
+                <TERMINAL line='5' col='10'>Symbol.ASSIGN</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='5' col='13'>(</TERMINAL>
+                      <EXPRESSION>
+                        <TERM>
+                          <FACTOR>
+                            <TERMINAL line='5' col='14'>IN</TERMINAL>
+                          </FACTOR>
+                          <TERMINAL line='5' col='16'>*</TERMINAL>
+                          <FACTOR>
+                            <TERMINAL line='5' col='17'>3.0</TERMINAL>
+                          </FACTOR>
+                        </TERM>
+                      </EXPRESSION>
+                      <TERMINAL line='5' col='18'>)</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                  <TERMINAL line='5' col='19'>+</TERMINAL>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='5' col='20'>2.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </ASSIGNMENT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='5' col='21'>;</TERMINAL>
+            <STATEMENT>
+              <CONDITIONAL_STATEMENT>
+                <TERMINAL line='6' col='5'>Symbol.IF</TERMINAL>
+                <CONDITION>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='6' col='8'>GOAL</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                  <TERMINAL line='6' col='13'><</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='6' col='15'>0.0</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </CONDITION>
+                <TERMINAL line='6' col='17'>Symbol.THEN</TERMINAL>
+                <STATEMENT>
+                  <ASSIGNMENT_STATEMENT>
+                    <TERMINAL line='6' col='22'>GOAL</TERMINAL>
+                    <TERMINAL line='6' col='27'>Symbol.ASSIGN</TERMINAL>
+                    <EXPRESSION>
+                      <TERMINAL line='6' col='30'>-</TERMINAL>
+                      <TERM>
+                        <FACTOR>
+                          <TERMINAL line='6' col='31'>GOAL</TERMINAL>
+                        </FACTOR>
+                      </TERM>
+                    </EXPRESSION>
+                  </ASSIGNMENT_STATEMENT>
+                </STATEMENT>
+              </CONDITIONAL_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='7' col='2'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='7' col='5'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='8' col='2'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='8' col='12'>MAIN</TERMINAL>
+      <TERMINAL line='8' col='16'>;</TERMINAL>
+      <BLOCK>
+        <STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='9' col='2'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <ASSIGNMENT_STATEMENT>
+                <TERMINAL line='10' col='5'>DONE</TERMINAL>
+                <TERMINAL line='10' col='9'>Symbol.ASSIGN</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='10' col='11'>0.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </ASSIGNMENT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='10' col='12'>;</TERMINAL>
+            <STATEMENT>
+              <ASSIGNMENT_STATEMENT>
+                <TERMINAL line='11' col='5'>TRIES</TERMINAL>
+                <TERMINAL line='11' col='10'>Symbol.ASSIGN</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='11' col='12'>0.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </ASSIGNMENT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='11' col='13'>;</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='12' col='5'>!</TERMINAL>
+                <TERMINAL line='12' col='8'>       GUESS</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='12' col='20'>;</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='13' col='5'>!</TERMINAL>
+                <TERMINAL line='13' col='8'>           THE</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='13' col='22'>;</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='14' col='5'>!</TERMINAL>
+                <TERMINAL line='14' col='8'>             NUMBER</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='14' col='27'>;</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='15' col='5'>!</TERMINAL>
+                <TERMINAL line='15' col='8'>Enter random number:</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='15' col='28'>;</TERMINAL>
+            <STATEMENT>
+              <INPUT_STATEMENT>
+                <TERMINAL line='16' col='5'>?</TERMINAL>
+                <TERMINAL line='16' col='6'>IN</TERMINAL>
+              </INPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='16' col='8'>;</TERMINAL>
+            <STATEMENT>
+              <PROCEDURE_CALL>
+                <TERMINAL line='17' col='5'>Symbol.CALL</TERMINAL>
+                <TERMINAL line='17' col='10'>CALCULATEGOAL</TERMINAL>
+              </PROCEDURE_CALL>
+            </STATEMENT>
+            <TERMINAL line='17' col='23'>;</TERMINAL>
+            <STATEMENT>
+              <LOOP_STATEMENT>
+                <TERMINAL line='18' col='5'>Symbol.WHILE</TERMINAL>
+                <CONDITION>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='18' col='11'>DONE</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                  <TERMINAL line='18' col='16'>=</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='18' col='18'>0.0</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </CONDITION>
+                <TERMINAL line='18' col='20'>Symbol.DO</TERMINAL>
+                <STATEMENT>
+                  <COMPOUND_STATEMENT>
+                    <TERMINAL line='19' col='5'>Symbol.BEGIN</TERMINAL>
+                    <STATEMENT>
+                      <OUTPUT_STATEMENT>
+                        <TERMINAL line='20' col='9'>!</TERMINAL>
+                        <TERMINAL line='20' col='12'>Your guess:</TERMINAL>
+                      </OUTPUT_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='20' col='23'>;</TERMINAL>
+                    <STATEMENT>
+                      <INPUT_STATEMENT>
+                        <TERMINAL line='21' col='9'>?</TERMINAL>
+                        <TERMINAL line='21' col='10'>IN</TERMINAL>
+                      </INPUT_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='21' col='12'>;</TERMINAL>
+                    <STATEMENT>
+                      <CONDITIONAL_STATEMENT>
+                        <TERMINAL line='22' col='9'>Symbol.IF</TERMINAL>
+                        <CONDITION>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='22' col='12'>IN</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                          <TERMINAL line='22' col='15'>=</TERMINAL>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='22' col='17'>GOAL</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                        </CONDITION>
+                        <TERMINAL line='22' col='22'>Symbol.THEN</TERMINAL>
+                        <STATEMENT>
+                          <COMPOUND_STATEMENT>
+                            <TERMINAL line='23' col='9'>Symbol.BEGIN</TERMINAL>
+                            <STATEMENT>
+                              <OUTPUT_STATEMENT>
+                                <TERMINAL line='24' col='13'>!</TERMINAL>
+                                <TERMINAL line='24' col='16'>You won!</TERMINAL>
+                              </OUTPUT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='24' col='24'>;</TERMINAL>
+                            <STATEMENT>
+                              <ASSIGNMENT_STATEMENT>
+                                <TERMINAL line='25' col='13'>DONE</TERMINAL>
+                                <TERMINAL line='25' col='18'>Symbol.ASSIGN</TERMINAL>
+                                <EXPRESSION>
+                                  <TERM>
+                                    <FACTOR>
+                                      <TERMINAL line='25' col='21'>1.0</TERMINAL>
+                                    </FACTOR>
+                                  </TERM>
+                                </EXPRESSION>
+                              </ASSIGNMENT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='26' col='9'>Symbol.END</TERMINAL>
+                          </COMPOUND_STATEMENT>
+                        </STATEMENT>
+                      </CONDITIONAL_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='26' col='12'>;</TERMINAL>
+                    <STATEMENT>
+                      <CONDITIONAL_STATEMENT>
+                        <TERMINAL line='28' col='9'>Symbol.IF</TERMINAL>
+                        <CONDITION>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='28' col='12'>IN</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                          <TERMINAL line='28' col='14'>></TERMINAL>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='28' col='15'>GOAL</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                        </CONDITION>
+                        <TERMINAL line='28' col='20'>Symbol.THEN</TERMINAL>
+                        <STATEMENT>
+                          <COMPOUND_STATEMENT>
+                            <TERMINAL line='29' col='9'>Symbol.BEGIN</TERMINAL>
+                            <STATEMENT>
+                              <OUTPUT_STATEMENT>
+                                <TERMINAL line='30' col='13'>!</TERMINAL>
+                                <TERMINAL line='30' col='16'>Smaller!</TERMINAL>
+                              </OUTPUT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='30' col='24'>;</TERMINAL>
+                            <STATEMENT>
+                              <ASSIGNMENT_STATEMENT>
+                                <TERMINAL line='31' col='13'>TRIES</TERMINAL>
+                                <TERMINAL line='31' col='19'>Symbol.ASSIGN</TERMINAL>
+                                <EXPRESSION>
+                                  <TERM>
+                                    <FACTOR>
+                                      <TERMINAL line='31' col='22'>TRIES</TERMINAL>
+                                    </FACTOR>
+                                  </TERM>
+                                  <TERMINAL line='31' col='27'>+</TERMINAL>
+                                  <TERM>
+                                    <FACTOR>
+                                      <TERMINAL line='31' col='28'>1.0</TERMINAL>
+                                    </FACTOR>
+                                  </TERM>
+                                </EXPRESSION>
+                              </ASSIGNMENT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='32' col='9'>Symbol.END</TERMINAL>
+                          </COMPOUND_STATEMENT>
+                        </STATEMENT>
+                      </CONDITIONAL_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='32' col='12'>;</TERMINAL>
+                    <STATEMENT>
+                      <CONDITIONAL_STATEMENT>
+                        <TERMINAL line='34' col='9'>Symbol.IF</TERMINAL>
+                        <CONDITION>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='34' col='12'>IN</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                          <TERMINAL line='34' col='14'><</TERMINAL>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='34' col='15'>GOAL</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                        </CONDITION>
+                        <TERMINAL line='34' col='20'>Symbol.THEN</TERMINAL>
+                        <STATEMENT>
+                          <COMPOUND_STATEMENT>
+                            <TERMINAL line='35' col='9'>Symbol.BEGIN</TERMINAL>
+                            <STATEMENT>
+                              <OUTPUT_STATEMENT>
+                                <TERMINAL line='36' col='13'>!</TERMINAL>
+                                <TERMINAL line='36' col='16'>Larger!</TERMINAL>
+                              </OUTPUT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='36' col='23'>;</TERMINAL>
+                            <STATEMENT>
+                              <ASSIGNMENT_STATEMENT>
+                                <TERMINAL line='37' col='13'>TRIES</TERMINAL>
+                                <TERMINAL line='37' col='19'>Symbol.ASSIGN</TERMINAL>
+                                <EXPRESSION>
+                                  <TERM>
+                                    <FACTOR>
+                                      <TERMINAL line='37' col='22'>TRIES</TERMINAL>
+                                    </FACTOR>
+                                  </TERM>
+                                  <TERMINAL line='37' col='27'>+</TERMINAL>
+                                  <TERM>
+                                    <FACTOR>
+                                      <TERMINAL line='37' col='28'>1.0</TERMINAL>
+                                    </FACTOR>
+                                  </TERM>
+                                </EXPRESSION>
+                              </ASSIGNMENT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='38' col='9'>Symbol.END</TERMINAL>
+                          </COMPOUND_STATEMENT>
+                        </STATEMENT>
+                      </CONDITIONAL_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='38' col='12'>;</TERMINAL>
+                    <STATEMENT>
+                      <CONDITIONAL_STATEMENT>
+                        <TERMINAL line='40' col='9'>Symbol.IF</TERMINAL>
+                        <CONDITION>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='40' col='12'>TRIES</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                          <TERMINAL line='40' col='18'><</TERMINAL>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='40' col='20'>MAXTRIES</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                        </CONDITION>
+                        <TERMINAL line='40' col='29'>Symbol.THEN</TERMINAL>
+                        <STATEMENT>
+                          <COMPOUND_STATEMENT>
+                            <TERMINAL line='41' col='9'>Symbol.BEGIN</TERMINAL>
+                            <STATEMENT>
+                              <OUTPUT_STATEMENT>
+                                <TERMINAL line='42' col='13'>!</TERMINAL>
+                                <TERMINAL line='42' col='16'>Tries left:</TERMINAL>
+                              </OUTPUT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='42' col='27'>;</TERMINAL>
+                            <STATEMENT>
+                              <OUTPUT_STATEMENT>
+                                <TERMINAL line='43' col='13'>!</TERMINAL>
+                                <EXPRESSION>
+                                  <TERM>
+                                    <FACTOR>
+                                      <TERMINAL line='43' col='14'>TRIES</TERMINAL>
+                                    </FACTOR>
+                                  </TERM>
+                                </EXPRESSION>
+                              </OUTPUT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='44' col='9'>Symbol.END</TERMINAL>
+                          </COMPOUND_STATEMENT>
+                        </STATEMENT>
+                      </CONDITIONAL_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='44' col='12'>;</TERMINAL>
+                    <STATEMENT>
+                      <CONDITIONAL_STATEMENT>
+                        <TERMINAL line='46' col='9'>Symbol.IF</TERMINAL>
+                        <CONDITION>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='46' col='12'>TRIES</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                          <TERMINAL line='46' col='18'>=</TERMINAL>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='46' col='20'>MAXTRIES</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                        </CONDITION>
+                        <TERMINAL line='46' col='29'>Symbol.THEN</TERMINAL>
+                        <STATEMENT>
+                          <COMPOUND_STATEMENT>
+                            <TERMINAL line='47' col='9'>Symbol.BEGIN</TERMINAL>
+                            <STATEMENT>
+                              <OUTPUT_STATEMENT>
+                                <TERMINAL line='48' col='13'>!</TERMINAL>
+                                <TERMINAL line='48' col='16'>No tries left...</TERMINAL>
+                              </OUTPUT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='48' col='32'>;</TERMINAL>
+                            <STATEMENT>
+                              <OUTPUT_STATEMENT>
+                                <TERMINAL line='49' col='13'>!</TERMINAL>
+                                <TERMINAL line='49' col='16'>   G A M E</TERMINAL>
+                              </OUTPUT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='49' col='26'>;</TERMINAL>
+                            <STATEMENT>
+                              <OUTPUT_STATEMENT>
+                                <TERMINAL line='50' col='13'>!</TERMINAL>
+                                <TERMINAL line='50' col='16'>    O V E R</TERMINAL>
+                              </OUTPUT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='50' col='27'>;</TERMINAL>
+                            <STATEMENT>
+                              <ASSIGNMENT_STATEMENT>
+                                <TERMINAL line='51' col='13'>DONE</TERMINAL>
+                                <TERMINAL line='51' col='18'>Symbol.ASSIGN</TERMINAL>
+                                <EXPRESSION>
+                                  <TERM>
+                                    <FACTOR>
+                                      <TERMINAL line='51' col='21'>1.0</TERMINAL>
+                                    </FACTOR>
+                                  </TERM>
+                                </EXPRESSION>
+                              </ASSIGNMENT_STATEMENT>
+                            </STATEMENT>
+                            <TERMINAL line='52' col='9'>Symbol.END</TERMINAL>
+                          </COMPOUND_STATEMENT>
+                        </STATEMENT>
+                      </CONDITIONAL_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='53' col='5'>Symbol.END</TERMINAL>
+                  </COMPOUND_STATEMENT>
+                </STATEMENT>
+              </LOOP_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='54' col='2'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='54' col='5'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <STATEMENT>
+      <PROCEDURE_CALL>
+        <TERMINAL line='55' col='2'>Symbol.CALL</TERMINAL>
+        <TERMINAL line='55' col='7'>MAIN</TERMINAL>
+      </PROCEDURE_CALL>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='55' col='11'>.</TERMINAL>
+</PROGRAM>

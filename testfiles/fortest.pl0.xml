@@ -1,78 +1,308 @@
 <PROGRAM>
   <BLOCK>
+    <CONSTANT_LIST>
+      <TERMINAL line='1' col='1'>Symbol.CONST</TERMINAL>
+      <CONSTANT_DECLARATION>
+        <TERMINAL line='1' col='7'>HEIGHT</TERMINAL>
+        <TERMINAL line='1' col='13'>=</TERMINAL>
+        <TERMINAL line='1' col='14'>5.0</TERMINAL>
+      </CONSTANT_DECLARATION>
+      <TERMINAL line='1' col='15'>;</TERMINAL>
+    </CONSTANT_LIST>
     <VARIABLE_LIST>
-      <TERMINAL line='1' col='1'>Symbol.VAR</TERMINAL>
+      <TERMINAL line='2' col='1'>Symbol.VAR</TERMINAL>
       <VARIABLE_DECLARATION>
-        <TERMINAL line='1' col='5'>A</TERMINAL>
+        <TERMINAL line='2' col='5'>I</TERMINAL>
       </VARIABLE_DECLARATION>
-      <TERMINAL line='1' col='6'>;</TERMINAL>
+      <TERMINAL line='2' col='6'>,</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='2' col='7'>J</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='2' col='8'>;</TERMINAL>
     </VARIABLE_LIST>
-    <STATEMENT>
-      <FOR_STATEMENT>
-        <TERMINAL line='2' col='1'>Symbol.FOR</TERMINAL>
-        <TERMINAL line='2' col='4'>(</TERMINAL>
-        <ASSIGNMENT_STATEMENT>
-          <TERMINAL line='2' col='5'>A</TERMINAL>
-          <TERMINAL line='2' col='6'>Symbol.ASSIGN</TERMINAL>
-          <EXPRESSION>
-            <TERM>
-              <FACTOR>
-                <TERMINAL line='2' col='8'>0.0</TERMINAL>
-              </FACTOR>
-            </TERM>
-          </EXPRESSION>
-        </ASSIGNMENT_STATEMENT>
-        <TERMINAL line='2' col='9'>;</TERMINAL>
-        <CONDITION>
-          <EXPRESSION>
-            <TERM>
-              <FACTOR>
-                <TERMINAL line='2' col='10'>A</TERMINAL>
-              </FACTOR>
-            </TERM>
-          </EXPRESSION>
-          <TERMINAL line='2' col='11'><</TERMINAL>
-          <EXPRESSION>
-            <TERM>
-              <FACTOR>
-                <TERMINAL line='2' col='12'>10.0</TERMINAL>
-              </FACTOR>
-            </TERM>
-          </EXPRESSION>
-        </CONDITION>
-        <TERMINAL line='2' col='14'>;</TERMINAL>
-        <ASSIGNMENT_STATEMENT>
-          <TERMINAL line='2' col='15'>A</TERMINAL>
-          <TERMINAL line='2' col='16'>Symbol.ASSIGN</TERMINAL>
-          <EXPRESSION>
-            <TERM>
-              <FACTOR>
-                <TERMINAL line='2' col='18'>A</TERMINAL>
-              </FACTOR>
-            </TERM>
-            <TERMINAL line='2' col='19'>+</TERMINAL>
-            <TERM>
-              <FACTOR>
-                <TERMINAL line='2' col='20'>1.0</TERMINAL>
-              </FACTOR>
-            </TERM>
-          </EXPRESSION>
-        </ASSIGNMENT_STATEMENT>
-        <TERMINAL line='2' col='21'>)</TERMINAL>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='3' col='1'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='3' col='11'>ONE</TERMINAL>
+      <TERMINAL line='3' col='14'>;</TERMINAL>
+      <BLOCK>
         <STATEMENT>
-          <OUTPUT_STATEMENT>
-            <TERMINAL line='3' col='9'>!</TERMINAL>
-            <EXPRESSION>
-              <TERM>
-                <FACTOR>
-                  <TERMINAL line='3' col='10'>A</TERMINAL>
-                </FACTOR>
-              </TERM>
-            </EXPRESSION>
-          </OUTPUT_STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='4' col='1'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='5' col='5'>!</TERMINAL>
+                <TERMINAL line='5' col='8'>  /|\</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='6' col='1'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
         </STATEMENT>
-      </FOR_STATEMENT>
+      </BLOCK>
+      <TERMINAL line='6' col='4'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='7' col='1'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='7' col='11'>TWO</TERMINAL>
+      <TERMINAL line='7' col='14'>;</TERMINAL>
+      <BLOCK>
+        <STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='8' col='1'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='9' col='5'>!</TERMINAL>
+                <TERMINAL line='9' col='8'> //|\\</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='10' col='1'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='10' col='4'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='11' col='1'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='11' col='11'>THREE</TERMINAL>
+      <TERMINAL line='11' col='16'>;</TERMINAL>
+      <BLOCK>
+        <STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='12' col='1'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='13' col='5'>!</TERMINAL>
+                <TERMINAL line='13' col='8'>///|\\\</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='14' col='1'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='14' col='4'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='15' col='1'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='15' col='11'>MAIN</TERMINAL>
+      <TERMINAL line='15' col='15'>;</TERMINAL>
+      <BLOCK>
+        <STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='16' col='1'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <FOR_STATEMENT>
+                <TERMINAL line='17' col='5'>Symbol.FOR</TERMINAL>
+                <TERMINAL line='17' col='8'>(</TERMINAL>
+                <ASSIGNMENT_STATEMENT>
+                  <TERMINAL line='17' col='9'>I</TERMINAL>
+                  <TERMINAL line='17' col='10'>Symbol.ASSIGN</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='17' col='12'>0.0</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </ASSIGNMENT_STATEMENT>
+                <TERMINAL line='17' col='13'>;</TERMINAL>
+                <CONDITION>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='17' col='14'>I</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                  <TERMINAL line='17' col='15'><</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='17' col='16'>HEIGHT</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </CONDITION>
+                <TERMINAL line='17' col='22'>;</TERMINAL>
+                <ASSIGNMENT_STATEMENT>
+                  <TERMINAL line='17' col='23'>I</TERMINAL>
+                  <TERMINAL line='17' col='24'>Symbol.ASSIGN</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='17' col='26'>I</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                    <TERMINAL line='17' col='27'>+</TERMINAL>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='17' col='28'>1.0</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </ASSIGNMENT_STATEMENT>
+                <TERMINAL line='17' col='29'>)</TERMINAL>
+                <STATEMENT>
+                  <FOR_STATEMENT>
+                    <TERMINAL line='18' col='9'>Symbol.FOR</TERMINAL>
+                    <TERMINAL line='18' col='12'>(</TERMINAL>
+                    <ASSIGNMENT_STATEMENT>
+                      <TERMINAL line='18' col='13'>J</TERMINAL>
+                      <TERMINAL line='18' col='14'>Symbol.ASSIGN</TERMINAL>
+                      <EXPRESSION>
+                        <TERM>
+                          <FACTOR>
+                            <TERMINAL line='18' col='16'>I</TERMINAL>
+                          </FACTOR>
+                        </TERM>
+                      </EXPRESSION>
+                    </ASSIGNMENT_STATEMENT>
+                    <TERMINAL line='18' col='17'>;</TERMINAL>
+                    <CONDITION>
+                      <EXPRESSION>
+                        <TERM>
+                          <FACTOR>
+                            <TERMINAL line='18' col='18'>J</TERMINAL>
+                          </FACTOR>
+                        </TERM>
+                      </EXPRESSION>
+                      <TERMINAL line='18' col='19'><</TERMINAL>
+                      <EXPRESSION>
+                        <TERM>
+                          <FACTOR>
+                            <TERMINAL line='18' col='20'>HEIGHT</TERMINAL>
+                          </FACTOR>
+                        </TERM>
+                      </EXPRESSION>
+                    </CONDITION>
+                    <TERMINAL line='18' col='26'>;</TERMINAL>
+                    <ASSIGNMENT_STATEMENT>
+                      <TERMINAL line='18' col='27'>J</TERMINAL>
+                      <TERMINAL line='18' col='28'>Symbol.ASSIGN</TERMINAL>
+                      <EXPRESSION>
+                        <TERM>
+                          <FACTOR>
+                            <TERMINAL line='18' col='30'>J</TERMINAL>
+                          </FACTOR>
+                        </TERM>
+                        <TERMINAL line='18' col='31'>+</TERMINAL>
+                        <TERM>
+                          <FACTOR>
+                            <TERMINAL line='18' col='32'>1.0</TERMINAL>
+                          </FACTOR>
+                        </TERM>
+                      </EXPRESSION>
+                    </ASSIGNMENT_STATEMENT>
+                    <TERMINAL line='18' col='33'>)</TERMINAL>
+                    <STATEMENT>
+                      <COMPOUND_STATEMENT>
+                        <TERMINAL line='19' col='9'>Symbol.BEGIN</TERMINAL>
+                        <STATEMENT>
+                          <CONDITIONAL_STATEMENT>
+                            <TERMINAL line='20' col='13'>Symbol.IF</TERMINAL>
+                            <CONDITION>
+                              <EXPRESSION>
+                                <TERM>
+                                  <FACTOR>
+                                    <TERMINAL line='20' col='16'>J</TERMINAL>
+                                  </FACTOR>
+                                </TERM>
+                              </EXPRESSION>
+                              <TERMINAL line='20' col='17'><</TERMINAL>
+                              <EXPRESSION>
+                                <TERM>
+                                  <FACTOR>
+                                    <TERMINAL line='20' col='18'>2.0</TERMINAL>
+                                  </FACTOR>
+                                </TERM>
+                              </EXPRESSION>
+                            </CONDITION>
+                            <TERMINAL line='20' col='20'>Symbol.THEN</TERMINAL>
+                            <STATEMENT>
+                              <PROCEDURE_CALL>
+                                <TERMINAL line='20' col='25'>Symbol.CALL</TERMINAL>
+                                <TERMINAL line='20' col='30'>ONE</TERMINAL>
+                              </PROCEDURE_CALL>
+                            </STATEMENT>
+                          </CONDITIONAL_STATEMENT>
+                        </STATEMENT>
+                        <TERMINAL line='20' col='33'>;</TERMINAL>
+                        <STATEMENT>
+                          <CONDITIONAL_STATEMENT>
+                            <TERMINAL line='21' col='13'>Symbol.IF</TERMINAL>
+                            <CONDITION>
+                              <EXPRESSION>
+                                <TERM>
+                                  <FACTOR>
+                                    <TERMINAL line='21' col='16'>J</TERMINAL>
+                                  </FACTOR>
+                                </TERM>
+                              </EXPRESSION>
+                              <TERMINAL line='21' col='17'>></TERMINAL>
+                              <EXPRESSION>
+                                <TERM>
+                                  <FACTOR>
+                                    <TERMINAL line='21' col='18'>2.0</TERMINAL>
+                                  </FACTOR>
+                                </TERM>
+                              </EXPRESSION>
+                            </CONDITION>
+                            <TERMINAL line='21' col='20'>Symbol.THEN</TERMINAL>
+                            <STATEMENT>
+                              <PROCEDURE_CALL>
+                                <TERMINAL line='21' col='25'>Symbol.CALL</TERMINAL>
+                                <TERMINAL line='21' col='30'>TWO</TERMINAL>
+                              </PROCEDURE_CALL>
+                            </STATEMENT>
+                          </CONDITIONAL_STATEMENT>
+                        </STATEMENT>
+                        <TERMINAL line='21' col='33'>;</TERMINAL>
+                        <STATEMENT>
+                          <CONDITIONAL_STATEMENT>
+                            <TERMINAL line='22' col='13'>Symbol.IF</TERMINAL>
+                            <CONDITION>
+                              <EXPRESSION>
+                                <TERM>
+                                  <FACTOR>
+                                    <TERMINAL line='22' col='16'>J</TERMINAL>
+                                  </FACTOR>
+                                </TERM>
+                              </EXPRESSION>
+                              <TERMINAL line='22' col='17'>></TERMINAL>
+                              <EXPRESSION>
+                                <TERM>
+                                  <FACTOR>
+                                    <TERMINAL line='22' col='18'>3.0</TERMINAL>
+                                  </FACTOR>
+                                </TERM>
+                              </EXPRESSION>
+                            </CONDITION>
+                            <TERMINAL line='22' col='20'>Symbol.THEN</TERMINAL>
+                            <STATEMENT>
+                              <PROCEDURE_CALL>
+                                <TERMINAL line='22' col='25'>Symbol.CALL</TERMINAL>
+                                <TERMINAL line='22' col='30'>THREE</TERMINAL>
+                              </PROCEDURE_CALL>
+                            </STATEMENT>
+                          </CONDITIONAL_STATEMENT>
+                        </STATEMENT>
+                        <TERMINAL line='23' col='9'>Symbol.END</TERMINAL>
+                      </COMPOUND_STATEMENT>
+                    </STATEMENT>
+                  </FOR_STATEMENT>
+                </STATEMENT>
+              </FOR_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='24' col='1'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='24' col='4'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <STATEMENT>
+      <PROCEDURE_CALL>
+        <TERMINAL line='25' col='1'>Symbol.CALL</TERMINAL>
+        <TERMINAL line='25' col='6'>MAIN</TERMINAL>
+      </PROCEDURE_CALL>
     </STATEMENT>
   </BLOCK>
-  <TERMINAL line='3' col='11'>.</TERMINAL>
+  <TERMINAL line='25' col='10'>.</TERMINAL>
 </PROGRAM>
