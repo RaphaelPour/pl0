@@ -1,0 +1,11 @@
+<PROGRAM>
+  <BLOCK>
+    <STATEMENT>
+      <OUTPUT_STATEMENT>
+        <TERMINAL line='1' col='1'>!</TERMINAL>
+        <TERMINAL line='1' col='5'>Hello World!</TERMINAL>
+      </OUTPUT_STATEMENT>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='1' col='17'>.</TERMINAL>
+</PROGRAM>

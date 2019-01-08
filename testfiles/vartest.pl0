@@ -1,0 +1,9 @@
+CONST a=5;
+VAR b;
+PROCEDURE main;
+  BEGIN
+    !b;
+    b := a;
+    !b
+  END;
+CALL main.

@@ -1,11 +1,14 @@
+CONST a=5;
+VAR b;
 PROCEDURE sub;
-    PROCEDURE subsub;
     BEGIN
-      !1
+      IF b > 0 THEN CALL sub
+      b := b-1;
+      !b;
     END;
-    CALL subsub;
 PROCEDURE main;
   BEGIN
+    b := a;
     CALL sub
   END;
 CALL main.

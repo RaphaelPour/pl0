@@ -1,25 +1,10 @@
-const height=5;
-var i,j;
-PROCEDURE one;
-BEGIN
-    !"  /|\"
-END;
-PROCEDURE two;
-BEGIN
-    !" //|\\"
-END;
-PROCEDURE three;
-BEGIN
-    !"///|\\\"
-END;
+CONST k=5;
+VAR i,j;
 PROCEDURE main;
 BEGIN
-    FOR(i:=0;i<height;i:=i+1)
-        FOR(j:=i;j<height;j:=j+1)
+    FOR(i:=0;i<k;i:=i+1)
         BEGIN
-            IF j<2 THEN CALL one;
-            IF j>2 THEN CALL two;
-            IF j>3 THEN CALL three
+            !i
         END
 END;
 CALL main.
