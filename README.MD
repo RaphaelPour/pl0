@@ -4,6 +4,13 @@ This Python-based Compiler converts PL/0 source code into CL/0 virtual machine c
 
 This project is the outcome of the Compilerconstruction Module at the HTW Dresden.
 
+## Usage
+
+The compiler runs with Python 3 and can be easily installed via ``git clone`` and executed via ``python3 pl0parser.py <pl0-file>``.
+
+The outcoming virtual machine codefile can be run with the vm of the supervising Professor. The vm can be found [here](http://www.informatik.htw-dresden.de/~beck/Compiler/bin/rlinux) (compiled for linux 32-bit). It can be used like ``./rlinux <cl0-file>``.
+
+
 ## PL0-Features
 
 PL/0 provides a bunch of features such as:
