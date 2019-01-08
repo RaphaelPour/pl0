@@ -76,7 +76,6 @@ END .
 
 ### Define Procedures/ Constants/ Variables
 
-Define nested procedures and call
 ```
 CONST a=5;
 VAR b;
@@ -202,10 +201,10 @@ Due to a lack of time, they couldn't (and maybe will never) be implemented.
 
 ## Bugs
 
-* [x] Conditional Statement error on wrong condition. The jmpnot jumps probably to the wrong address
-* [x] Call doesn't work properly. Check out BL5/BL6
-* [x] Procedure can't access variables of the main programm
+* ~~ Conditional Statement error on wrong condition. The jmpnot jumps probably to the wrong address ~~
+* ~~ Call doesn't work properly. Check out BL5/BL6 ~~
+* ~~ Procedure can't access variables of the main programm ~~
 
 ## License
 
-(C) 2019 Raphael Pour, licensed under GPL v3 (http://www.gnu.de/documents/gpl-3.0.de.html)
+(C) 2019 Raphael Pour, licensed under [GPL v3](http://www.gnu.de/documents/gpl-3.0.de.html)
