@@ -190,14 +190,14 @@ CALL main.
 The following features/additions came up to my mind while developing the compiler.
 Due to a lack of time, they couldn't (and maybe will never) be implemented.
 
-* Procedures with Arguments
+* Procedures with arguments
 * Arrays
 * Include other PL/0 files
 * Types
 * Own VM where with more features (for example more I/O Features to read/write from file/network)
-* Real Executables instead of vm code (implement x86/x64 code generator)
+* Real executables instead of vm code (implement x86/x64 code generator)
 * Switch-Case
-* Break for Loops and Switch-Case
+* Break for loops and Switch-Case
 
 ## Bugs
 
@@ -207,4 +207,4 @@ Due to a lack of time, they couldn't (and maybe will never) be implemented.
 
 ## License
 
-(C) 2019 Raphael Pour, licensed under [GPL v3](http://www.gnu.de/documents/gpl-3.0.de.html)
+(C) 2019 [Raphael Pour](https://raphaelpour.de), licensed under [GPL v3](http://www.gnu.de/documents/gpl-3.0.de.html)
