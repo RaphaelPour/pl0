@@ -1,0 +1,16 @@
+VAR input;
+PROCEDURE main;
+BEGIN
+    !" >>>>>>>>> ODD Tester >>>>>>>>>";
+    !"Input 0 to exit.";
+    !"Input Number:";
+    ?input;
+    WHILE input # 0 DO
+    BEGIN
+        IF ODD input THEN !"ODD"
+        ELSE !"EVEN";
+        !"Input Number:";
+        ?input
+    END
+END;
+CALL main.

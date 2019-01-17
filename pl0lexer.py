@@ -32,7 +32,7 @@ class Symbol(Enum):
     VAR = 140
     WHILE = 141
     FOR = 142
-    #ELSE = 143
+    ELSE = 143
 
 class Morphem():
 

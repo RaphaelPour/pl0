@@ -1,0 +1,132 @@
+<PROGRAM>
+  <BLOCK>
+    <VARIABLE_LIST>
+      <TERMINAL line='1' col='1'>Symbol.VAR</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='5'>INPUT</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='10'>;</TERMINAL>
+    </VARIABLE_LIST>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='2' col='1'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='2' col='11'>MAIN</TERMINAL>
+      <TERMINAL line='2' col='15'>;</TERMINAL>
+      <BLOCK>
+        <STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='3' col='1'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='4' col='5'>!</TERMINAL>
+                <TERMINAL line='4' col='8'> >>>>>>>>> ODD Tester >>>>>>>>></TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='4' col='39'>;</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='5' col='5'>!</TERMINAL>
+                <TERMINAL line='5' col='8'>Input 0 to exit.</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='5' col='24'>;</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='6' col='5'>!</TERMINAL>
+                <TERMINAL line='6' col='8'>Input Number:</TERMINAL>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='6' col='21'>;</TERMINAL>
+            <STATEMENT>
+              <INPUT_STATEMENT>
+                <TERMINAL line='7' col='5'>?</TERMINAL>
+                <TERMINAL line='7' col='6'>INPUT</TERMINAL>
+              </INPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='7' col='11'>;</TERMINAL>
+            <STATEMENT>
+              <LOOP_STATEMENT>
+                <TERMINAL line='8' col='5'>Symbol.WHILE</TERMINAL>
+                <CONDITION>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='8' col='11'>INPUT</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                  <TERMINAL line='8' col='17'>#</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='8' col='19'>0.0</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </CONDITION>
+                <TERMINAL line='8' col='21'>Symbol.DO</TERMINAL>
+                <STATEMENT>
+                  <COMPOUND_STATEMENT>
+                    <TERMINAL line='9' col='5'>Symbol.BEGIN</TERMINAL>
+                    <STATEMENT>
+                      <CONDITIONAL_STATEMENT>
+                        <TERMINAL line='10' col='9'>Symbol.IF</TERMINAL>
+                        <CONDITION>
+                          <TERMINAL line='10' col='12'>Symbol.ODD</TERMINAL>
+                          <EXPRESSION>
+                            <TERM>
+                              <FACTOR>
+                                <TERMINAL line='10' col='16'>INPUT</TERMINAL>
+                              </FACTOR>
+                            </TERM>
+                          </EXPRESSION>
+                        </CONDITION>
+                        <TERMINAL line='10' col='22'>Symbol.THEN</TERMINAL>
+                        <STATEMENT>
+                          <OUTPUT_STATEMENT>
+                            <TERMINAL line='10' col='27'>!</TERMINAL>
+                            <TERMINAL line='10' col='30'>ODD</TERMINAL>
+                          </OUTPUT_STATEMENT>
+                        </STATEMENT>
+                        <TERMINAL line='11' col='9'>Symbol.ELSE</TERMINAL>
+                        <STATEMENT>
+                          <OUTPUT_STATEMENT>
+                            <TERMINAL line='11' col='14'>!</TERMINAL>
+                            <TERMINAL line='11' col='17'>EVEN</TERMINAL>
+                          </OUTPUT_STATEMENT>
+                        </STATEMENT>
+                      </CONDITIONAL_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='11' col='21'>;</TERMINAL>
+                    <STATEMENT>
+                      <OUTPUT_STATEMENT>
+                        <TERMINAL line='12' col='9'>!</TERMINAL>
+                        <TERMINAL line='12' col='12'>Input Number:</TERMINAL>
+                      </OUTPUT_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='12' col='25'>;</TERMINAL>
+                    <STATEMENT>
+                      <INPUT_STATEMENT>
+                        <TERMINAL line='13' col='9'>?</TERMINAL>
+                        <TERMINAL line='13' col='10'>INPUT</TERMINAL>
+                      </INPUT_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='14' col='5'>Symbol.END</TERMINAL>
+                  </COMPOUND_STATEMENT>
+                </STATEMENT>
+              </LOOP_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='15' col='1'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='15' col='4'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <STATEMENT>
+      <PROCEDURE_CALL>
+        <TERMINAL line='16' col='1'>Symbol.CALL</TERMINAL>
+        <TERMINAL line='16' col='6'>MAIN</TERMINAL>
+      </PROCEDURE_CALL>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='16' col='10'>.</TERMINAL>
+</PROGRAM>

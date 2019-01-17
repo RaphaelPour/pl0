@@ -48,7 +48,8 @@ BEGIN
 END.
 ~~~~
 
-### Conditions
+### If
+
 ```
 VAR a,b;
 BEGIN
@@ -65,6 +66,43 @@ BEGIN
 
     IF ODD a THEN !7
 END.
+```
+
+### If-Else
+
+Simple If-Else Odd-Number tester
+```
+VAR input;
+PROCEDURE main;
+BEGIN
+    !" >>>>>>>>> ODD Tester >>>>>>>>>";
+    !"Input 0 to exit.";
+    !"Input Number:";
+    ?input;
+    WHILE input # 0 DO
+    BEGIN
+        IF ODD input THEN !"ODD"
+        ELSE !"EVEN";
+        !"Input Number:";
+        ?input
+    END
+END;
+CALL main.
+```
+
+Extended If-Else with a third case using Else-If.
+```
+CONST pHNeutral=7;
+VAR input;
+PROCEDURE main;
+BEGIN
+    !"Input pH Value:";
+    ?input;
+    IF input = pHNeutral THEN !"Neutral"
+    ELSE IF input > pHNeutral THEN !"Alkaline"
+    ELSE !"Acid"
+END;
+CALL main.
 ```
 
 ### While-Loop

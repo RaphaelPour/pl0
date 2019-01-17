@@ -34,6 +34,9 @@ class NonTerminal(Enum):
     # Compiler Extension
     FOR_STATEMENT = 19
 
+    PARAMETER_CALL_LIST = 20
+    PARAMETER_DECLARATION_LIST = 21
+
 
 class EdgeType(Enum):
     NIL______ = 0
@@ -112,6 +115,8 @@ class PL0Parser():
         ST9 = self.statementGetVal
         ST10 = self.statementPutVal
         ST11 = self.statementPutStr
+        ST12 = self.statementElseKeyword
+        ST13 = self.statementElseStatement
 
         # Condition
         CO1 = self.conditionOdd
@@ -164,6 +169,8 @@ class PL0Parser():
         PRCC = NonTerminal.PROCEDURE_CALL
         INST = NonTerminal.INPUT_STATEMENT
         OUTS = NonTerminal.OUTPUT_STATEMENT
+        PCL = NonTerminal.PARAMETER_CALL_LIST
+        PDL = NonTerminal.PARAMETER_DECLARATION_LIST
 
         # Language Extension
         FORS = NonTerminal.FOR_STATEMENT
@@ -212,14 +219,33 @@ class PL0Parser():
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, VARD)                  # 1
         ]
 
-        procDeclatationEdges = [
-            Edge(EdgeType.SYMBOL___, Symbol.PROCEDURE, None, 1, 0, PROC),  # 0
+        procDeclarationEdges = [
+            Edge(EdgeType.SYMBOL___, Symbol.PROCEDURE, None, 1, 0, PROC),   # 0
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL4, 2, 0, PROC),  # 1
-            Edge(EdgeType.SYMBOL___, ';', None, 3, 0, PROC),               # 2
-            Edge(EdgeType.SUBGRAPH_, BLCK, None, 4, 0, PROC),              # 3
-            Edge(EdgeType.SYMBOL___, ';', None, 5, 0, PROC),                # 4
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROC)                  # 5
+            
+            Edge(EdgeType.SYMBOL___, '(', None, 3, 5, PROC),                # 2
+            Edge(EdgeType.SUBGRAPH_, PDL, None, 4, 4, PROC),                # 3
+            Edge(EdgeType.SYMBOL___, ')', None, 5, 0, PROC),                # 4
+            
+            Edge(EdgeType.SYMBOL___, ';', None, 6, 0, PROC),                # 5
+            Edge(EdgeType.SUBGRAPH_, BLCK, None, 7,0, PROC),                # 6
+            Edge(EdgeType.SYMBOL___,  ';', None, 8,0, PROC),                # 7
 
+            Edge(EdgeType.GRAPH_END,0,None,0,0, PROC)                       # 8 
+            
+        ]
+
+
+        parameterCallList = [
+            Edge(EdgeType.SUBGRAPH_, EXPR,None, 1,0,PCL),  # 0
+            Edge(EdgeType.SYMBOL___,',', None, 0,2,PCL),   # 1
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0,PCL)     # 2
+        ]
+
+        parameterDefinitionList = [
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,None, 1,0,PDL),  # 0
+            Edge(EdgeType.SYMBOL___,',', None, 0,2,PDL),                # 1
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0,PDL)                  # 2
         ]
 
         assignmentEdges = [
@@ -233,16 +259,22 @@ class PL0Parser():
             Edge(EdgeType.SYMBOL___, Symbol.IF, None, 1, 0, CNDS),             # 0
             Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, ST3, 2, 0, CNDS),  # 1
             Edge(EdgeType.SYMBOL___, Symbol.THEN, None, 3, 0, CNDS),           # 2
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, ST4, 4, 0, CNDS),  # 3
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, CNDS)                      # 4
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, None, 5, 0, CNDS), # 3
+            Edge(EdgeType.NIL______, None, ST4, 7,0, CNDS),                    # 4 
+
+            # ELSE
+            Edge(EdgeType.SYMBOL___,Symbol.ELSE,ST12, 6,4, CNDS),              # 5
+            Edge(EdgeType.SUBGRAPH_,NonTerminal.STATEMENT, ST13, 7,0,CNDS),    # 6
+
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, CNDS)                      # 7
         ]
 
         loopEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.WHILE, ST5, 1, 0, LOOP),           # 0
             Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, ST6, 2, 0, LOOP),  # 1
-            Edge(EdgeType.SYMBOL___, Symbol.DO,  None, 3, 0, LOOP),             # 2
+            Edge(EdgeType.SYMBOL___, Symbol.DO,  None, 3, 0, LOOP),            # 2
             Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, ST7, 4, 0, LOOP),  # 3
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, LOOP)                       # 5
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, LOOP)                      # 5
         ]
 
         compoundEdges = [
@@ -255,13 +287,16 @@ class PL0Parser():
 
         procedureCallEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.CALL, None, 1, 0, PRCC),            # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST8, 2, 0, PRCC),       # 1
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PRCC)                       # 2
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,ST8, 2, 0, PRCC),        # 1
+            Edge(EdgeType.SYMBOL___, '(',None, 3,5,PRCC),                       # 2
+            Edge(EdgeType.SUBGRAPH_, PCL, None, 4,4, PRCC),                     # 3
+            Edge(EdgeType.SYMBOL___,')', None, 5,0,PRCC),                       # 4
+            Edge(EdgeType.GRAPH_END,0, None, 0,0, PRCC)                         # 5
         ]
 
         inputEdges = [
             Edge(EdgeType.SYMBOL___, "?", None, 1, 0, INST),               # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST9, 2, 0, INST), # 1
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST9, 2, 0, INST),  # 1
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, INST)                  # 2
         ]
 
@@ -355,21 +390,21 @@ class PL0Parser():
 
         conditionEdges = [
             # ODD
-            Edge(EdgeType.SYMBOL___, Symbol.ODD, None, 1, 2, COND),  # 0
-            Edge(EdgeType.SUBGRAPH_, EXPR, CO1, 10, 0, COND),  # 1
+            Edge(EdgeType.SYMBOL___, Symbol.ODD, None, 1, 2, COND),          # 0
+            Edge(EdgeType.SUBGRAPH_, EXPR, CO1, 10, 0, COND),                # 1
 
             # Comparisson
-            Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, COND),  # 2
-            Edge(EdgeType.SYMBOL___, '=', CO2, 9, 4, COND),  # 3
-            Edge(EdgeType.SYMBOL___, '#', CO3, 9, 5, COND),  # 4
-            Edge(EdgeType.SYMBOL___, '>', CO6, 9, 6, COND),  # 5
-            Edge(EdgeType.SYMBOL___, '<', CO4, 9, 7, COND),  # 6
+            Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, COND),                # 2
+            Edge(EdgeType.SYMBOL___, '=', CO2, 9, 4, COND),                  # 3
+            Edge(EdgeType.SYMBOL___, '#', CO3, 9, 5, COND),                  # 4
+            Edge(EdgeType.SYMBOL___, '>', CO6, 9, 6, COND),                  # 5
+            Edge(EdgeType.SYMBOL___, '<', CO4, 9, 7, COND),                  # 6
             Edge(EdgeType.SYMBOL___, Symbol.LESSER_EQUAL, CO5, 9, 8, COND),  # 7
-            Edge(EdgeType.SYMBOL___, Symbol.GREATER_EQUAL, CO7, 9, 0, COND),  # 8
-            Edge(EdgeType.SUBGRAPH_, EXPR, CO8, 10, 0, COND),  # 9
+            Edge(EdgeType.SYMBOL___, Symbol.GREATER_EQUAL, CO7, 9, 0, COND), # 8
+            Edge(EdgeType.SUBGRAPH_, EXPR, CO8, 10, 0, COND),                # 9
 
             # End
-            Edge(EdgeType.GRAPH_END, None, None, 0, 0, COND)                   # 10
+            Edge(EdgeType.GRAPH_END, None, None, 0, 0, COND)                 # 10
         ]
 
 
@@ -387,28 +422,30 @@ class PL0Parser():
         ]
 
         self.edges = {
-            PROG: programEdges,         # 0
-            BLCK: blockEdges,           # 1
-            EXPR: expressionEdges,      # 2
-            TERM: termEdges,            # 3
-            STAT: statementEdges,       # 4
-            FACT: factorEdges,          # 5
-            COND: conditionEdges,       # 6
-            CLST: constListEdges,       # 7
-            CNST: constDeclarationEdges,# 8
-            VLST: varListEdges,         # 9
-            VARD: varDeclarationEdges,  # 10
-            PROC: procDeclatationEdges, # 11
-            ASSS: assignmentEdges,      # 12
-            CNDS: conditionalEdges,     # 13
-            LOOP: loopEdges,            # 14
-            COMP: compoundEdges,        # 15
-            PRCC: procedureCallEdges,   # 16
-            INST: inputEdges,           # 17
-            OUTS: outputEdges,          # 18
+            PROG: programEdges,          # 0
+            BLCK: blockEdges,            # 1
+            EXPR: expressionEdges,       # 2
+            TERM: termEdges,             # 3
+            STAT: statementEdges,        # 4
+            FACT: factorEdges,           # 5
+            COND: conditionEdges,        # 6
+            CLST: constListEdges,        # 7
+            CNST: constDeclarationEdges, # 8
+            VLST: varListEdges,          # 9
+            VARD: varDeclarationEdges,   # 10
+            PROC: procDeclarationEdges,  # 11
+            ASSS: assignmentEdges,       # 12
+            CNDS: conditionalEdges,      # 13
+            LOOP: loopEdges,             # 14
+            COMP: compoundEdges,         # 15
+            PRCC: procedureCallEdges,    # 16
+            INST: inputEdges,            # 17
+            OUTS: outputEdges,           # 18
 
             # Language Extension
-            FORS: forEdges              # 19
+            FORS: forEdges,              # 19
+            PCL: parameterCallList,      # 20
+            PDL: parameterDefinitionList # 21 
         }
 
         # Init Lexer
@@ -726,6 +763,27 @@ class PL0Parser():
         # Add length of jump command (3 bytes) 
         label.distance -= 3
         return self.codeGen.correctJmp(label)
+
+
+    def statementElseKeyword(self):
+        jmpNotLabel = self.codeGen.popLabel()
+
+        # For the current JMP Command
+        self.codeGen.pushLabel()
+
+        if not self.codeGen.writeCommand(VMCode.JMP,[0]):
+            return False
+
+        # Add length of jump command (3 bytes) 
+        #jmpNotLabel.distance += 3
+        return self.codeGen.correctJmp(jmpNotLabel)
+
+
+    def statementElseStatement(self):
+        
+        jmpLabel = self.codeGen.popLabel()
+        jmpLabel.distance -= 3
+        return self.codeGen.correctJmp(jmpLabel)
 
     # Also known as ST5
     def statementWhileCondition(self):

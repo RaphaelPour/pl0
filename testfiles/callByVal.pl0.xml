@@ -1,0 +1,125 @@
+<PROGRAM>
+  <BLOCK>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='1' col='3'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='1' col='13'>P1</TERMINAL>
+      <TERMINAL line='1' col='15'>(</TERMINAL>
+      <PARAMETER_DECLARATION_LIST>
+        <TERMINAL line='1' col='16'>A</TERMINAL>
+        <TERMINAL line='1' col='17'>,</TERMINAL>
+        <TERMINAL line='1' col='18'>B</TERMINAL>
+      </PARAMETER_DECLARATION_LIST>
+      <TERMINAL line='1' col='19'>)</TERMINAL>
+      <TERMINAL line='1' col='20'>;</TERMINAL>
+      <BLOCK>
+        <VARIABLE_LIST>
+          <TERMINAL line='2' col='3'>Symbol.VAR</TERMINAL>
+          <VARIABLE_DECLARATION>
+            <TERMINAL line='2' col='7'>I</TERMINAL>
+          </VARIABLE_DECLARATION>
+          <TERMINAL line='2' col='8'>;</TERMINAL>
+        </VARIABLE_LIST>
+        <STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='3' col='3'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <ASSIGNMENT_STATEMENT>
+                <TERMINAL line='4' col='5'>I</TERMINAL>
+                <TERMINAL line='4' col='6'>Symbol.ASSIGN</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='4' col='8'>0.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </ASSIGNMENT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='4' col='9'>;</TERMINAL>
+            <STATEMENT>
+              <LOOP_STATEMENT>
+                <TERMINAL line='5' col='5'>Symbol.WHILE</TERMINAL>
+                <CONDITION>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='5' col='11'>I</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                  <TERMINAL line='5' col='12'><</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='5' col='13'>7.0</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </CONDITION>
+                <TERMINAL line='5' col='15'>Symbol.DO</TERMINAL>
+                <STATEMENT>
+                  <COMPOUND_STATEMENT>
+                    <TERMINAL line='6' col='6'>Symbol.BEGIN</TERMINAL>
+                    <STATEMENT>
+                      <ASSIGNMENT_STATEMENT>
+                        <TERMINAL line='7' col='7'>I</TERMINAL>
+                        <TERMINAL line='7' col='8'>Symbol.ASSIGN</TERMINAL>
+                        <EXPRESSION>
+                          <TERM>
+                            <FACTOR>
+                              <TERMINAL line='7' col='10'>I</TERMINAL>
+                            </FACTOR>
+                          </TERM>
+                          <TERMINAL line='7' col='11'>+</TERMINAL>
+                          <TERM>
+                            <FACTOR>
+                              <TERMINAL line='7' col='12'>1.0</TERMINAL>
+                            </FACTOR>
+                          </TERM>
+                        </EXPRESSION>
+                      </ASSIGNMENT_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='7' col='13'>;</TERMINAL>
+                    <STATEMENT>
+                      <OUTPUT_STATEMENT>
+                        <TERMINAL line='8' col='7'>!</TERMINAL>
+                        <EXPRESSION>
+                          <TERM>
+                            <FACTOR>
+                              <TERMINAL line='8' col='8'>I</TERMINAL>
+                            </FACTOR>
+                          </TERM>
+                        </EXPRESSION>
+                      </OUTPUT_STATEMENT>
+                    </STATEMENT>
+                    <TERMINAL line='9' col='6'>Symbol.END</TERMINAL>
+                  </COMPOUND_STATEMENT>
+                </STATEMENT>
+              </LOOP_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='10' col='3'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='10' col='6'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <STATEMENT>
+      <PROCEDURE_CALL>
+        <TERMINAL line='12' col='1'>Symbol.CALL</TERMINAL>
+        <TERMINAL line='12' col='6'>P1</TERMINAL>
+        <TERMINAL line='12' col='8'>(</TERMINAL>
+        <PARAMETER_CALL_LIST>
+          <FACTOR>
+            <TERMINAL line='12' col='9'>1.0</TERMINAL>
+          </FACTOR>
+          <TERMINAL line='12' col='10'>,</TERMINAL>
+          <FACTOR>
+            <TERMINAL line='12' col='11'>2.0</TERMINAL>
+          </FACTOR>
+        </PARAMETER_CALL_LIST>
+        <TERMINAL line='12' col='12'>)</TERMINAL>
+      </PROCEDURE_CALL>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='12' col='13'>.</TERMINAL>
+</PROGRAM>

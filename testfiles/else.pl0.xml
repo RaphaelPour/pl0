@@ -1,0 +1,52 @@
+<PROGRAM>
+  <BLOCK>
+    <STATEMENT>
+      <COMPOUND_STATEMENT>
+        <TERMINAL line='1' col='1'>Symbol.BEGIN</TERMINAL>
+        <STATEMENT>
+          <CONDITIONAL_STATEMENT>
+            <TERMINAL line='2' col='3'>Symbol.IF</TERMINAL>
+            <CONDITION>
+              <TERMINAL line='2' col='6'>Symbol.ODD</TERMINAL>
+              <EXPRESSION>
+                <TERM>
+                  <FACTOR>
+                    <TERMINAL line='2' col='10'>1.0</TERMINAL>
+                  </FACTOR>
+                </TERM>
+              </EXPRESSION>
+            </CONDITION>
+            <TERMINAL line='2' col='12'>Symbol.THEN</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='2' col='17'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='2' col='18'>3.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='3' col='3'>Symbol.ELSE</TERMINAL>
+            <STATEMENT>
+              <OUTPUT_STATEMENT>
+                <TERMINAL line='3' col='8'>!</TERMINAL>
+                <EXPRESSION>
+                  <TERM>
+                    <FACTOR>
+                      <TERMINAL line='3' col='9'>5.0</TERMINAL>
+                    </FACTOR>
+                  </TERM>
+                </EXPRESSION>
+              </OUTPUT_STATEMENT>
+            </STATEMENT>
+          </CONDITIONAL_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='4' col='1'>Symbol.END</TERMINAL>
+      </COMPOUND_STATEMENT>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='4' col='4'>.</TERMINAL>
+</PROGRAM>

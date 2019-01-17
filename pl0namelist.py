@@ -18,8 +18,10 @@ class NLProc(NLIdent):
         self.parent = parent
         self.constants = []
         self.variables = []
+        self.parameters = []
         self.childProcedures = []
-        self.addressOffset = 0
+        self.localVarAddressOffset = 0
+        self.parameterAddressOffset = 0
         self.index = index
 
 class NLConst(NLIdent):
@@ -111,25 +113,47 @@ class PL0NameList:
         self.currentProcedure.childProcedures.append(newConst)
         return newConst
 
-    def createVar(self, name):
+    def createVar(self, name, procedureParameter=False):
         """Adds a new variable to the current procedure.
         It doesn't check if the ident is already existing,
         while this should be done in the parser when the
         ident-name is parsed
         """
 
-        # Each variable has a relative address offset 
-        currentOffset = self.currentProcedure.addressOffset
+        currentOffset = 0
+        
+        if procedureParameter:
+            currentOffset = self.currentProcedure.parameterAddressOffset
+            self.currentProcedure.parameterAddressOffset -= 4
 
+        else:
+            # Each variable has a relative address offset 
+            currentOffset = self.currentProcedure.localVarAddressOffset
+            
+            # Increase address offset for the next variable
+            self.currentProcedure.localVarAddressOffset += 4
+            
+            
         newVar = NLVar(name=name,parent=self.currentProcedure,addressOffset=currentOffset)
-
-        # Increase address offset for the next variable
-        self.currentProcedure.addressOffset += 4
-
         # Add variable to the local variable list of the current procedure
         self.currentProcedure.variables.append(newVar)
-
+        
         return newVar
+
+    def correctParameterList(self):
+
+        minAddr = 0
+
+        for v in self.currentProcedure.variables:
+            if v.addressOffset < minAddr:
+                minAddr = v.addressOffset
+
+
+        # Correct rel addr
+        for v in self.currentProcedure.variables.reverse():
+            if v.addressOffset < 0:
+                v.addressOffset = minAddr
+                minAddr += 4
 
     def createProc(self, name,parent=None):
         
