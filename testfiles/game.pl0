@@ -1,4 +1,8 @@
 /*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Number guessing game
+ * @date:        24.01.2019
+ *
  * Number-Guessing Game
  *
  * 1) Enter random seed (we don't have a random function)

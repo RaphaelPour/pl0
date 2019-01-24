@@ -1,2 +1,4 @@
 *.pyc
 *error.xml
+*.cl0
+*.xml

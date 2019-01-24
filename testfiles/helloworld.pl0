@@ -1,1 +1,6 @@
+/*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Prints out Hello World
+ * @date:        24.01.2019
+ */
 ! "Hello World!".

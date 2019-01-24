@@ -1,3 +1,8 @@
+/*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Reads continously numbers from stdin and prints out if its even or odd  
+ * @date:        24.01.2019
+ */
 VAR input;
 PROCEDURE main;
 BEGIN

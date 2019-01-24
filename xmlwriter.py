@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+#   file:           xmlwriter.py
+#   description:    Converts abstract syntax tree of a parsed PL/0 file to xml and 
+#                   writes it to a file
+#   date:           24.01.2018
+#   license:        GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
+#
 import pl0parser
 
 class XMLWriter:
@@ -21,6 +30,17 @@ class XMLWriter:
                 out += self.parse(el['sub'], depth+1)
                 out += ("  " * depth) + "</{}>\n".format(el['value'])
             else:
-                out += ("  " * depth) +  "<TERMINAL line='{}' col='{}'>{}</TERMINAL>\n".format(el['pos'][0],el['pos'][1],str(el['value']))
+                value = str(el['value'])
+                if value == '<':
+                    value = "&lt;"
+                elif value == '>':
+                    value = '&gt;'
+                elif value == '"':
+                    value = '&quot;'
+                elif value == "'":
+                    value = "&apos;"
+                elif value == "&":
+                    value = "&amp;"
+                out += ("  " * depth) +  "<TERMINAL line='{}' col='{}'>{}</TERMINAL>\n".format(el['pos'][0],el['pos'][1],value)
 
         return out

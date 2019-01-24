@@ -1,4 +1,9 @@
+/*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Checks if 1 is odd and prints the result ("Odd","Even")
+ * @date:        24.01.2019
+ */
 BEGIN
-  IF ODD 1 THEN !3
-  ELSE !5
+  IF ODD 1 THEN !"Odd"
+  ELSE !"Even"
 END.

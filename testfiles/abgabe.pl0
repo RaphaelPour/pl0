@@ -1,3 +1,8 @@
+/*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Abgabeprogramm in C/I
+ * @date:        13.12.2018
+ */
 CONST null=0, eins=1;
 VAR a,b;
 
@@ -11,7 +16,6 @@ PROCEDURE p2;
             y := b;
             WHILE y > null DO
             BEGIN
-                    
                 !y*x;
                 y := y-eins
             END;

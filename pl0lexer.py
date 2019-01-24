@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#
+#   file:           pl0lexer.py
+#   description:    Takes PL/0 file as input and provides tokens for the PL/0 parser
+#   date:           24.01.2018
+#   license:        GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
+#
 import sys
 import re
 import os

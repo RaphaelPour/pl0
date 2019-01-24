@@ -1,3 +1,8 @@
+/*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Reads two values from user and prints out the biggest one
+ * @date:        13.12.2018
+ */
 var a,b,Max;
 procedure p1;
 begin
@@ -9,5 +14,3 @@ begin
   call p1;
   !Max
 end.
-
-

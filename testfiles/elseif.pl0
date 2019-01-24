@@ -1,3 +1,8 @@
+/*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Read pH value from stdin and prints out if its Acid,Alkaline or Neutral
+ * @date:        24.01.2019
+ */
 CONST pHNeutral=7;
 VAR input;
 PROCEDURE main;

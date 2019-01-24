@@ -71,7 +71,7 @@
                       </FACTOR>
                     </TERM>
                   </EXPRESSION>
-                  <TERMINAL line='5' col='7'><</TERMINAL>
+                  <TERMINAL line='5' col='7'>&lt;</TERMINAL>
                   <EXPRESSION>
                     <TERM>
                       <FACTOR>

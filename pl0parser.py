@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#
+#   file:           pl0parser.py
+#   description:    PL/0 Parser implementing the PL/0 grammar
+#   date:           24.01.2018
+#   license:        GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
+#
 import sys
 import os
 from enum import Enum

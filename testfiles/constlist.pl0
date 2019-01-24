@@ -1,2 +1,7 @@
+/*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Defines a const and prints it out.
+ * @date:        24.01.2019
+ */
 CONST a=5;
 !a.

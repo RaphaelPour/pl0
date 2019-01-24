@@ -251,6 +251,8 @@ Due to a lack of time, they couldn't (and maybe will never) be implemented.
 * ~~ Conditional Statement error on wrong condition. The jmpnot jumps probably to the wrong address ~~
 * ~~ Call doesn't work properly. Check out BL5/BL6 ~~
 * ~~ Procedure can't access variables of the main programm ~~
+* AST will only be written correctly to xml-file if the compiling process succeeded. On Error some 
+  tags are missing and the xml-file is corrupted.
 
 ## License
 

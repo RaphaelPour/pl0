@@ -1,3 +1,8 @@
+/*
+ * @author:      Raphael Pour <s74020@informatik.htw-dresden.de>
+ * @description: Tests multi-line comments and strings
+ * @date:        24.01.2019
+ */
 var a,b;
 Procedure p1;
  /* Test-Procedur */
