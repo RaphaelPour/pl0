@@ -8,7 +8,7 @@ This project is the outcome of the Compilerconstruction Module at the HTW Dresde
 
     python3 cpl0.py [--ast] <inputFile>
 
-The outcoming virtual machine codefile can be run with the vm of the supervising Professor. The vm can be found [here](http://www.informatik.htw-dresden.de/~beck/Compiler/bin/rlinux) (compiled for linux 32-bit). It can be used like ``./rlinux <cl0-file>``.
+The outcoming virtual machine codefile can be run with the vm of my supervising Professor which can be found here [here](http://www.informatik.htw-dresden.de/~beck/Compiler/bin/rlinux) (compiled for linux 32-bit). It can be used like ``./rlinux <cl0-file>``.
 
 
 ## PL0-Features
