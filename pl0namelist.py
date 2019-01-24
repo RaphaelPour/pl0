@@ -18,10 +18,8 @@ class NLProc(NLIdent):
         self.parent = parent
         self.constants = []
         self.variables = []
-        self.parameters = []
         self.childProcedures = []
-        self.localVarAddressOffset = 0
-        self.parameterAddressOffset = 0
+        self.addressOffset = 0
         self.index = index
 
 class NLConst(NLIdent):
@@ -121,17 +119,12 @@ class PL0NameList:
         """
 
         currentOffset = 0
+    
+        # Each variable has a relative address offset 
+        currentOffset = self.currentProcedure.addressOffset
         
-        if procedureParameter:
-            currentOffset = self.currentProcedure.parameterAddressOffset
-            self.currentProcedure.parameterAddressOffset -= 4
-
-        else:
-            # Each variable has a relative address offset 
-            currentOffset = self.currentProcedure.localVarAddressOffset
-            
-            # Increase address offset for the next variable
-            self.currentProcedure.localVarAddressOffset += 4
+        # Increase address offset for the next variable
+        self.currentProcedure.addressOffset += 4
             
             
         newVar = NLVar(name=name,parent=self.currentProcedure,addressOffset=currentOffset)

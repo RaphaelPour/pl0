@@ -1,0 +1,146 @@
+<PROGRAM>
+  <BLOCK>
+    <VARIABLE_LIST>
+      <TERMINAL line='1' col='1'>Symbol.VAR</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='5'>A</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='6'>,</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='7'>B</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='8'>,</TERMINAL>
+      <VARIABLE_DECLARATION>
+        <TERMINAL line='1' col='9'>MAX</TERMINAL>
+      </VARIABLE_DECLARATION>
+      <TERMINAL line='1' col='12'>;</TERMINAL>
+    </VARIABLE_LIST>
+    <PROCEDURE_DECLARATION>
+      <TERMINAL line='2' col='1'>Symbol.PROCEDURE</TERMINAL>
+      <TERMINAL line='2' col='11'>P1</TERMINAL>
+      <TERMINAL line='2' col='13'>;</TERMINAL>
+      <BLOCK>
+        <STATEMENT>
+          <COMPOUND_STATEMENT>
+            <TERMINAL line='3' col='1'>Symbol.BEGIN</TERMINAL>
+            <STATEMENT>
+              <CONDITIONAL_STATEMENT>
+                <TERMINAL line='4' col='3'>Symbol.IF</TERMINAL>
+                <CONDITION>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='4' col='6'>A</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                  <TERMINAL line='4' col='7'>Symbol.GREATER_EQUAL</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='4' col='9'>B</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </CONDITION>
+                <TERMINAL line='4' col='11'>Symbol.THEN</TERMINAL>
+                <STATEMENT>
+                  <ASSIGNMENT_STATEMENT>
+                    <TERMINAL line='4' col='16'>MAX</TERMINAL>
+                    <TERMINAL line='4' col='19'>Symbol.ASSIGN</TERMINAL>
+                    <EXPRESSION>
+                      <TERM>
+                        <FACTOR>
+                          <TERMINAL line='4' col='21'>A</TERMINAL>
+                        </FACTOR>
+                      </TERM>
+                    </EXPRESSION>
+                  </ASSIGNMENT_STATEMENT>
+                </STATEMENT>
+              </CONDITIONAL_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='4' col='22'>;</TERMINAL>
+            <STATEMENT>
+              <CONDITIONAL_STATEMENT>
+                <TERMINAL line='5' col='3'>Symbol.IF</TERMINAL>
+                <CONDITION>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='5' col='6'>A</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                  <TERMINAL line='5' col='7'><</TERMINAL>
+                  <EXPRESSION>
+                    <TERM>
+                      <FACTOR>
+                        <TERMINAL line='5' col='9'>B</TERMINAL>
+                      </FACTOR>
+                    </TERM>
+                  </EXPRESSION>
+                </CONDITION>
+                <TERMINAL line='5' col='11'>Symbol.THEN</TERMINAL>
+                <STATEMENT>
+                  <ASSIGNMENT_STATEMENT>
+                    <TERMINAL line='5' col='16'>MAX</TERMINAL>
+                    <TERMINAL line='5' col='19'>Symbol.ASSIGN</TERMINAL>
+                    <EXPRESSION>
+                      <TERM>
+                        <FACTOR>
+                          <TERMINAL line='5' col='21'>B</TERMINAL>
+                        </FACTOR>
+                      </TERM>
+                    </EXPRESSION>
+                  </ASSIGNMENT_STATEMENT>
+                </STATEMENT>
+              </CONDITIONAL_STATEMENT>
+            </STATEMENT>
+            <TERMINAL line='6' col='1'>Symbol.END</TERMINAL>
+          </COMPOUND_STATEMENT>
+        </STATEMENT>
+      </BLOCK>
+      <TERMINAL line='6' col='4'>;</TERMINAL>
+    </PROCEDURE_DECLARATION>
+    <STATEMENT>
+      <COMPOUND_STATEMENT>
+        <TERMINAL line='7' col='1'>Symbol.BEGIN</TERMINAL>
+        <STATEMENT>
+          <INPUT_STATEMENT>
+            <TERMINAL line='8' col='3'>?</TERMINAL>
+            <TERMINAL line='8' col='4'>A</TERMINAL>
+          </INPUT_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='8' col='5'>;</TERMINAL>
+        <STATEMENT>
+          <INPUT_STATEMENT>
+            <TERMINAL line='8' col='6'>?</TERMINAL>
+            <TERMINAL line='8' col='7'>B</TERMINAL>
+          </INPUT_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='8' col='8'>;</TERMINAL>
+        <STATEMENT>
+          <PROCEDURE_CALL>
+            <TERMINAL line='9' col='3'>Symbol.CALL</TERMINAL>
+            <TERMINAL line='9' col='8'>P1</TERMINAL>
+          </PROCEDURE_CALL>
+        </STATEMENT>
+        <TERMINAL line='9' col='10'>;</TERMINAL>
+        <STATEMENT>
+          <OUTPUT_STATEMENT>
+            <TERMINAL line='10' col='3'>!</TERMINAL>
+            <EXPRESSION>
+              <TERM>
+                <FACTOR>
+                  <TERMINAL line='10' col='4'>MAX</TERMINAL>
+                </FACTOR>
+              </TERM>
+            </EXPRESSION>
+          </OUTPUT_STATEMENT>
+        </STATEMENT>
+        <TERMINAL line='11' col='1'>Symbol.END</TERMINAL>
+      </COMPOUND_STATEMENT>
+    </STATEMENT>
+  </BLOCK>
+  <TERMINAL line='11' col='4'>.</TERMINAL>
+</PROGRAM>
