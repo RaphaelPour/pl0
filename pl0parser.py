@@ -39,6 +39,8 @@ class NonTerminal(Enum):
 
     # Compiler Extension
     FOR_STATEMENT = 19
+    PARAMETER_LIST_CALL = 20
+    PARAMETER_LIST_DECLARATION = 21
 
 
 class EdgeType(Enum):
@@ -175,6 +177,8 @@ class PL0Parser():
 
         # Language Extension
         FORS = NonTerminal.FOR_STATEMENT
+        PLC = NonTerminal.PARAMETER_LIST_CALL
+        PLD = NonTerminal.PARAMETER_LIST_DECLARATION
 
         programEdges = [
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 1, 0, PROG),  # 0
@@ -220,14 +224,45 @@ class PL0Parser():
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, VARD)                  # 1
         ]
 
+
         procDeclatationEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.PROCEDURE, None, 1, 0, PROC),  # 0
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL4, 2, 0, PROC),  # 1
-            Edge(EdgeType.SYMBOL___, ';', None, 3, 0, PROC),               # 2
-            Edge(EdgeType.SUBGRAPH_, BLCK, None, 4, 0, PROC),              # 3
-            Edge(EdgeType.SYMBOL___, ';', None, 5, 0, PROC),                # 4
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROC)                  # 5
 
+            Edge(EdgeType.SYMBOL___,'(', None, 3,5,PROC),                       # 2
+            Edge(EdgeType.SUBGRAPH_, PLD, None, 4,4, PROC),                     # 3
+            Edge(EdgeType.SYMBOL___,')', None, 5,0,PROC),                       # 4
+
+            Edge(EdgeType.SYMBOL___, ';', None, 6, 0, PROC),               # 5
+            Edge(EdgeType.SUBGRAPH_, BLCK, None, 7, 0, PROC),              # 6
+            Edge(EdgeType.SYMBOL___, ';', None, 8, 0, PROC),               # 7
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROC)                  # 8
+        ]
+        
+
+        procedureCallEdges = [
+            Edge(EdgeType.SYMBOL___, Symbol.CALL, None, 1, 0, PRCC),            # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST8, 2, 0, PRCC),       # 1
+
+            Edge(EdgeType.SYMBOL___,'(', None, 3,5,PRCC),                       # 2
+            Edge(EdgeType.SUBGRAPH_, PLC, None, 4,4, PRCC),                     # 3
+            Edge(EdgeType.SYMBOL___,')', None, 5,0,PRCC),                       # 4
+
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PRCC)                       # 5
+        ]
+
+        parameterListCallEdges = [
+            Edge(EdgeType.SUBGRAPH_, EXPR, None, 1,0,PLC),      # 0
+            Edge(EdgeType.SYMBOL___, ',', None, 0,2, PLC),      # 1
+
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, PLC)         # 2
+        ]
+
+        parameterListDeclarationEdges = [
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 1,0,PLD),      # 0
+            Edge(EdgeType.SYMBOL___, ',', None, 0,2, PLD),                   # 1
+
+            Edge(EdgeType.GRAPH_END, 0, None, 0,0, PLD)                      # 2
         ]
 
         assignmentEdges = [
@@ -266,13 +301,6 @@ class PL0Parser():
             Edge(EdgeType.SYMBOL___, Symbol.END, None, 4, 0, COMP),            # 3
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, COMP)                      # 4
         ]
-
-        procedureCallEdges = [
-            Edge(EdgeType.SYMBOL___, Symbol.CALL, None, 1, 0, PRCC),            # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST8, 2, 0, PRCC),       # 1
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PRCC)                       # 2
-        ]
-
         inputEdges = [
             Edge(EdgeType.SYMBOL___, "?", None, 1, 0, INST),               # 0
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST9, 2, 0, INST), # 1
@@ -422,7 +450,9 @@ class PL0Parser():
             OUTS: outputEdges,          # 18
 
             # Language Extension
-            FORS: forEdges              # 19
+            FORS: forEdges,                     # 19
+            PLC : parameterListCallEdges,       # 20
+            PLD : parameterListDeclarationEdges # 21
         }
 
         # Init Lexer

@@ -1,0 +1,8 @@
+var a,fac;
+Procedure p1(x,y);
+ begin
+  a := 1;
+  !a
+ end;
+
+call p1(a,1).
