@@ -116,7 +116,7 @@ class PL0Parser():
         ST5 = self.statementWhileCondition
         ST6 = self.statementWhileAfterCondition
         ST7 = self.statementWhileEnd
-        ST8 = self.statementCallProc
+        #ST8 = self.statementCallBeforeParamsProc # Replaced with PL1/PL2
         ST9 = self.statementGetVal
         ST10 = self.statementPutVal
         ST11 = self.statementPutStr
@@ -152,6 +152,14 @@ class PL0Parser():
         FOR3 = self.forAfterIncrement
         FOR4 = self.forAfterStatement
 
+        # Parameter list
+        
+        PL1 = self.statementCallBeforeParamsProc
+        PL2 = self.statementCallAfterParamsProc
+
+        PD1 = self.procedureParameter
+        PD2 = self.procedureEndParameterList
+
         # Init Syntax rules
 
         # Short identifier for edge definition
@@ -182,10 +190,10 @@ class PL0Parser():
 
         programEdges = [
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 1, 0, PROG),  # 0
-            Edge(EdgeType.SYMBOL___, '.', PR1, 2, 0, PROG),  # 1
+            Edge(EdgeType.SYMBOL___, '.', PR1, 2, 0, PROG),    # 1
 
             # End
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROG)     # 2
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROG)      # 2
         ]
 
         constListEdges = [
@@ -209,12 +217,12 @@ class PL0Parser():
 
         varListEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.VAR, None, 1, 0, VLST),   # 0
-            Edge(EdgeType.SUBGRAPH_, VARD, None, 2, 0, VLST),           # 1
-            Edge(EdgeType.SYMBOL___, ',', None, 1, 3, VLST),             # 2
-            Edge(EdgeType.SYMBOL___, ';', None, 4, 0, VLST),             # 3
+            Edge(EdgeType.SUBGRAPH_, VARD, None, 2, 0, VLST),         # 1
+            Edge(EdgeType.SYMBOL___, ',', None, 1, 3, VLST),          # 2
+            Edge(EdgeType.SYMBOL___, ';', None, 4, 0, VLST),          # 3
 
             # End
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, VLST)              # 4
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, VLST)             # 4
         ]
 
         varDeclarationEdges = [
@@ -229,11 +237,11 @@ class PL0Parser():
             Edge(EdgeType.SYMBOL___, Symbol.PROCEDURE, None, 1, 0, PROC),  # 0
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL4, 2, 0, PROC),  # 1
 
-            Edge(EdgeType.SYMBOL___,'(', None, 3,5,PROC),                       # 2
-            Edge(EdgeType.SUBGRAPH_, PLD, None, 4,4, PROC),                     # 3
-            Edge(EdgeType.SYMBOL___,')', None, 5,0,PROC),                       # 4
+            Edge(EdgeType.SYMBOL___,'(', None, 3,5,PROC),                  # 2
+            Edge(EdgeType.SUBGRAPH_, PLD, None, 4,4, PROC),                # 3
+            Edge(EdgeType.SYMBOL___,')', None, 5,0,PROC),                  # 4
 
-            Edge(EdgeType.SYMBOL___, ';', None, 6, 0, PROC),               # 5
+            Edge(EdgeType.SYMBOL___, ';', PD2, 6, 0, PROC),                # 5
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 7, 0, PROC),              # 6
             Edge(EdgeType.SYMBOL___, ';', None, 8, 0, PROC),               # 7
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROC)                  # 8
@@ -242,13 +250,14 @@ class PL0Parser():
 
         procedureCallEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.CALL, None, 1, 0, PRCC),            # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST8, 2, 0, PRCC),       # 1
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, PL1, 2, 0, PRCC),       # 1
 
             Edge(EdgeType.SYMBOL___,'(', None, 3,5,PRCC),                       # 2
             Edge(EdgeType.SUBGRAPH_, PLC, None, 4,4, PRCC),                     # 3
             Edge(EdgeType.SYMBOL___,')', None, 5,0,PRCC),                       # 4
+            Edge(EdgeType.NIL______,0, PL2,6,0,PRCC),                           # 5
 
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PRCC)                       # 5
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PRCC)                        # 6
         ]
 
         parameterListCallEdges = [
@@ -259,7 +268,7 @@ class PL0Parser():
         ]
 
         parameterListDeclarationEdges = [
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, None, 1,0,PLD),      # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, PD1, 1,0,PLD),      # 0
             Edge(EdgeType.SYMBOL___, ',', None, 0,2, PLD),                   # 1
 
             Edge(EdgeType.GRAPH_END, 0, None, 0,0, PLD)                      # 2
@@ -540,6 +549,8 @@ class PL0Parser():
                     # successful
                     localPath.pop()
 
+
+
             # End detected -> Return the current parse-tree
             elif edge.type == EdgeType.GRAPH_END:
                 return localPath
@@ -646,7 +657,7 @@ class PL0Parser():
 
         # Create Constant, print error if locally existing
         if self.nameList.isLocalIdentName(ident):
-            logging.error("[Parser] Can't create Const-Ident: Ident {} already existing.".format(ident))
+            logging.error("[Parser] Can't create Var-Ident: Ident {} already existing.".format(ident))
 
             # Error-Handling  
             return False
@@ -670,6 +681,30 @@ class PL0Parser():
         self.nameList.createProc(ident)
         return True
     
+    def procedureParameter(self):
+        # Check if ident is already defined in local scope
+        ident = str(self.lexer.morphem.value)
+
+        # Create Constant, print error if locally existing
+        if self.nameList.isLocalIdentName(ident):
+            logging.error("[Parser] Can't create Procedure-Parameter-Ident: Ident {} already existing.".format(ident))
+
+            # Error-Handling  
+            return False
+
+        # Add Variable to our namelist
+        self.nameList.createProcedureParam(name=ident)
+
+        return True
+
+    def procedureEndParameterList(self):
+        # Recalculate the relative addresses of the parameters
+        # otherwise the first one gets the highest address and
+        # is used as last parameter
+        self.nameList.correctParameterList()
+
+        return True
+
     # Also known as BL5
     def blockEndProcedure(self):
         #print("*ring ring* BL5 was called")
@@ -700,7 +735,7 @@ class PL0Parser():
         # Write EntryProc command to introduce a new procedure
         length = 0
         index = self.nameList.currentProcedure.index
-        varMemorySize = self.nameList.currentProcedure.addressOffset
+        varMemorySize = self.nameList.currentProcedure.localAddressOffset
         
         args = [length, index, varMemorySize]
 
@@ -825,7 +860,7 @@ class PL0Parser():
         return self.codeGen.correctJmp(label=jmpNotRelAddr)
 
     # Also known as ST8
-    def statementCallProc(self):
+    def statementCallBeforeParamsProc(self):
 
         # Use current morphem as ident for procedure
         identName = str(self.lexer.morphem.value)
@@ -849,7 +884,12 @@ class PL0Parser():
 
         # Write Call Command with proc index as first argument
         args = [ident.index]
-        return self.codeGen.writeCommand(VMCode.CALL,args)
+        self.codeGen.pushDelayedCommand(VMCode.CALL,args)
+        return True
+
+    def statementCallAfterParamsProc(self):
+        command, args = self.codeGen.popDelayedCommand()
+        return self.codeGen.writeCommand(command, args)
 
     # Also known as ST9
     def statementGetVal(self):
@@ -946,6 +986,10 @@ class PL0Parser():
         command, args = self.codeGen.popDelayedCommand()
 
         return self.codeGen.writeCommand(command, args)
+
+    # Procedure with parameter list
+    def procedureParameterDeclaration(self):
+        pass
 
     # EXPRESSION
 

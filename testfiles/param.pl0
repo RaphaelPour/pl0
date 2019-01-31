@@ -1,8 +1,6 @@
-var a,fac;
-Procedure p1(x,y);
- begin
-  a := 1;
-  !a
- end;
+Procedure p1(x);
+BEGIN
+  !x
+END;
 
-call p1(a,1).
+CALL p1(123).
