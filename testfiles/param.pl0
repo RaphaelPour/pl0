@@ -1,0 +1,6 @@
+Procedure p1(x);
+BEGIN
+  !x
+END;
+
+CALL p1(123).
