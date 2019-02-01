@@ -1,0 +1,35 @@
+var result,i,choice,a,b;
+Procedure pow(base,power);
+BEGIN
+  result := 1;
+  FOR(i:=0;i<power;i:=i+1)
+    result := result * base;
+  !"Result:"
+END;
+BEGIN
+!"Math Functions";
+!"1) a + b";
+!"2) a - b";
+!"3) a * b";
+!"4) a ^ b";
+?choice;
+!"a:";
+?a;
+!"b:";
+?b;
+
+IF choice = 1 THEN
+    !a+b
+ELSE IF choice = 2 THEN
+    !a-b
+ELSE IF choice = 3 THEN
+    !a*b
+ELSE IF choice = 4 THEN
+BEGIN
+    CALL pow(a,b);
+    !result
+END
+ELSE
+    !"Unknown choice"
+
+END.
