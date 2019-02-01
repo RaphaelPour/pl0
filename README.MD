@@ -268,9 +268,9 @@ The following features/additions came up to my mind while developing the compile
 Due to a lack of time, they couldn't (and maybe will never) be implemented.
 
 * ~~ Procedures with arguments ~~
-* __Procedures with return value__
-* __Modulo division__
-* __Add Return keyword to leave procedure earlier__
+* _Procedures with return value_
+* _Modulo division_
+* _Add Return keyword to leave procedure earlier_
 * Arrays
 * Include other PL/0 files
 * Types
