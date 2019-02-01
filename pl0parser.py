@@ -707,7 +707,13 @@ class PL0Parser():
 
     # Also known as BL5
     def blockEndProcedure(self):
-        #print("*ring ring* BL5 was called")
+
+        # Pop all parameters 
+        for _ in filter(lambda v: v.procedureParameter ,self.nameList.currentProcedure.variables):
+            if not self.codeGen.writeCommand(VMCode.POP):
+                return False
+
+
         # Write Return Statement (Doesn't need an address, cause Beck's VM can handle it by itself)
         if not self.codeGen.writeCommand(VMCode.RET_PROC):
             return False

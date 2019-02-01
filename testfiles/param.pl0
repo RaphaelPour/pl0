@@ -1,6 +1,3 @@
-Procedure p1(x);
-BEGIN
-  !x
-END;
-
-CALL p1(123).
+Procedure f(a);
+    !a;
+CALL f(7331).

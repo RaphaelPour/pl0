@@ -26,6 +26,7 @@ Additional Features
 * Output string
 * Block comments
 * For-Loop
+* Procedures with Parameters
 
 ## Examples
 
@@ -135,6 +136,35 @@ PROCEDURE main;
 CALL main.
 ```
 
+### Procedures with parameters
+
+
+```
+Procedure f(x);
+    !x;
+CALL f(7331).
+```
+
+Exponentiation programm using a self implemented pow function
+```
+VAR result,i,a,b;
+PROCEDURE pow(base,power);
+BEGIN
+  result := 1;
+  FOR(i:=0;i<power;i:=i+1)
+    result := result * base;
+  !"Result:"
+  !result
+END;
+BEGIN
+!"Base:";
+?a;
+!"Power:";
+?b;
+CALL pow(a,b)
+END.
+```
+
 ### For-Loop
 ```
 CONST k=5;
@@ -237,7 +267,7 @@ CALL main.
 The following features/additions came up to my mind while developing the compiler.
 Due to a lack of time, they couldn't (and maybe will never) be implemented.
 
-* Procedures with arguments
+* ~~ Procedures with arguments ~~
 * Arrays
 * Include other PL/0 files
 * Types
@@ -251,6 +281,8 @@ Due to a lack of time, they couldn't (and maybe will never) be implemented.
 * ~~ Conditional Statement error on wrong condition. The jmpnot jumps probably to the wrong address ~~
 * ~~ Call doesn't work properly. Check out BL5/BL6 ~~
 * ~~ Procedure can't access variables of the main programm ~~
+* ~~ Procedures with parameters won't work with more than one parameter ~~
+* ~~ Order of parameters in Procedures with parameters is wrong ~~ 
 * AST will only be written correctly to xml-file if the compiling process succeeded. On Error some 
   tags are missing and the xml-file is corrupted.
 

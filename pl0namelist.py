@@ -25,8 +25,7 @@ class NLProc(NLIdent):
         self.constants = []
         self.variables = []
         self.childProcedures = []
-        self.parameters = []
-        self.paramAddressOffset = 0
+        self.paramAddressOffset = -16
         self.localAddressOffset = 0
         self.index = index
 
@@ -37,10 +36,11 @@ class NLConst(NLIdent):
 
 class NLVar(NLIdent):
 
-    def __init__(self, name,addressOffset, parent,value=None):
+    def __init__(self, name,addressOffset, parent,value=None, procedureParameter=False):
         super().__init__(name,value)
         self.parent = parent
         self.addressOffset = addressOffset
+        self.procedureParameter = procedureParameter
 
 
 #
@@ -125,8 +125,8 @@ class PL0NameList:
 
         self.currentProcedure.paramAddressOffset -= 4
 
-        newVar = NLVar(name=name,parent=self.currentProcedure,addressOffset=currentOffset)
-        self.currentProcedure.parameters.append(newVar)
+        newVar = NLVar(name=name,parent=self.currentProcedure,addressOffset=currentOffset, procedureParameter=True)
+        self.currentProcedure.variables.append(newVar)
 
         return newVar
 
@@ -152,19 +152,21 @@ class PL0NameList:
 
     def correctParameterList(self):
 
-        if len(self.currentProcedure.parameters) == 0:
+        if len(self.currentProcedure.variables) == 0:
             return
 
         # Correct Address
         # The first argument has to be the highest negative relative address
         # because it was pushed at very first onto the stack
-        maxAddr = -len(self.currentProcedure.parameters) * 4
+        params = list(filter(lambda v: v.procedureParameter, self.currentProcedure.variables))
+        
+        # Reverse parameters
+        params = params[::-1]
 
-        for i in range(0,len(self.currentProcedure.parameters)):
-            self.currentProcedure.parameters[i].addressOffset = maxAddr - (i*4) - 12
-
-        # Merge Parameter list into the variable list
-        self.currentProcedure.variables += self.currentProcedure.parameters
+        # -16 is the negative offset in order to overstep the entry proc command with 
+        # properties of the current procedure
+        for i in range(0,len(params)):
+            params[i].addressOffset = -16 -i*4
 
     def createProc(self, name,parent=None):
         
