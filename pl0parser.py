@@ -41,6 +41,7 @@ class NonTerminal(Enum):
     FOR_STATEMENT = 19
     PARAMETER_LIST_CALL = 20
     PARAMETER_LIST_DECLARATION = 21
+    ARRAY_INDEX = 22
 
 
 class EdgeType(Enum):
@@ -160,6 +161,14 @@ class PL0Parser():
         PD1 = self.procedureParameter
         PD2 = self.procedureEndParameterList
 
+        # Array
+        ARR0 = self.arrayPushAddr
+        AR1 = self.arraySetIndex
+        AR2 = self.arrayCrate
+        AR3 = self.arrayAccess
+        AR4 = self.arraySwap
+        FA3 = self.factorGetIdent
+
         # Init Syntax rules
 
         # Short identifier for edge definition
@@ -187,6 +196,7 @@ class PL0Parser():
         FORS = NonTerminal.FOR_STATEMENT
         PLC = NonTerminal.PARAMETER_LIST_CALL
         PLD = NonTerminal.PARAMETER_LIST_DECLARATION
+        ARR = NonTerminal.ARRAY_INDEX
 
         programEdges = [
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 1, 0, PROG),  # 0
@@ -228,10 +238,24 @@ class PL0Parser():
         varDeclarationEdges = [
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, BL3, 1, 0, VARD),  # 0
 
+            # Array
+            Edge(EdgeType.SYMBOL___,'[',None, 2,4, VARD),                  # 1
+            Edge(EdgeType.MORPHEM__,MorphemCode.NUMBER,AR1, 3,0, VARD),    # 2
+            Edge(EdgeType.SYMBOL___,']',AR2, 4,0, VARD),                   # 3
+
             # End
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, VARD)                  # 1
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, VARD)                  # 4
         ]
 
+
+        arrayIndexEdges = [
+            Edge(EdgeType.SYMBOL___,'[',ARR0, 1,0, ARR),        # 0
+            Edge(EdgeType.SUBGRAPH_,EXPR,None, 2,0, ARR),       # 1
+            Edge(EdgeType.SYMBOL___,']',AR3, 3,0, ARR),        # 2
+
+            # End
+            Edge(EdgeType.GRAPH_END,0, None, 0,0,ARR)           # 3
+        ]
 
         procDeclatationEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.PROCEDURE, None, 1, 0, PROC),  # 0
@@ -276,9 +300,14 @@ class PL0Parser():
 
         assignmentEdges = [
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,ST1, 1, 0, ASSS),        # 0
-            Edge(EdgeType.SYMBOL___, Symbol.ASSIGN, None, 2, 0, ASSS),          # 1
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, ST2, 3, 0, ASSS),  # 2
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, ASSS)                       # 3
+            
+            Edge(EdgeType.SYMBOL___,'[',None, 2,4, ASSS),                        # 1
+            Edge(EdgeType.SUBGRAPH_,EXPR,None, 3,0, ASSS),                       # 2
+            Edge(EdgeType.SYMBOL___,']',AR3, 4,0, ASSS),                         # 3
+            
+            Edge(EdgeType.SYMBOL___, Symbol.ASSIGN, None, 5, 0, ASSS),          # 4
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, ST2, 6, 0, ASSS),  # 5
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, ASSS)                       # 6
         ]
 
         conditionalEdges = [
@@ -363,22 +392,31 @@ class PL0Parser():
         ]
 
         statementEdges = [
+            # A := b
             Edge(EdgeType.SUBGRAPH_, NonTerminal.ASSIGNMENT_STATEMENT, None, 8, 1, STAT),    # 0
 
+            # If-Else
             Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITIONAL_STATEMENT, None, 8, 2, STAT),   # 1
 
+            # While-Loop
             Edge(EdgeType.SUBGRAPH_, NonTerminal.LOOP_STATEMENT, None, 8, 3, STAT),          # 2
 
+            # BEGIN, END
             Edge(EdgeType.SUBGRAPH_, NonTerminal.COMPOUND_STATEMENT, None, 8, 4,  STAT),     # 3
 
+            # Call procedure
             Edge(EdgeType.SUBGRAPH_, NonTerminal.PROCEDURE_CALL, None,  8, 5, STAT),         # 4
 
+            # Get value
             Edge(EdgeType.SUBGRAPH_, NonTerminal.INPUT_STATEMENT, None, 8, 6, STAT),         # 5
 
+            # Print value
             Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT, None, 8, 7, STAT),        # 6
 
+            # For-Loop
             Edge(EdgeType.SUBGRAPH_,NonTerminal.FOR_STATEMENT,None,8,0,STAT),                # 7 
 
+            # End
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, STAT)                                    # 8
         ]
 
@@ -394,30 +432,38 @@ class PL0Parser():
         ]
 
         factorEdges = [
-            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, FA1, 5, 1, FACT),      # 0
+
+            # 0-9
+            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, FA1, 7, 1, FACT),      # 0
+
+            # ( EXPRESSION )
             Edge(EdgeType.SYMBOL___, '(', None, 2, 4, FACT),                    # 1
             Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, FACT),                   # 2
-            Edge(EdgeType.SYMBOL___, ')', None, 5, 0, FACT),                    # 3
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, FA2, 5, 0, FACT),       # 4
+            Edge(EdgeType.SYMBOL___, ')', None, 7, 0, FACT),                    # 3
 
+            # Variable or array
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, FA3, 5, 0, FACT),       # 4
+            Edge(EdgeType.SUBGRAPH_, ARR, AR4, 7,6, FACT),                      # 5
+
+            Edge(EdgeType.NIL______,None, FA2,7,0,FACT),                        # 6
             # End
-            Edge(EdgeType.GRAPH_END, None, None, 0, 0, FACT)                    # 5
+            Edge(EdgeType.GRAPH_END, None, None, 0, 0, FACT)                    # 7
         ]
 
         conditionEdges = [
             # ODD
-            Edge(EdgeType.SYMBOL___, Symbol.ODD, None, 1, 2, COND),          # 0
-            Edge(EdgeType.SUBGRAPH_, EXPR, CO1, 10, 0, COND),                # 1
+            Edge(EdgeType.SYMBOL___, Symbol.ODD, None, 1, 2, COND),          #  0
+            Edge(EdgeType.SUBGRAPH_, EXPR, CO1, 10, 0, COND),                #  1
 
             # Comparisson
-            Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, COND),                # 2
-            Edge(EdgeType.SYMBOL___, '=', CO2, 9, 4, COND),                  # 3
-            Edge(EdgeType.SYMBOL___, '#', CO3, 9, 5, COND),                  # 4
-            Edge(EdgeType.SYMBOL___, '>', CO6, 9, 6, COND),                  # 5
-            Edge(EdgeType.SYMBOL___, '<', CO4, 9, 7, COND),                  # 6
-            Edge(EdgeType.SYMBOL___, Symbol.LESSER_EQUAL, CO5, 9, 8, COND),  # 7
-            Edge(EdgeType.SYMBOL___, Symbol.GREATER_EQUAL, CO7, 9, 0, COND), # 8
-            Edge(EdgeType.SUBGRAPH_, EXPR, CO8, 10, 0, COND),                # 9
+            Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, COND),                #  2
+            Edge(EdgeType.SYMBOL___, '=', CO2, 9, 4, COND),                  #  3
+            Edge(EdgeType.SYMBOL___, '#', CO3, 9, 5, COND),                  #  4
+            Edge(EdgeType.SYMBOL___, '>', CO6, 9, 6, COND),                  #  5
+            Edge(EdgeType.SYMBOL___, '<', CO4, 9, 7, COND),                  #  6
+            Edge(EdgeType.SYMBOL___, Symbol.LESSER_EQUAL, CO5, 9, 8, COND),  #  7
+            Edge(EdgeType.SYMBOL___, Symbol.GREATER_EQUAL, CO7, 9, 0, COND), #  8
+            Edge(EdgeType.SUBGRAPH_, EXPR, CO8, 10, 0, COND),                #  9
 
             # End
             Edge(EdgeType.GRAPH_END, None, None, 0, 0, COND)                 # 10
@@ -438,30 +484,31 @@ class PL0Parser():
         ]
 
         self.edges = {
-            PROG: programEdges,         # 0
-            BLCK: blockEdges,           # 1
-            EXPR: expressionEdges,      # 2
-            TERM: termEdges,            # 3
-            STAT: statementEdges,       # 4
-            FACT: factorEdges,          # 5
-            COND: conditionEdges,       # 6
-            CLST: constListEdges,       # 7
-            CNST: constDeclarationEdges,# 8
-            VLST: varListEdges,         # 9
-            VARD: varDeclarationEdges,  # 10
-            PROC: procDeclatationEdges, # 11
-            ASSS: assignmentEdges,      # 12
-            CNDS: conditionalEdges,     # 13
-            LOOP: loopEdges,            # 14
-            COMP: compoundEdges,        # 15
-            PRCC: procedureCallEdges,   # 16
-            INST: inputEdges,           # 17
-            OUTS: outputEdges,          # 18
+            PROG: programEdges,                  #  0
+            BLCK: blockEdges,                    #  1
+            EXPR: expressionEdges,               #  2
+            TERM: termEdges,                     #  3
+            STAT: statementEdges,                #  4
+            FACT: factorEdges,                   #  5
+            COND: conditionEdges,                #  6
+            CLST: constListEdges,                #  7
+            CNST: constDeclarationEdges,         #  8
+            VLST: varListEdges,                  #  9
+            VARD: varDeclarationEdges,           # 10
+            PROC: procDeclatationEdges,          # 11
+            ASSS: assignmentEdges,               # 12
+            CNDS: conditionalEdges,              # 13
+            LOOP: loopEdges,                     # 14
+            COMP: compoundEdges,                 # 15
+            PRCC: procedureCallEdges,            # 16
+            INST: inputEdges,                    # 17
+            OUTS: outputEdges,                   # 18
 
             # Language Extension
-            FORS: forEdges,                     # 19
-            PLC : parameterListCallEdges,       # 20
-            PLD : parameterListDeclarationEdges # 21
+            FORS: forEdges,                      # 19
+            PLC : parameterListCallEdges,        # 20
+            PLD : parameterListDeclarationEdges, # 21
+            ARR : arrayIndexEdges                # 22
         }
 
         # Init Lexer
@@ -471,6 +518,7 @@ class PL0Parser():
         # Init NameList
         self.nameList = PL0NameList()
         self.currentIdent = None
+        self.currentIndex = 0
 
         # Init Code Generator
         self.outputFilename = outputFilenname
@@ -560,6 +608,8 @@ class PL0Parser():
             # Call Emitter
             if success and edge.f:
                 success = edge.f()
+                if success is None:
+                    logging.error("[Parser] Missing valid return value of edge function {}(). It returned with None".format(edge.f.__name__))
 
             # Check alternatives if evaluation of edge type
             # wasn't successful
@@ -662,6 +712,7 @@ class PL0Parser():
             # Error-Handling  
             return False
 
+        self.currentIdent = ident
         # Add Variable to our namelist
         self.nameList.createVar(name=ident)
 
@@ -920,7 +971,7 @@ class PL0Parser():
             logging.error("[Parser] Type error: Excepted Var ident but got Const ident {}".format(identName))
             return False
 
-                # Check if main/local/global variable
+        # Check if main/local/global variable
         displacement = ident.addressOffset
         args = [displacement]
         if ident.parent == self.nameList.mainProc:
@@ -949,6 +1000,101 @@ class PL0Parser():
         value = str(self.lexer.morphem.value)
         return self.codeGen.putString(value)
 
+
+    # Array
+
+    def arrayPushAddr(self):
+        # Search globally for ident
+        ident = self.nameList.searchIdentNameGlobal(self.currentIdent)
+
+        # if ident not found -> Semantic Error!
+        if ident is None:
+            logging.error("[Parser] Declaration error: Ident {} is used in assignment but not declared.".format(self.currentIdent))
+            return False
+
+        # Check if const or proc -> Semantic error!
+        if isinstance(ident, NLProc):
+            logging.error("[Parser] Type error: Excepted Var ident but got Procedure ident {}".format(self.currentIdent))
+            return False
+
+        if isinstance(ident, NLConst):
+            logging.error("[Parser] Type error: Excepted Var ident but got Const ident {}".format(self.currentIdent))
+            return False
+
+
+        # Check if main/local/global variable
+        displacement = ident.addressOffset
+        args = [displacement]
+        if ident.parent == self.nameList.mainProc:
+            # Main Variable
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_MAIN,args):
+                return False
+        elif ident.parent == self.nameList.currentProcedure:
+            # Local Scope Variable
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_LOCAL,args):
+                return False
+        else:
+            # Global scope Variable
+            args.append(ident.parent.index)
+            if not self.codeGen.writeCommand(VMCode.PUSH_ADDRESS_VAR_GLOBAL,args):
+                return False
+
+        return True
+
+    def arraySetIndex(self):
+
+        # Get number from the last read morphem
+        self.currentIndex = int(self.lexer.morphem.value)
+        return True
+
+    def arrayCrate(self):
+
+        self.nameList.turnLastVarToArray(self.currentIndex)
+        return True
+
+    def arrayAccess(self):
+
+        # Currently the Start address of the array and the index which should be accessed is on the stack
+        # the index has to be multiplied by the size (always 4) and added to the start address
+        
+        #
+        # Push size of a single array filed onto the stack
+        #
+
+        value = 4
+
+        # Looking for const with the current value
+        const = self.nameList.searchConstByValue(value)
+
+        # if not found -> add it as anonym const
+        if const is None:
+            const = self.nameList.createConst(value)
+
+        # put index of the constant onto the stack
+        args = [const.index]
+        if not self.codeGen.writeCommand(VMCode.PUSH_CONST,args):
+            return False
+
+        #
+        # Push Multiplication command onto the stack for index*size
+        #
+        
+        if not self.codeGen.writeCommand(VMCode.OP_MULT):
+            return False
+
+        #
+        # Add the result to the start address of the array
+        #
+        if not self.codeGen.writeCommand(VMCode.OP_ADD):
+            return False
+        return True
+
+    def arraySwap(self):
+
+        # Swap addres with the value on the address
+        if not self.codeGen.writeCommand(VMCode.SWAP):
+            return False
+        return True
 
     # CONDITION
 
@@ -1018,11 +1164,15 @@ class PL0Parser():
     def termMul(self):
         return self.codeGen.writeCommand(VMCode.OP_MULT)
 
-    # Also known as TE1
+    # Also known as TE2
     def termDiv(self):
         return self.codeGen.writeCommand(VMCode.OP_DIV)
 
     # FACTOR
+
+    def factorGetIdent(self):
+        self.currentIdent = str(self.lexer.morphem.value)
+        return True
 
     # Also known as FA1
     def factorPushNumber(self):
@@ -1043,7 +1193,8 @@ class PL0Parser():
     # Also known as FA2
     def factorPushIdent(self):
         # Get ident from the last read morphem
-        identName = str(self.lexer.morphem.value)
+        #identName = str(self.lexer.morphem.value)
+        identName = self.currentIdent     
 
         # Search globally for ident
         ident = self.nameList.searchIdentNameGlobal(identName)

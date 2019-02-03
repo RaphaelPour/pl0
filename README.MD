@@ -179,6 +179,18 @@ END;
 CALL main.
 ```
 
+### Arrays
+```
+VAR x[4],i;
+BEGIN
+    FOR(i:=0; i < 4; i:=i+1)
+    BEGIN
+        x[i] := i;
+        !x[i]
+    END
+END.
+```
+
 ### Recursion
 ```
 CONST a=5;
