@@ -1,0 +1,23 @@
+VAR x[5],i,j,tmp;
+BEGIN
+    /* Initialize "random" int vector*/
+    x[0] := 4;
+    x[1] := 2;
+    x[2] := 1;
+    x[3] := 5;
+    x[4] := 3;
+
+    /* Sort */
+    FOR(i:=4; i >= 0; i:=i-1)
+        FOR(j:=1; j <= i; j:=j+1)
+            IF x[j-1] > x[j] THEN
+            BEGIN
+                tmp := x[j-1];
+                x[j-1] := x[j];
+                x[j] := tmp
+            END;
+
+    /* Display */
+    FOR(i:=0; i < 5; i:=i+1)
+        !x[i]
+END.

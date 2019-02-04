@@ -1,0 +1,14 @@
+VAR x[5],i,j,tmp;
+BEGIN
+    /* Initialize random int vector*/
+    x[0] := 13;
+    x[1] := 21;
+    x[2] := 33;
+    x[3] := 16;
+    x[4] := 47;
+
+
+    /* Display */
+    FOR(i:=0; i < 5; i:=i+1)
+        !x[i]
+END.

@@ -27,6 +27,7 @@ Additional Features
 * Block comments
 * For-Loop
 * Procedures with Parameters
+* Arrays
 
 ## Examples
 
@@ -179,6 +180,45 @@ END;
 CALL main.
 ```
 
+### Arrays
+```
+VAR x[4],i;
+BEGIN
+    FOR(i:=0; i < 4; i:=i+1)
+    BEGIN
+        x[i] := i;
+        !x[i]
+    END
+END.
+```
+
+Sorting numbers
+```
+VAR x[5],i,j,tmp;
+BEGIN
+    /* Initialize "random" int vector*/
+    x[0] := 4;
+    x[1] := 2;
+    x[2] := 1;
+    x[3] := 5;
+    x[4] := 3;
+
+    /* Sort */
+    FOR(i:=4; i >= 0; i:=i-1)
+        FOR(j:=1; j <= i; j:=j+1)
+            IF x[j-1] > x[j] THEN
+            BEGIN
+                tmp := x[j-1];
+                x[j-1] := x[j];
+                x[j] := tmp
+            END;
+
+    /* Display */
+    FOR(i:=0; i < 5; i:=i+1)
+        !x[i]
+END.
+```
+
 ### Recursion
 ```
 CONST a=5;
@@ -271,7 +311,7 @@ Due to a lack of time, they couldn't (and maybe will never) be implemented.
 * _Procedures with return value_
 * _Modulo division_
 * _Add Return keyword to leave procedure earlier_
-* Arrays
+* ~~ Arrays ~~
 * Include other PL/0 files
 * Types
 * Own VM where with more features (for example more I/O Features to read/write from file/network)

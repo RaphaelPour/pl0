@@ -36,11 +36,12 @@ class NLConst(NLIdent):
 
 class NLVar(NLIdent):
 
-    def __init__(self, name,addressOffset, parent,value=None, procedureParameter=False):
+    def __init__(self, name,addressOffset, parent,value=None, procedureParameter=False, fields=0):
         super().__init__(name,value)
         self.parent = parent
         self.addressOffset = addressOffset
         self.procedureParameter = procedureParameter
+        self.fields = fields
 
 
 #
@@ -129,6 +130,12 @@ class PL0NameList:
         self.currentProcedure.variables.append(newVar)
 
         return newVar
+
+    def turnLastVarToArray(self,fields):
+        self.currentProcedure.variables[-1].fields = fields
+
+        # Corrent current local address offset
+        self.currentProcedure.localAddressOffset += 4*(fields-1)
 
     def createVar(self, name):
         """Adds a new variable to the current procedure.
