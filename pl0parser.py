@@ -247,7 +247,6 @@ class PL0Parser():
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, VARD)                  # 4
         ]
 
-
         arrayIndexEdges = [
             Edge(EdgeType.SYMBOL___,'[',ARR0, 1,0, ARR),        # 0
             Edge(EdgeType.SUBGRAPH_,EXPR,None, 2,0, ARR),       # 1
@@ -271,7 +270,6 @@ class PL0Parser():
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, PROC)                  # 8
         ]
         
-
         procedureCallEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.CALL, None, 1, 0, PRCC),            # 0
             Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, PL1, 2, 0, PRCC),       # 1
@@ -434,20 +432,20 @@ class PL0Parser():
         factorEdges = [
 
             # 0-9
-            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, FA1, 7, 1, FACT),      # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.NUMBER, FA1, 7, 1, FACT), # 0
 
             # ( EXPRESSION )
-            Edge(EdgeType.SYMBOL___, '(', None, 2, 4, FACT),                    # 1
-            Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, FACT),                   # 2
-            Edge(EdgeType.SYMBOL___, ')', None, 7, 0, FACT),                    # 3
+            Edge(EdgeType.SYMBOL___, '(', None, 2, 4, FACT),               # 1
+            Edge(EdgeType.SUBGRAPH_, EXPR, None, 3, 0, FACT),              # 2
+            Edge(EdgeType.SYMBOL___, ')', None, 7, 0, FACT),               # 3
 
             # Variable or array
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, FA3, 5, 0, FACT),       # 4
-            Edge(EdgeType.SUBGRAPH_, ARR, AR4, 7,6, FACT),                      # 5
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, FA3, 5, 0, FACT),  # 4
+            Edge(EdgeType.SUBGRAPH_, ARR, AR4, 7,6, FACT),                 # 5
 
-            Edge(EdgeType.NIL______,None, FA2,7,0,FACT),                        # 6
+            Edge(EdgeType.NIL______,None, FA2,7,0,FACT),                   # 6
             # End
-            Edge(EdgeType.GRAPH_END, None, None, 0, 0, FACT)                    # 7
+            Edge(EdgeType.GRAPH_END, None, None, 0, 0, FACT)               # 7
         ]
 
         conditionEdges = [
@@ -468,7 +466,6 @@ class PL0Parser():
             # End
             Edge(EdgeType.GRAPH_END, None, None, 0, 0, COND)                 # 10
         ]
-
 
         forEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.FOR, None, 1,0,FORS),   # 0
