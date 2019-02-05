@@ -32,9 +32,9 @@ Additional Features
 ## Examples
 
 ### Hello World
-```
+~~~~
 ! "Hello World!".
-```
+~~~~
 
 ### Arithmetic expressions
 ~~~~
@@ -51,7 +51,6 @@ END.
 ~~~~
 
 ### If
-
 ~~~~
 VAR a,b;
 BEGIN
