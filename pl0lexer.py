@@ -142,7 +142,7 @@ class PL0Lexer():
             [(16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (16,B__)],  # 8 // >=
             [(16, B__), ( 2, SL_), ( 9, GL_), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), ( 9, GL_), (16,B__), (16,B__), (16,B__)],  # 9 // Potential Keyword
 
-            [(16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16, SLB), (16,SLB), (16,SLB), (11,RL_)],  #10 // '/'
+            [(16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16, B__), (16,B__), (16,B__), (11,RL_)],  #10 // '/'
             [(11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11,L__), (11,L__), (12,L__)],  #11 // '/*'
             [(11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11, L__), (11,L__), (13,L__), (11,L__)],  #12 // '/*...|*'
             [( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0, L__), ( 0,L__), ( 0,L__), ( 0,L__)],  #13 // '/*...*/'
@@ -175,15 +175,15 @@ class PL0Lexer():
 
             cvIndex = ord(self.currentChar)
             if cvIndex >= len(self.charVector):
-                logging.error("Char Vector Index out of range with char '{}' ({}), Char Vector's size is {}".format(
+                logging.error("[Lexer] Char Vector Index out of range with char '{}' ({}), Char Vector's size is {}".format(
                     self.controlSymbolsToString(self.currentChar), ord(self.currentChar), len(self.charVector)))
 
             charClass = self.charVector[cvIndex]
             if charClass > 11:
-                logging.error("Char Class Index '{}' out of range. There are only 11 classes.".format(charClass))
+                logging.error("[Lexer] Char Class Index '{}' out of range. There are only 11 classes.".format(charClass))
 
             if self.currentState > 16:
-                logging.error("Invalid State '{}'. There are only 16 states.".format(self.currentState))
+                logging.error("[Lexer] Invalid State '{}'. There are only 16 states.".format(self.currentState))
 
             #print("State: {}, charClass: {}".format(self.currentState, charClass))
             action = self.stateMat[self.currentState][charClass]
@@ -255,7 +255,7 @@ class PL0Lexer():
         self.morphem.cols = self.cols - len(str(self.outBuffer))
 
         # Valid Special Chars and :,<,>
-        if self.currentState in (3, 4, 5,0):
+        if self.currentState in (3, 4, 5,0, 10):
             self.morphem.setSymbol(self.outBuffer)
 
         # Number
@@ -291,7 +291,7 @@ class PL0Lexer():
         elif self.currentState == 15:
             self.morphem.setString(self.outBuffer)
         else:
-            logging.error("Unknown State '{}'".format(self.currentState))
+            logging.error("[Lexer] Unknown State '{}'".format(self.currentState))
 
     def controlSymbolsToString(self, s):
         out = ""
