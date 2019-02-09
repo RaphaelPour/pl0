@@ -305,9 +305,9 @@ CALL main.
 
 The compiler has four main components:
     - Lexer ([pl0lexer.py](pl0lexer.py))
-    - Parser ([pl0parser.py](pl0lexer.py))
-    - Namelist ([pl0parser.py](pl0namelist.py))
-    - Code-Generator ([pl0parser.py](pl0codegen.py))
+    - Parser ([pl0parser.py](pl0parser.py))
+    - Namelist ([pl0namelist.py](pl0namelist.py))
+    - Code-Generator ([pl0codegen.py](pl0codegen.py))
 
 
 ### Lexer
