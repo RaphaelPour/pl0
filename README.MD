@@ -301,6 +301,24 @@ END;
 CALL main.
 ~~~~
 
+## Language specification (__in progress__)
+<PROGRAM>     :: <BLOCK> '.'.
+<BLOCK>       :: ['CONST' ident=num{',' ident=num}';']
+                 ['VAR' ident { ',' ident } ';' ]
+                 {'PROCEDURE' ident ';' <BLOCK> ';' } <STATEMENT>.
+<STATEMENT>   :: [ident ':=' expression |
+                 'CALL' ident |
+                 '?' ident |
+                 '!' <EXPRESSION> |
+                 'BEGIN' <STATEMENT> { ';' STATEMENT } 'END' |
+                 'IF' <CONDITION> 'THEN' <STATEMENT> |
+                 'WHILE' <CONDITION> 'DO' <STATEMENT>].
+<CONDITION>   :: 'ODD' <EXPRESSION> |
+                  <EXPRESSION> ("="|"#"|"<"|"<="|">"|">=") <EXPRESSION>.
+<EXPRESSION>  :: ["+" | "-"] term {("+" | "-") <TERM> }.
+<TERM>        :: <FAKTOR> { ("*"|"/") <FAKTOR> }.
+<FACTOR>      :: ident | number | "(" <EXPRESSION> ")".
+
 ## Architecture
 
 The compiler has four main components:
