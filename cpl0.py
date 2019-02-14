@@ -4,6 +4,7 @@
 #   file:           cpl0.py
 #   description:    PL/0 Compiler main program with argument parser
 #   date:           24.01.2018
+#   author:         Raphael Pour <info@raphaelpour.de>
 #   license:        GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 #
 

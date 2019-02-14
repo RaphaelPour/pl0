@@ -3,6 +3,7 @@
 #
 #   file:           pl0parser.py
 #   description:    PL/0 Parser implementing the PL/0 grammar
+#   author:         Raphael Pour <info@raphaelpour.de>
 #   date:           24.01.2018
 #   license:        GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 #
