@@ -15,7 +15,6 @@ BEGIN
    goal := (in*3)+2;
    IF goal < 0 THEN goal := -goal
 END;
-PROCEDURE main;
 BEGIN
    done:=0;
    tries:=0;
@@ -33,15 +32,13 @@ BEGIN
        BEGIN
            !"You won!";
            done := 1
-       END;
-
-       IF in>goal THEN
+       END
+       ELSE IF in>goal THEN
        BEGIN
            !"Smaller!";
            tries := tries+1
-       END;
-
-       IF in<goal THEN
+       END
+       ELSE 
        BEGIN
            !"Larger!";
            tries := tries+1
@@ -51,9 +48,8 @@ BEGIN
        BEGIN
            !"Tries left:";
            !MAXTRIES-tries
-       END;
-
-       IF tries = MAXTRIES THEN
+       END
+       ELSE IF tries = MAXTRIES THEN
        BEGIN
            !"No tries left...";
            !"   G A M E";
@@ -61,5 +57,4 @@ BEGIN
            done := 1
        END
    END
-END;
-CALL main.
+END.

@@ -5,11 +5,9 @@
  */
 CONST k=5;
 VAR i;
-PROCEDURE main;
 BEGIN
     FOR(i:=0;i<k;i:=i+1)
         BEGIN
             !i
         END
-END;
-CALL main.
+END.

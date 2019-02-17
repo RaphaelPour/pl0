@@ -4,7 +4,6 @@
  * @date:        24.01.2019
  */
 VAR input;
-PROCEDURE main;
 BEGIN
     !" >>>>>>>>> ODD Tester >>>>>>>>>";
     !"Input 0 to exit.";
@@ -17,5 +16,4 @@ BEGIN
         !"Input Number:";
         ?input
     END
-END;
-CALL main.
+END.

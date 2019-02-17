@@ -5,12 +5,10 @@
  */
 CONST pHNeutral=7;
 VAR input;
-PROCEDURE main;
 BEGIN
     !"Input pH Value:";
     ?input;
     IF input = pHNeutral THEN !"Neutral"
     ELSE IF input > pHNeutral THEN !"Alkaline"
     ELSE !"Acid"
-END;
-CALL main.
+END.

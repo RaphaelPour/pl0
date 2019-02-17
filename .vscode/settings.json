@@ -10,5 +10,4 @@
     "python.unitTest.nosetestsEnabled": false,
     "python.unitTest.unittestEnabled": true,
     "python.linting.pylintEnabled": true,
-    "python.pythonPath": "C:\\Python36\\python.exe"
 }
