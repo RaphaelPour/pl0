@@ -1,0 +1,10 @@
+PROCEDURE f(x);
+BEGIN
+    IF ODD x THEN 
+    BEGIN
+        !"ODD";
+        RETURN 
+    END;
+    !"EVEN"
+END;
+CALL f(2).

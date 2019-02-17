@@ -364,17 +364,11 @@ Due to a lack of time, they couldn't (and maybe will never) be implemented.
 EDIT: The crossed out features managed itself to get to the actual feature list.
 
 * ~~ Procedures with arguments ~~
-<<<<<<< HEAD
-* _Procedures with return value_
-* _Modulo division_
-* _Add Return keyword to leave procedure earlier_
-* _Multiple conditions in one If-Condition seperated by AND/OR_
-=======
+* ~~ Add Return keyword to leave procedure earlier ~~
+* ~~ Arrays ~~
 * Procedures with return value
 * Modulo division
-* Add Return keyword to leave procedure earlier
->>>>>>> 7b1bdf9495e3a7c45d51490f6162444c363aa73d
-* ~~ Arrays ~~
+* Multiple conditions in one If-Condition seperated by AND/OR
 * Include other PL/0 files
 * Types
 * Own VM where with more features (for example more I/O Features to read/write from file/network)

@@ -109,6 +109,7 @@ class PL0Parser():
         BL4 = self.blockCreateProc
         BL5 = self.blockEndProcedure
         BL6 = self.blockInitCodeGen
+        BL7 = self.blockReturnProcedure
 
         # Statement
         ST1 = self.statementAssignmentLeftSide
@@ -416,7 +417,7 @@ class PL0Parser():
             Edge(EdgeType.SUBGRAPH_,NonTerminal.FOR_STATEMENT,None,9,8,STAT),                # 7 
 
             # Return command
-            Edge(EdgeType.SYMBOL___,Symbol.RETURN, BL5, 9,0,STAT ),                          # 8
+            Edge(EdgeType.SYMBOL___,Symbol.RETURN, BL7, 9,0,STAT ),                          # 8
 
             # End
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, STAT)                                    # 9
@@ -754,6 +755,19 @@ class PL0Parser():
         # otherwise the first one gets the highest address and
         # is used as last parameter
         self.nameList.correctParameterList()
+
+        return True
+
+
+    def blockReturnProcedure(self):
+        # Pop all parameters 
+        for _ in filter(lambda v: v.procedureParameter ,self.nameList.currentProcedure.variables):
+            if not self.codeGen.writeCommand(VMCode.POP):
+                return False        
+
+        # Write Return Statement (Doesn't need an address, cause Beck's VM can handle it by itself)
+        if not self.codeGen.writeCommand(VMCode.RET_PROC):
+            return False
 
         return True
 
