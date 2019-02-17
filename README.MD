@@ -338,9 +338,11 @@ CALL main.
                                  | "(" <EXPRESSION> ")".
 ~~~
 
+
 ## Architecture
 
 The compiler has four main components:
+
     - Lexer ([pl0lexer.py](pl0lexer.py))
     - Parser ([pl0parser.py](pl0parser.py))
     - Namelist ([pl0namelist.py](pl0namelist.py))
