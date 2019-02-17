@@ -302,6 +302,8 @@ CALL main.
 ~~~~
 
 ## Language specification
+
+~~~
 <PROGRAM>     :: <BLOCK> '.'.
 
 <BLOCK>       :: [ <CONSTANT_LIST> ]
@@ -358,6 +360,7 @@ CALL main.
 <TERM>        :: <FAKTOR> { ("*"|"/") <FAKTOR> }.
 
 <FACTOR>      :: ident [ <ARRAY_INDEX> ] | number | "(" <EXPRESSION> ")".
+~~~
 
 ## Architecture
 
