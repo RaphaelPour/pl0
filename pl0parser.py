@@ -391,31 +391,34 @@ class PL0Parser():
 
         statementEdges = [
             # A := b
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.ASSIGNMENT_STATEMENT, None, 8, 1, STAT),    # 0
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.ASSIGNMENT_STATEMENT, None, 9, 1, STAT),    # 0
 
             # If-Else
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITIONAL_STATEMENT, None, 8, 2, STAT),   # 1
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITIONAL_STATEMENT, None, 9, 2, STAT),   # 1
 
             # While-Loop
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.LOOP_STATEMENT, None, 8, 3, STAT),          # 2
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.LOOP_STATEMENT, None, 9, 3, STAT),          # 2
 
             # BEGIN, END
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.COMPOUND_STATEMENT, None, 8, 4,  STAT),     # 3
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.COMPOUND_STATEMENT, None, 9, 4,  STAT),     # 3
 
             # Call procedure
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.PROCEDURE_CALL, None,  8, 5, STAT),         # 4
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.PROCEDURE_CALL, None,  9, 5, STAT),         # 4
 
             # Get value
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.INPUT_STATEMENT, None, 8, 6, STAT),         # 5
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.INPUT_STATEMENT, None, 9, 6, STAT),         # 5
 
             # Print value
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT, None, 8, 7, STAT),        # 6
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.OUTPUT_STATEMENT, None, 9, 7, STAT),        # 6
 
             # For-Loop
-            Edge(EdgeType.SUBGRAPH_,NonTerminal.FOR_STATEMENT,None,8,0,STAT),                # 7 
+            Edge(EdgeType.SUBGRAPH_,NonTerminal.FOR_STATEMENT,None,9,8,STAT),                # 7 
+
+            # Return command
+            Edge(EdgeType.SYMBOL___,Symbol.RETURN, BL5, 9,0,STAT ),                          # 8
 
             # End
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, STAT)                                    # 8
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, STAT)                                    # 9
         ]
 
         termEdges = [

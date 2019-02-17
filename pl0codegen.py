@@ -51,7 +51,7 @@ class VMCode(Enum):
     POP = 28
     SWAP = 29
 
-    END_OF_CODE = 20 #1E
+    END_OF_CODE = 30 #1E
 
 class CGLabel:
     def __init__(self, address):

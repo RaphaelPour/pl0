@@ -37,8 +37,11 @@ class Symbol(Enum):
     THEN = 139
     VAR = 140
     WHILE = 141
+
+    # Additional Symbols
     FOR = 142
     ELSE = 143
+    RETURN = 144
 
 class Morphem():
 
@@ -254,7 +257,7 @@ class PL0Lexer():
         self.morphem.lines = self.lines
         self.morphem.cols = self.cols - len(str(self.outBuffer))
 
-        # Valid Special Chars and :,<,>
+        # Valid Special Chars and :,<,>,/
         if self.currentState in (3, 4, 5,0, 10):
             self.morphem.setSymbol(self.outBuffer)
 

@@ -310,6 +310,7 @@ Due to a lack of time, they couldn't (and maybe will never) be implemented.
 * _Procedures with return value_
 * _Modulo division_
 * _Add Return keyword to leave procedure earlier_
+* _Multiple conditions in one If-Condition seperated by AND/OR_
 * ~~ Arrays ~~
 * Include other PL/0 files
 * Types
