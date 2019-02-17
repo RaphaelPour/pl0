@@ -305,27 +305,17 @@ CALL main.
 
 ~~~
 <PROGRAM>     :: <BLOCK> '.'.
-
 <BLOCK>       :: [ <CONSTANT_LIST> ]
                  [ <VARIABLE_LIST> ] 
                  { <PROCEDURE> } <STATEMENT>.
-
 <CONSTANT_LIST> :: 'CONST' <CONSTANT_DECLARATION> {',' <CONSTANT_DECLARATION>} ';'.
-
 <CONSTANT>    :: ident '=' number.
-
 <VARIABLE_LIST> :: 'VAR' <VAR_DECLARATION> {',' <VAR_DECLARATION> } ';'.
-
 <VARIABLE_DECLARATION> :: ident [ '[' number ']' ].
-
 <PROCEDURE>   :: 'PROCEDURE' ident ['(' [ <PARAMETER_LIST_DECLARATION> ] ')' ] ';' <BLOCK> ';'.
-
 <PROCEDURE_CALL> :: 'CALL' ident ['(' [ <PARAMETER_LIST_CALL> ] ')' ]
-
 <PARAMETER_LIST_DECLARATION> :: ident {',' ident }
-
 <PARAMETER_LIST_CALL> :: <EXPRESSION> {',' <EXPRESSION> }
-
 <STATEMENT>   :: <ASSIGNMENT> 
                 | <PROCEDURE_CALL>
                 | <INPUT_STATEMENT>
@@ -335,30 +325,18 @@ CALL main.
                 | <LOOP_STATEMENT>
                 | <FOR_STATEMENT>
                 | 'RETURN'.
-
 <COMPOUND_STATEMENT> :: 'BEGIN' <STATEMENT> { ';' STATEMENT } 'END'.
-
 <INPUT_STATEMENT> :: '?' ident.
-
 <OUTPUT_STATEMENT> :: '!' (string | <EXPRESSION>).
-
 <ASSIGNMENT>  :: ident ':=' <EXPRESSION>.
-
 <ARRAY_INDEX> :: '[' number ']'.
-
 <CONDITIONAL_STATEMENT> ::  'IF' <CONDITION> 'THEN' <STATEMENT> .
-
 <CONDITION>   :: 'ODD' <EXPRESSION> 
                 | <EXPRESSION> ("="|"#"|"<"|"<="|">"|">=") <EXPRESSION>.
-
 <LOOP_STATEMENT> :: 'WHILE' <CONDITION> 'DO' <STATEMENT>.
-
 <FOR_STATEMENT> :: 'FOR' '(' <ASSIGNMENT> ';' <CONDITION> '; <ASSIGNMENT>  ')' <STATEMENT> .
-
 <EXPRESSION>  :: ["+" | "-"] term {("+" | "-") <TERM> }.
-
 <TERM>        :: <FAKTOR> { ("*"|"/") <FAKTOR> }.
-
 <FACTOR>      :: ident [ <ARRAY_INDEX> ] | number | "(" <EXPRESSION> ")".
 ~~~
 
