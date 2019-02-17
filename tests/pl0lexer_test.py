@@ -1,12 +1,17 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import unittest
 import os
+
+import sys
+sys.path.append("..")
 
 from pl0lexer import PL0Lexer, Morphem, MorphemCode, Symbol
 
 class TestPL0Lexer(unittest.TestCase):
 
     def setUp(self):
-        self.testFileFolder = "../testfiles"
+        self.testFileFolder = "testfiles"
 
     def test_operator(self):
         testFile = os.path.join(self.testFileFolder, "test1.txt")

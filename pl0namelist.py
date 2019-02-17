@@ -3,6 +3,7 @@
 #
 #   file:           pl0namelist.py
 #   description:    Namelist which keeps track of all parsed idents and procedures/variables/constants
+#   author:         Raphael Pour <info@raphaelpour.de>
 #   date:           24.01.2018
 #   license:        GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 #

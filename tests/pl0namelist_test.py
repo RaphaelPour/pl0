@@ -1,6 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import unittest
 import os
 
+import sys
+sys.path.append("..")
 from pl0namelist import PL0NameList,NLIdent,NLConst,NLProc,NLVar
 
 class TestPL0Parser(unittest.TestCase):

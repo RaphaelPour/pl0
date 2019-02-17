@@ -2,7 +2,7 @@
 
 This Python-based Compiler converts PL/0 source code into CL/0 virtual machine code. Both are educational languages with the aim to get faster to the real handwork of compiler-construction.
 
-This project is the outcome of the Compilerconstruction Module at the HTW Dresden.
+This project is the outcome of the Compilerconstruction module at the HTW Dresden.
 
 ## Usage
 
@@ -301,16 +301,79 @@ END;
 CALL main.
 ~~~~
 
+## Language specification (__in progress__)
+<PROGRAM>     :: <BLOCK> '.'.
+<BLOCK>       :: ['CONST' ident=num{',' ident=num}';']
+                 ['VAR' ident { ',' ident } ';' ]
+                 {'PROCEDURE' ident ';' <BLOCK> ';' } <STATEMENT>.
+<STATEMENT>   :: [ident ':=' expression |
+                 'CALL' ident |
+                 '?' ident |
+                 '!' <EXPRESSION> |
+                 'BEGIN' <STATEMENT> { ';' STATEMENT } 'END' |
+                 'IF' <CONDITION> 'THEN' <STATEMENT> |
+                 'WHILE' <CONDITION> 'DO' <STATEMENT>].
+<CONDITION>   :: 'ODD' <EXPRESSION> |
+                  <EXPRESSION> ("="|"#"|"<"|"<="|">"|">=") <EXPRESSION>.
+<EXPRESSION>  :: ["+" | "-"] term {("+" | "-") <TERM> }.
+<TERM>        :: <FAKTOR> { ("*"|"/") <FAKTOR> }.
+<FACTOR>      :: ident | number | "(" <EXPRESSION> ")".
+
+## Architecture
+
+The compiler has four main components:
+    - Lexer ([pl0lexer.py](pl0lexer.py))
+    - Parser ([pl0parser.py](pl0parser.py))
+    - Namelist ([pl0namelist.py](pl0namelist.py))
+    - Code-Generator ([pl0codegen.py](pl0codegen.py))
+
+
+### Lexer
+The lexical analyzer (short: lexer) transforms source code into tokens and provide them to the parser.
+It does this transformation on-demand, when the parser asks for the next token.
+One token can be a symbol, number, or a whole variable identifier.
+Let's take the Hello-World programm as an example:
+~~~~
+!"Hello World".
+~~~~
+
+The lexer would identify and transform this program into the following three tokens:
+- SYMBOL (!)
+- STRING (Hello World)
+- END (.)
+
+### Parser
+The syntactical analyzer (or parser) tries to resolve the incoming tokens using the syntax-rules of PL/0.
+It is designed as a graph-controlled top-down parser with edge-functions. This means that the rules itself
+are expressed using a graph and each edge of the graph can have a function which gets called on success.
+
+Those functions trigger the code generation or prepare it by for example creating a new variable or checking
+if the currently read identifier is already defined. In conclusion it is also possible to detect a few semantical
+errors.
+
+### Namelist
+It manages all procedures, variables and constants of a program. This includes adding and looking for them.
+
+### Code-Generation
+Provides all commands of the target-language CL/0 such as functions to create jump labels or correct addresses (backpatching).
+
 ## Vision
 
 The following features/additions came up to my mind while developing the compiler.
 Due to a lack of time, they couldn't (and maybe will never) be implemented.
+EDIT: The crossed out features managed itself to get to the actual feature list.
 
 * ~~ Procedures with arguments ~~
+<<<<<<< HEAD
 * _Procedures with return value_
 * _Modulo division_
 * _Add Return keyword to leave procedure earlier_
 * _Multiple conditions in one If-Condition seperated by AND/OR_
+=======
+* Procedures with return value
+* Modulo division
+* Add Return keyword to leave procedure earlier
+>>>>>>> 7b1bdf9495e3a7c45d51490f6162444c363aa73d
 * ~~ Arrays ~~
 * Include other PL/0 files
 * Types

@@ -4,6 +4,7 @@
 #   file:           xmlwriter.py
 #   description:    Converts abstract syntax tree of a parsed PL/0 file to xml and 
 #                   writes it to a file
+#   author:         Raphael Pour <info@raphaelpour.de>
 #   date:           24.01.2018
 #   license:        GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 #
