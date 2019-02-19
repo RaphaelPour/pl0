@@ -28,6 +28,7 @@ Additional Features
 * For-Loop
 * Procedures with Parameters
 * Arrays
+* Logical Expressions
 
 ## Examples
 
@@ -233,6 +234,16 @@ PROCEDURE main;
 CALL main.
 ~~~~
 
+### Logical Expressions
+~~~
+BEGIN
+  IF  { ODD 1 AND NOT ODD 1} OR NOT ODD 1 THEN
+  !1
+  ELSE
+  !2
+END.
+~~~
+
 ### Number guessing game
 ~~~~
 /*
@@ -326,16 +337,20 @@ CALL main.
 <OUTPUT_STATEMENT>           ::= '!' (string | <EXPRESSION>).
 <ASSIGNMENT>                 ::= ident ':=' <EXPRESSION>.
 <ARRAY_INDEX>                ::= '[' <EXPRESSION> ']'.
-<CONDITIONAL_STATEMENT>      ::=  'IF' <CONDITION> 'THEN' <STATEMENT> .
+<CONDITIONAL_STATEMENT>      ::=  'IF' <LOGICAL_EXPRESSION> 'THEN' <STATEMENT> ['ELSE' <STATEMENT>].
 <CONDITION>                  ::= 'ODD' <EXPRESSION> 
-                                 | <EXPRESSION> ("="|"#"|"<"|"<="|">"|">=") <EXPRESSION>.
-<LOOP_STATEMENT>             ::= 'WHILE' <CONDITION> 'DO' <STATEMENT>.
-<FOR_STATEMENT>              ::= 'FOR' '(' <ASSIGNMENT> ';' <CONDITION> '; <ASSIGNMENT>  ')' <STATEMENT> .
-<EXPRESSION>                 ::= ["+" | "-"] term {("+" | "-") <TERM> }.
-<TERM>                       ::= <FAKTOR> { ("*"|"/") <FAKTOR> }.
+                                 | <EXPRESSION> ('=' | '#' | '<' | '<=' | '>' | '>=') <EXPRESSION>.
+<LOOP_STATEMENT>             ::= 'WHILE' <LOGICAL_EXPRESSION> 'DO' <STATEMENT>.
+<FOR_STATEMENT>              ::= 'FOR' '(' <ASSIGNMENT> ';' <LOGICAL_EXPRESSION> '; <ASSIGNMENT>  ')' <STATEMENT> .
+<EXPRESSION>                 ::= ['+' | '-'] term { ('+' | '-') <TERM> }.
+<TERM>                       ::= <FAKTOR> { ( '*' | '/' ) <FAKTOR> }.
 <FACTOR>                     ::= ident [ <ARRAY_INDEX> ] 
                                  | number 
-                                 | "(" <EXPRESSION> ")".
+                                 | '(' <EXPRESSION> ')'.
+<LOGICAL_EXPRESSION>         ::= LOGICAL_TERM {'OR' LOGICAL_TERM}.
+<LOGICAL_TERM>               ::= ['NOT'] LOGICAL_FACTOR {'AND' ['NOT'] LOGICAL_FACTOR}.
+<LOGICAL_FACTOR>             ::= CONDITION 
+                                 | ( '{' LOGICAL_EXPRESSION '}').
 ~~~
 
 
@@ -387,6 +402,7 @@ EDIT: The crossed out features managed itself to get to the actual feature list.
 * ~~ Procedures with arguments ~~
 * ~~ Add Return keyword to leave procedure earlier ~~
 * ~~ Arrays ~~
+* ~~ Connect multiple conditions using logical expressions with AND/OR/NOT ~~
 * Procedures with return value
 * Modulo division
 * Multiple conditions in one If-Condition seperated by AND/OR

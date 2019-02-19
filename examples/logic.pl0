@@ -1,0 +1,6 @@
+BEGIN
+  IF  { ODD 1 AND NOT ODD 1} OR NOT ODD 1 THEN
+  !1
+  ELSE
+  !2
+END.

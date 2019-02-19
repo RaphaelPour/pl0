@@ -44,6 +44,9 @@ class NonTerminal(Enum):
     PARAMETER_LIST_DECLARATION = 21
     ARRAY_INDEX = 22
 
+    LOGICAL_EXPRESSION = 23
+    LOGICAL_TERM = 24
+    LOGICAL_FACTOR = 25
 
 class EdgeType(Enum):
     NIL______ = 0
@@ -174,6 +177,12 @@ class PL0Parser():
         ST15= self.statementGetValIdent
         ST16= self.statementGetValToArray
 
+        # Logical Expressions
+        LE1 = self.logicalOr
+        LT1 = self.logicalNot
+        LT2 = self.logicalNotAnd
+        LT3 = self.logicalAnd
+
         # Init Syntax rules
 
         # Short identifier for edge definition
@@ -203,6 +212,9 @@ class PL0Parser():
         PLD = NonTerminal.PARAMETER_LIST_DECLARATION
         ARR = NonTerminal.ARRAY_INDEX
        
+        LEXPR = NonTerminal.LOGICAL_EXPRESSION
+        LTERM = NonTerminal.LOGICAL_TERM
+        LFACT = NonTerminal.LOGICAL_FACTOR
 
         programEdges = [
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 1, 0, PROG),  # 0
@@ -316,7 +328,7 @@ class PL0Parser():
 
         conditionalEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.IF, None, 1, 0, CNDS),             # 0
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, ST3, 2, 0, CNDS),  # 1
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.LOGICAL_EXPRESSION, ST3, 2, 0, CNDS),  # 1
             Edge(EdgeType.SYMBOL___, Symbol.THEN, None, 3, 0, CNDS),           # 2
             Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, None, 5, 0, CNDS), # 3
             Edge(EdgeType.NIL______, None, ST4, 7,0, CNDS),                    # 4 
@@ -330,7 +342,7 @@ class PL0Parser():
 
         loopEdges = [
             Edge(EdgeType.SYMBOL___, Symbol.WHILE, ST5, 1, 0, LOOP),           # 0
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.CONDITION, ST6, 2, 0, LOOP),  # 1
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.LOGICAL_EXPRESSION, ST6, 2, 0, LOOP),  # 1
             Edge(EdgeType.SYMBOL___, Symbol.DO,  None, 3, 0, LOOP),            # 2
             Edge(EdgeType.SUBGRAPH_, NonTerminal.STATEMENT, ST7, 4, 0, LOOP),  # 3
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, LOOP)                      # 5
@@ -398,6 +410,52 @@ class PL0Parser():
             Edge(EdgeType.SUBGRAPH_, TERM, EX3, 3, 0, EXPR),  # 6
 
             Edge(EdgeType.GRAPH_END, None, None, 0, 0, EXPR)  # 7  
+        ]
+
+        logicalTermEdges = [
+
+            # not LTerm
+            Edge(EdgeType.SYMBOL___,Symbol.NOT, None, 1,2,LTERM),   # 0
+            Edge(EdgeType.SUBGRAPH_,LFACT, LT1, 3,0,LTERM),         # 1
+            
+            # LTerm (without not)
+            Edge(EdgeType.SUBGRAPH_,LFACT, None, 3,0,LTERM),        # 2
+
+            # Or
+            Edge(EdgeType.SYMBOL___,Symbol.AND, None, 4,7,LTERM),    # 3
+
+            # Not LTerm
+            Edge(EdgeType.SYMBOL___,Symbol.NOT, None, 5,6,LTERM),   # 4
+            Edge(EdgeType.SUBGRAPH_,LFACT, LT2, 3,0,LTERM),         # 5
+
+            # LTerm (Without not)
+            Edge(EdgeType.SUBGRAPH_,LFACT, LT3,7,0,LTERM),         # 6
+
+            # Graph end
+            Edge(EdgeType.GRAPH_END,None,None,0,0,LTERM)            # 7
+
+        ]
+
+        logicalExpressionEdges = [
+            Edge(EdgeType.SUBGRAPH_,LTERM,None, 1,0,LEXPR),         # 0
+            Edge(EdgeType.SYMBOL___,Symbol.OR,None, 2,3,LEXPR),     # 1
+            Edge(EdgeType.SUBGRAPH_,LTERM,LE1, 1,0,LEXPR),          # 2
+
+            Edge(EdgeType.GRAPH_END,None, None, 0,0,LEXPR)          # 3
+        ]
+
+        logicalFactorEdges = [
+            
+            # CONDITION
+            Edge(EdgeType.SUBGRAPH_,COND,None,4,1,LFACT),           # 0
+            
+            # ( LEXPR )
+            Edge(EdgeType.SYMBOL___,'{',None,2,0,LFACT),            # 1
+            Edge(EdgeType.SUBGRAPH_,LEXPR,None,3,0,LFACT),          # 2
+            Edge(EdgeType.SYMBOL___,'}',None,4,0,LFACT),            # 3
+
+            Edge(EdgeType.GRAPH_END, None, None, 0,0, LFACT)
+
         ]
 
         statementEdges = [
@@ -486,7 +544,7 @@ class PL0Parser():
             Edge(EdgeType.SYMBOL___, '(', None, 2,0,FORS),          # 1
             Edge(EdgeType.SUBGRAPH_,ASSS,None, 3,0,FORS),           # 2
             Edge(EdgeType.SYMBOL___,';',FOR1, 4,0,FORS),            # 3
-            Edge(EdgeType.SUBGRAPH_,COND,FOR2,5,0,FORS),            # 4
+            Edge(EdgeType.SUBGRAPH_,LEXPR,FOR2,5,0,FORS),            # 4
             Edge(EdgeType.SYMBOL___,';',None,6,0,FORS),             # 5
             Edge(EdgeType.SUBGRAPH_,ASSS,FOR3,7,0,FORS),            # 6
             Edge(EdgeType.SYMBOL___,')', None, 8,0,FORS),           # 7
@@ -519,7 +577,11 @@ class PL0Parser():
             FORS: forEdges,                      # 19
             PLC : parameterListCallEdges,        # 20
             PLD : parameterListDeclarationEdges, # 21
-            ARR : arrayIndexEdges                # 22
+            ARR : arrayIndexEdges,               # 22
+
+            LEXPR : logicalExpressionEdges,      # 23
+            LTERM : logicalTermEdges,            # 24
+            LFACT : logicalFactorEdges          
         }
 
         # Init Lexer
@@ -1309,6 +1371,51 @@ class PL0Parser():
         # Correct address of the JmpNot of the While-Condition
         return self.codeGen.correctJmp(label=jmpNotRelAddr)
         
+
+    # Logical Expressions
+    def logicalOr(self):
+        return self.codeGen.writeCommand(VMCode.OP_ADD)
+
+    def logicalNot(self):
+
+        value = 1
+
+        # Looking for const with the current value
+        const = self.nameList.searchConstByValue(value)
+
+        # if not found -> add it as anonym const
+        if const is None:
+            const = self.nameList.createConst(value)
+
+        # put index of the constant onto the stack
+        args = [const.index]
+        if not self.codeGen.writeCommand(VMCode.PUSH_CONST,args):
+            return False
+
+        return self.codeGen.writeCommand(VMCode.CMP_LT)
+
+    def logicalNotAnd(self):
+        value = 1
+
+        # Looking for const with the current value
+        const = self.nameList.searchConstByValue(value)
+
+        # if not found -> add it as anonym const
+        if const is None:
+            const = self.nameList.createConst(value)
+
+        # put index of the constant onto the stack
+        args = [const.index]
+        if not self.codeGen.writeCommand(VMCode.PUSH_CONST,args):
+            return False
+
+        if not self.codeGen.writeCommand(VMCode.CMP_LT):
+            return False
+
+        return self.codeGen.writeCommand(VMCode.OP_MULT)
+
+    def logicalAnd(self):
+        return self.codeGen.writeCommand(VMCode.OP_MULT)
 
 if __name__ == "__main__":
 
