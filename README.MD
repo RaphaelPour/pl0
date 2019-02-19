@@ -325,7 +325,7 @@ CALL main.
 <INPUT_STATEMENT>            ::= '?' ident.
 <OUTPUT_STATEMENT>           ::= '!' (string | <EXPRESSION>).
 <ASSIGNMENT>                 ::= ident ':=' <EXPRESSION>.
-<ARRAY_INDEX>                ::= '[' number ']'.
+<ARRAY_INDEX>                ::= '[' <EXPRESSION> ']'.
 <CONDITIONAL_STATEMENT>      ::=  'IF' <CONDITION> 'THEN' <STATEMENT> .
 <CONDITION>                  ::= 'ODD' <EXPRESSION> 
                                  | <EXPRESSION> ("="|"#"|"<"|"<="|">"|">=") <EXPRESSION>.

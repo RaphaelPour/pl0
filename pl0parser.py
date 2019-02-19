@@ -170,6 +170,9 @@ class PL0Parser():
         AR3 = self.arrayAccess
         AR4 = self.arraySwap
         FA3 = self.factorGetIdent
+        ST14= self.statementAssigmnmentIdent
+        ST15= self.statementGetValIdent
+        ST16= self.statementGetValToArray
 
         # Init Syntax rules
 
@@ -199,6 +202,7 @@ class PL0Parser():
         PLC = NonTerminal.PARAMETER_LIST_CALL
         PLD = NonTerminal.PARAMETER_LIST_DECLARATION
         ARR = NonTerminal.ARRAY_INDEX
+       
 
         programEdges = [
             Edge(EdgeType.SUBGRAPH_, BLCK, None, 1, 0, PROG),  # 0
@@ -299,15 +303,15 @@ class PL0Parser():
         ]
 
         assignmentEdges = [
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,ST1, 1, 0, ASSS),        # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT,ST14, 1, 0, ASSS),       # 0
             
-            Edge(EdgeType.SYMBOL___,'[',None, 2,4, ASSS),                        # 1
-            Edge(EdgeType.SUBGRAPH_,EXPR,None, 3,0, ASSS),                       # 2
-            Edge(EdgeType.SYMBOL___,']',AR3, 4,0, ASSS),                         # 3
+            Edge(EdgeType.SUBGRAPH_,ARR, None,3,2, ASSS),                       # 1
+
+            Edge(EdgeType.NIL______, None, ST1, 3,0, ASSS),                     # 2
             
-            Edge(EdgeType.SYMBOL___, Symbol.ASSIGN, None, 5, 0, ASSS),          # 4
-            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, ST2, 6, 0, ASSS),  # 5
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, ASSS)                       # 6
+            Edge(EdgeType.SYMBOL___, Symbol.ASSIGN, None, 4, 0, ASSS),          # 3
+            Edge(EdgeType.SUBGRAPH_, NonTerminal.EXPRESSION, ST2, 5, 0, ASSS),  # 4
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, ASSS)                       # 5
         ]
 
         conditionalEdges = [
@@ -340,9 +344,14 @@ class PL0Parser():
             Edge(EdgeType.GRAPH_END, 0, None, 0, 0, COMP)                      # 4
         ]
         inputEdges = [
-            Edge(EdgeType.SYMBOL___, "?", None, 1, 0, INST),               # 0
-            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST9, 2, 0, INST), # 1
-            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, INST)                  # 2
+            Edge(EdgeType.SYMBOL___, "?", None, 1, 0, INST),                # 0
+            Edge(EdgeType.MORPHEM__, MorphemCode.IDENT, ST15, 2, 0, INST),  # 1
+
+            Edge(EdgeType.SUBGRAPH_, ARR, ST16, 4,3, INST),                 # 2
+
+            Edge(EdgeType.NIL______,None,ST9,4,0,INST),                     # 3
+
+            Edge(EdgeType.GRAPH_END, 0, None, 0, 0, INST)                   # 4
         ]
 
         outputEdges = [
@@ -816,11 +825,15 @@ class PL0Parser():
 
     # STATEMENT
 
+    def statementAssigmnmentIdent(self):
+        self.currentIdent = str(self.lexer.morphem.value)
+        return True
+
     # Also known as ST1
     def statementAssignmentLeftSide(self):
         
         # Use current morphem as ident
-        identName = str(self.lexer.morphem.value)
+        identName = self.currentIdent
 
         # Search globally for ident
         ident = self.nameList.searchIdentNameGlobal(identName)
@@ -963,11 +976,20 @@ class PL0Parser():
         command, args = self.codeGen.popDelayedCommand()
         return self.codeGen.writeCommand(command, args)
 
+    def statementGetValIdent(self):
+        self.currentIdent = str(self.lexer.morphem.value)
+        return True
+
+    def statementGetValToArray(self):
+        # Write user-input command
+        return self.codeGen.writeCommand(VMCode.GET_VAL)
+
+
     # Also known as ST9
     def statementGetVal(self):
 
         # Use current morphem as ident
-        identName = str(self.lexer.morphem.value)
+        identName = self.currentIdent
 
         # Search globally for ident
         ident = self.nameList.searchIdentNameGlobal(identName)
