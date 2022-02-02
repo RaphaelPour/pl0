@@ -1,4 +1,4 @@
-#PL/0 Compiler
+# PL/0 Compiler
 
 This Python-based Compiler converts PL/0 source code into CL/0 virtual machine code. Both are educational languages with the aim to get faster to the real handwork of compiler-construction.
 
@@ -33,26 +33,26 @@ Additional Features
 ## Examples
 
 ### Hello World
-~~~~
+```basic
 ! "Hello World!".
-~~~~
+```
 
 ### Arithmetic expressions
-~~~~
+```basic
 !- 3+ (-4).
-~~~~
+```
 
 ### I/O
-~~~~
+```basic
 VAR input;
 BEGIN
     ?input;
     !input
 END.
-~~~~
+```
 
 ### If
-~~~~
+```basic
 VAR a,b;
 BEGIN
     ?a;
@@ -68,12 +68,12 @@ BEGIN
 
     IF ODD a THEN !7
 END.
-~~~~
+```
 
 ### If-Else
 
 If-Else Odd-Number tester
-~~~~
+```basic
 VAR input;
 PROCEDURE main;
 BEGIN
@@ -90,10 +90,10 @@ BEGIN
     END
 END;
 CALL main.
-~~~~
+```
 
 Extended If-Else with a third case using Else-If.
-~~~~
+```basic
 CONST pHNeutral=7;
 VAR input;
 PROCEDURE main;
@@ -105,10 +105,10 @@ BEGIN
     ELSE !"Acid"
 END;
 CALL main.
-~~~~
+```
 
 ### While-Loop
-~~~~
+```basic
 VAR a, fak;
 BEGIN
  ?a;
@@ -121,10 +121,10 @@ BEGIN
     ! fak
    END
 END .
-~~~~
+```
 
 ### Define Procedures/ Constants/ Variables
-~~~~
+```basic
 CONST a=5;
 VAR b;
 PROCEDURE main;
@@ -134,17 +134,17 @@ PROCEDURE main;
     !b
   END;
 CALL main.
-~~~~
+```
 
 ### Procedures with parameters
-~~~~
+```basic
 PROCEDURE f(x);
     !x;
 CALL f(7331).
-~~~~
+```
 
 Exponentiation programm using a self implemented pow function
-~~~~
+```basic
 VAR result,i,a,b;
 PROCEDURE pow(base,power);
 BEGIN
@@ -161,10 +161,10 @@ BEGIN
 ?b;
 CALL pow(a,b)
 END.
-~~~~
+```
 
 ### For-Loop
-~~~~
+```basic
 CONST k=5;
 VAR i,j;
 PROCEDURE main;
@@ -175,10 +175,10 @@ BEGIN
         END
 END;
 CALL main.
-~~~~
+```
 
 ### Arrays
-~~~~
+```basic
 VAR x[4],i;
 BEGIN
     FOR(i:=0; i < 4; i:=i+1)
@@ -187,10 +187,10 @@ BEGIN
         !x[i]
     END
 END.
-~~~~
+```
 
 Sorting numbers
-~~~~
+```basic
 VAR x[5],i,j,tmp;
 BEGIN
     /* Initialize "random" int vector*/
@@ -214,10 +214,10 @@ BEGIN
     FOR(i:=0; i < 5; i:=i+1)
         !x[i]
 END.
-~~~~
+```
 
 ### Recursion
-~~~~
+```basic
 CONST a=5;
 VAR b;
 PROCEDURE sub;
@@ -232,7 +232,7 @@ PROCEDURE main;
     CALL sub
   END;
 CALL main.
-~~~~
+```
 
 ### Logical Expressions
 ~~~
@@ -245,7 +245,7 @@ END.
 ~~~
 
 ### Number guessing game
-~~~~
+```basic
 /*
  * Number-Guessing Game
  *
@@ -307,7 +307,7 @@ BEGIN
    END
 END;
 CALL main.
-~~~~
+```
 
 ## Language specification
 ~~~
@@ -369,9 +369,9 @@ The lexical analyzer (short: lexer) transforms source code into tokens and provi
 It does this transformation on-demand, when the parser asks for the next token.
 One token can be a symbol, number, or a whole variable identifier.
 Let's take the Hello-World programm as an example:
-~~~~
+```basic
 !"Hello World".
-~~~~
+```
 
 The lexer would identify and transform this program into the following three tokens:
 - SYMBOL (!)
